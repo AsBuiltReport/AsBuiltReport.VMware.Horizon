@@ -31,18 +31,6 @@ if (!$StyleName) {
 }
 
 
-
-[CmdletBinding(SupportsShouldProcess = $False)]
-Param(
-
-    [Parameter(Position = 0, Mandatory = $true, HelpMessage = 'Please provide the IP/FQDN of a Horizon Connection Server')]
-    [ValidateNotNullOrEmpty()]
-    [String]$HVServer,
-
-    [parameter(ValueFromPipelineByPropertyName = $true, ValueFromPipeline = $true)]
-    [PSCredential]$Credentials
-)
-
 $script:HorizonServer = $null
 Try { 
     $script:HorizonServer = Connect-HVServer $HVServer -Credential $Credentials 
@@ -148,8 +136,78 @@ if ($HorizonServer) {
                         'Data Store Storage Over Commit' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.VirtualCenterStorageSettings.Datastores.storageOvercommit
                         'Data Store' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.VirtualCenterStorageSettings.Datastores.datastore
                         'Use VSan' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.VirtualCenterStorageSettings.UseVSan
-
-
+                        section -Style Heading5 'View Composer Storage Settings'
+                        'Use Separate Datastores Replica And OS Disks' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.VirtualCenterStorageSettings.ViewComposerStorageSettings.UseSeparateDatastoresReplicaAndOSDisks
+                        'Replica Disk Datastore' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.VirtualCenterStorageSettings.ViewComposerStorageSettings.ReplicaDiskDatastore
+                        'Use Native Snapshots' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.VirtualCenterStorageSettings.ViewComposerStorageSettings.UseNativeSnapshots
+                        'Reclaim Vm Disk Space' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.VirtualCenterStorageSettings.ViewComposerStorageSettings.SpaceReclamationSettings.ReclaimVmDiskSpace
+                        'ReclamationThresholdGB' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.VirtualCenterStorageSettings.ViewComposerStorageSettings.SpaceReclamationSettings.ReclamationThresholdGB
+                        'Redirect Windows Profile' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.VirtualCenterStorageSettings.ViewComposerStorageSettings.PersistentDiskSettings.RedirectWindowsProfile
+                        'Use Separate Datastores Persistent And OS Disks' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.VirtualCenterStorageSettings.ViewComposerStorageSettings.PersistentDiskSettings.UseSeparateDatastoresPersistentAndOSDisks
+                        'Persistent Disk Datastores' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.VirtualCenterStorageSettings.ViewComposerStorageSettings.PersistentDiskSettings.PersistentDiskDatastores
+                        'Disk Size MB' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.VirtualCenterStorageSettings.ViewComposerStorageSettings.PersistentDiskSettings.DiskSizeMB
+                        'Disk Drive Letter' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.VirtualCenterStorageSettings.ViewComposerStorageSettings.PersistentDiskSettings.DiskDriveLetter
+                        'Redirect Disposable Files' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.VirtualCenterStorageSettings.ViewComposerStorageSettings.NonPersistentDiskSettings.RedirectDisposableFiles
+                        'Disk Size MB' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.VirtualCenterStorageSettings.ViewComposerStorageSettings.NonPersistentDiskSettings.DiskSizeMB
+                        section -Style Heading5 'View Storage Accelerator Settings'
+                        'Use View Storage Accelerator' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.VirtualCenterStorageSettings.ViewStorageAcceleratorSettings.UseViewStorageAccelerator
+                        'View Composer Disk Types' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.VirtualCenterStorageSettings.ViewStorageAcceleratorSettings.ViewComposerDiskTypes
+                        'Regenerate View Storage Accelerator Days' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.VirtualCenterStorageSettings.ViewStorageAcceleratorSettings.RegenerateViewStorageAcceleratorDays
+                        'Blackout Times' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.VirtualCenterStorageSettings.ViewStorageAcceleratorSettings.BlackoutTimes
+                        section -Style Heading5 'User Assignment'
+                        'User Assignment' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.userAssignment.userAssignment
+                        'Automatic Assignment' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.userAssignment.AutomaticAssignment
+                        section -Style Heading3 'Customization Settings'
+                        'Customization Type' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.customizationSettings.CustomizationType
+                        'Domain Administrator' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.customizationSettings.DomainAdministrator
+                        'AdContainer' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.customizationSettings.AdContainer
+                        'Reuse PreExisting Accounts' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.customizationSettings.ReusePreExistingAccounts
+                        'No Customization Settings' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.customizationSettings.NoCustomizationSettings
+                        'Sysprep Customization Settings' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.customizationSettings.SysprepCustomizationSettings
+                        'Quick Prep Customization Settings' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.customizationSettings.QuickprepCustomizationSettings
+                        section -Style Heading3 'Clone Prep Customization Settings'
+                        'Instant Clone Engine Domain Administrator' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.customizationSettings.CloneprepCustomizationSettings.InstantCloneEngineDomainAdministrator
+                        'Power Off Script Name' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.customizationSettings.CloneprepCustomizationSettings.PowerOffScriptName
+                        'PowerOffScriptParameters' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.customizationSettings.CloneprepCustomizationSettings.PowerOffScriptParameters
+                        'PostSynchronizationScriptName' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.customizationSettings.CloneprepCustomizationSettings.PostSynchronizationScriptName
+                        'Post Synchronization Script Parameters' = $Pool.AutomatedDesktopSpec.virtualCenterProvisioningSettings.customizationSettings.CloneprepCustomizationSettings.PostSynchronizationScriptParameters
+                        section -Style Heading3 'virtual Center'
+                        'Virtual Center' = $Pool.AutomatedDesktopSpec.virtualCenter
+                        section -Style Heading3 'VM Naming Spec'
+                        'Naming Method' = $Pool.AutomatedDesktopSpec.virtualCenter.vmNamingSpec.namingMethod
+                        'Max Number Of Machines' = $Pool.AutomatedDesktopSpec.virtualCenter.vmNamingSpec.patternNamingSettings.MaxNumberOfMachines
+                        'Number Of Spare Machines' = $Pool.AutomatedDesktopSpec.virtualCenter.vmNamingSpec.patternNamingSettings.NumberOfSpareMachines
+                        'Provisioning Time' = $Pool.AutomatedDesktopSpec.virtualCenter.vmNamingSpec.patternNamingSettings.ProvisioningTime
+                        'Min Number Of Machines' = $Pool.AutomatedDesktopSpec.virtualCenter.vmNamingSpec.patternNamingSettings.MinNumberOfMachines
+                        'Specific Naming Spec' = $Pool.AutomatedDesktopSpec.virtualCenter.vmNamingSpec.specificNamingSpec
+                        'Provisioning Type' = $Pool.AutomatedDesktopSpec.virtualCenter.provisioningType
+                        'Transparent Page Sharing Scope' = $Pool.AutomatedDesktopSpec.virtualCenter.virtualCenterManagedCommonSettings.TransparentPageSharingScope
+                        'Min Number Of Machines' = $Pool.AutomatedDesktopSpec.virtualCenter.vmNamingSpec.patternNamingSettings.MinNumberOfMachines
+                        section -Style Heading2 'Manual Desktop Spec'
+                        'Machines' = $Pool.ManualDesktopSpec.machines
+                        'User Assignment' = $Pool.ManualDesktopSpec.userAssignment.UserAssignment
+                        'Automatic Assignment' = $Pool.ManualDesktopSpec.UserAssignment.AutomaticAssignment
+                        'Source' = $Pool.ManualDesktopSpec.source
+                        'Use View Storage Accelerator' = $Pool.ManualDesktopSpec.viewStorageAcceleratorSettings.UseViewStorageAccelerator
+                        'View Composer Disk Types' = $Pool.ManualDesktopSpec.viewStorageAcceleratorSettings.ViewComposerDiskTypes
+                        'Regenerate View Storage Accelerator Days' = $Pool.ManualDesktopSpec.viewStorageAcceleratorSettings.RegenerateViewStorageAcceleratorDays
+                        'Blackout Times' = $Pool.ManualDesktopSpec.viewStorageAcceleratorSettings.BlackoutTimes
+                        'Virtual Center' = $Pool.ManualDesktopSpec.virtualCenter
+                        'Transparent Page Sharing Scope' = $Pool.ManualDesktopSpec.virtualCenterManagedCommonSettings.TransparentPageSharingScope
+                        'Machines' = $Pool.ManualDesktopSpec.viewStorageAcceleratorSettings.
+                        section -Style Heading2 'Rds Desktop Spec'
+                        'Machines' = $Pool.RDSDesktopSpec.machines
+                        'User Assignment' = $Pool.RDSDesktopSpec.userAssignment.UserAssignment
+                        'Automatic Assignment' = $Pool.RDSDesktopSpec.UserAssignment.AutomaticAssignment
+                        'Source' = $Pool.RDSDesktopSpec.source
+                        'Use View Storage Accelerator' = $Pool.RDSDesktopSpec.viewStorageAcceleratorSettings.UseViewStorageAccelerator
+                        'View Composer Disk Types' = $Pool.RDSDesktopSpec.viewStorageAcceleratorSettings.ViewComposerDiskTypes
+                        'Regenerate View Storage Accelerator Days' = $Pool.RDSDesktopSpec.viewStorageAcceleratorSettings.RegenerateViewStorageAcceleratorDays
+                        'Blackout Times' = $Pool.RDSDesktopSpec.viewStorageAcceleratorSettings.BlackoutTimes
+                        'Virtual Center' = $Pool.RDSDesktopSpec.virtualCenter
+                        'Transparent Page Sharing Scope' = $Pool.RDSDesktopSpec.virtualCenterManagedCommonSettings.TransparentPageSharingScope
+                        'Machines' = $Pool.RDSDesktopSpec.viewStorageAcceleratorSettings.
+                        
                         
                     }
                 }
