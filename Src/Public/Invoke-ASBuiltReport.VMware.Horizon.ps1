@@ -181,7 +181,7 @@
                 #----------------------------------------------------------------------------------------------------#
                 #                Horizon UAG Settings                                                                #
                 #----------------------------------------------------------------------------------------------------#
-
+<#
 
                 $RAWUAG1 = Get-Content -Raw -path .\UAG1.json | ConvertFrom-Json
                 $RAWUAG2 = Get-Content -Raw -path .\UAG2.json | ConvertFrom-Json
@@ -257,7 +257,7 @@
                 'Group ID' = $RAWUAG1.loadBalancerSettings.groupID
 
 
-
+#>
 
 
 
