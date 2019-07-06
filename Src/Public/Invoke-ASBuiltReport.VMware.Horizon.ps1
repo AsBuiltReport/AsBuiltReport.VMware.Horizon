@@ -1,4 +1,5 @@
-﻿<#
+﻿function Invoke-AsBuiltReport.VMware.Horizon {
+<#
     .SYNOPSIS
         PowerShell script which documents the configuration of VMware Horizon View in Word/HTML/XML/Text formats
     .DESCRIPTION
@@ -16,16 +17,30 @@
     #region Script Parameters
     [CmdletBinding()]
     param (
-            [String[]] $Target,
-            [pscredential] $Credential,
-            $StylePath
+        [String[]] $Target,
+        [PSCredential] $Credential,
+        [String]$StylePath
     )
+
+    # Import JSON Configuration for Options and InfoLevel
+    $InfoLevel = $ReportConfig.InfoLevel
+    $Options = $ReportConfig.Options
+
+    # If custom style not set, use default style
+    if (!$StylePath) {
+        & "$PSScriptRoot\..\..\AsBuiltReport.VMware.Horizon.Style.ps1"
+    }
+
+    # You will need to close this loop. Basically all your code should go within this loop so that you can specify multiple Horizon servers
+    foreach ($HVServer in $Target) {} #move this brack to the end when you're done cleaning up your code
+    
+        Try { 
+            $script:HvServer = Connect-HVServer $HVServer -Credential $Credential -ErrorAction Stop 
+        } Catch { 
+            Write-Error $_
+        }
+
     $script:HvServer = $null
-Try { 
-    $script:HvServer = Connect-HVServer $Target -Credential $Credentials 
-} Catch { 
-    Write-Verbose "Unable to connect to Horizon Connection Server $HVserver."
-}
     #$hvServer = Connect-HVServer -Server test -User user -Password pass -Domain domain
     $Global:hvServices = $hvServer.ExtensionData
     $csService = New-Object VMware.Hv.ConnectionServerService
@@ -313,3 +328,4 @@ Try {
         $ViewAPICS.fqhn
         Write-Host "This is $_."
         } 
+    }
