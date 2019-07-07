@@ -1,25 +1,27 @@
 ﻿function Invoke-AsBuiltReport.VMware.Horizon {
-<#
+    <#
     .SYNOPSIS
-        PowerShell script which documents the configuration of VMware Horizon View in Word/HTML/XML/Text formats
+        PowerShell script which documents the configuration of VMware Horizon in Word/HTML/XML/Text formats
     .DESCRIPTION
-        Documents the configuration of VMware Horizon View in Word/HTML/XML/Text formats using PScribo.
+        Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
         Version:        0.1.1
         Author:         Karl Newick, Chris Hildebrandt
         Twitter:        @karlnewick, @childebrandt42
-        Github:         
+        Github:         https://github.com/mattallford
         Credits:        Iain Brighton (@iainbrighton) - PScribo module
 
+
     .LINK
-        https://github.com/AsBuiltReport/
+        https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon
     #>
+
     #region Script Parameters
     [CmdletBinding()]
     param (
-        [String[]] $Target,
-        [PSCredential] $Credential,
-        [String]$StylePath
+        [string[]] $Target,
+        [pscredential] $Credential,
+		$StylePath
     )
 
     # Import JSON Configuration for Options and InfoLevel
@@ -28,11 +30,15 @@
 
     # If custom style not set, use default style
     if (!$StylePath) {
-        & "$PSScriptRoot\..\..\AsBuiltReport.VMware.Horizon.Style.ps1"
+        & "$PSScriptRoot\..\..\AsBuiltReport.AsBuiltReport.VMware.Horizon.Style.ps1"
     }
 
+    $Script:Array = $Null
+    #Connect to VMware Horizon Connection Servers using supplied credentials
+  
+
     # You will need to close this loop. Basically all your code should go within this loop so that you can specify multiple Horizon servers
-    foreach ($HVServer in $Target) {} #move this brack to the end when you're done cleaning up your code
+    foreach ($HVServer in $Target) {
     
         Try { 
             $script:HvServer = Connect-HVServer $HVServer -Credential $Credential -ErrorAction Stop 
@@ -329,3 +335,4 @@
         Write-Host "This is $_."
         } 
     }
+}
