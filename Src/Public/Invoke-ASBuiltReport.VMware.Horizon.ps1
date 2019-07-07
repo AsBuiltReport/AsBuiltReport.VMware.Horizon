@@ -30,14 +30,12 @@
 
     # If custom style not set, use default style
     if (!$StylePath) {
-        & "$PSScriptRoot\..\..\AsBuiltReport.AsBuiltReport.VMware.Horizon.Style.ps1"
+        & "$PSScriptRoot\..\..\AsBuiltReport.VMware.Horizon.Style.ps1"
     }
 
     $Script:Array = $Null
     #Connect to VMware Horizon Connection Servers using supplied credentials
-  
 
-    # You will need to close this loop. Basically all your code should go within this loop so that you can specify multiple Horizon servers
     foreach ($HVServer in $Target) {
     
         Try { 
