@@ -25,8 +25,8 @@
     )
 
     # Import JSON Configuration for Options and InfoLevel
-    $InfoLevel = $ReportConfig.InfoLevel
-    $Options = $ReportConfig.Options
+    #$InfoLevel = $ReportConfig.InfoLevel
+    #$Options = $ReportConfig.Options
 
     # If custom style not set, use default style
     if (!$StylePath) {
