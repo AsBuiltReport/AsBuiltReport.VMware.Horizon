@@ -25,8 +25,8 @@
     )
 
     # Import JSON Configuration for Options and InfoLevel
-    #$InfoLevel = $ReportConfig.InfoLevel
-    #$Options = $ReportConfig.Options
+    $InfoLevel = $ReportConfig.InfoLevel
+    $Options = $ReportConfig.Options
 
     # If custom style not set, use default style
     if (!$StylePath) {
@@ -44,6 +44,8 @@
             Write-Error $_
         }
 
+<# 
+        
     $script:HvServer = $null
     #$hvServer = Connect-HVServer -Server test -User user -Password pass -Domain domain
     $Global:hvServices = $hvServer.ExtensionData
@@ -65,7 +67,7 @@
         #----------------------------------------------------------------------------------------------------#
 
         $ViewPod = $ViewAPI.pod.Pod_Get((($ViewAPI.Site.Site_List()).pods | select -First 1))
-
+#>
 <#
         #----------------------------------------------------------------------------------------------------#
         #                Horizon vCenter Settngs                                                             #
