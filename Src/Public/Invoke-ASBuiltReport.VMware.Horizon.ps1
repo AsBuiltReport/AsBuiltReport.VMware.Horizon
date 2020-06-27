@@ -54,7 +54,7 @@
             #Environment Varibles
 
             # Assign a variable to obtain the API Extension Data
-            $hzServices = $Global:DefaultHVServers.ExtensionData
+            $hzServices = $hvServer.ExtensionData
 
             # Define HV Query Services
             $Queryservice = new-object vmware.hv.queryserviceservice
