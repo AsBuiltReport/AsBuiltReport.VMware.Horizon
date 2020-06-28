@@ -32,6 +32,7 @@
         & "$PSScriptRoot\..\..\AsBuiltReport.VMware.Horizon.Style.ps1"
     } #Close out If (!$StylePath)
 
+    $ErrorActionPreference = “SilentlyContinue”
 
     foreach ($HVEnvironment in $Target) {
     
@@ -1367,9 +1368,10 @@
                                                                 }
                                                             } # Close out if($EntitledUserOrGroupGlobalMachine.globaldata.GlobalEntitlements.id -eq $GlobalEntitlement.id.id)
                                                         } # Close out foreach($EntitledUserOrGroupGlobalMachine in $EntitledUserOrGroupGlobalMachines)
-                                                        $GlobalEntitlementsUsersList | Table -Name "Global Entitlement $($GlobalEntitlement.Base.DisplayName) Users and Groups List" -ColumnWidths 40,30,30
+                                                        if($GlobalEntitlementsUsersList){
+                                                            $GlobalEntitlementsUsersList | Table -Name "Global Entitlement $($GlobalEntitlement.Base.DisplayName) Users and Groups List" -ColumnWidths 40,30,30
+                                                        }
                                                     } # Close out section -Style Heading6 "Global Entitlement $($GlobalEntitlement.Base.DisplayName) Users and Groups List"
-                                                    
                                                     
                                                     if ($InfoLevel.Inventory.GlobalEntitlements -ge 3) {
                                                         foreach($EntitledUserOrGroupGlobalMachine in $EntitledUserOrGroupGlobalMachines) {
