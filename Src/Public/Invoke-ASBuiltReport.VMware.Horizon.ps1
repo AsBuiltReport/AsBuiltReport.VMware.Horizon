@@ -16,29 +16,24 @@
         https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon
     #>
 
-    [CmdletBinding()]
     param (
         [String[]] $Target,
-        [PSCredential] $Credential,
-        [String] $StylePath
-    ) #Close out Param
+        [PSCredential] $Credential
+    )
 
-    # Import JSON Configuration for Options and InfoLevel
+    # Import Report Configuration
+    $Report = $ReportConfig.Report
     $InfoLevel = $ReportConfig.InfoLevel
-    #$Options = $ReportConfig.Options
+    $Options = $ReportConfig.Options
 
-    # If custom style not set, use default style
-    if (!$StylePath) {
-        & "$PSScriptRoot\..\..\AsBuiltReport.VMware.Horizon.Style.ps1"
-    } #Close out If (!$StylePath)
 
     $ErrorActionPreference = “SilentlyContinue”
 
     foreach ($HVEnvironment in $Target) {
-    
+
         Try {
             $HvServer = Connect-HVServer -Server $HVEnvironment -Credential $Credential -ErrorAction Stop
-        } Catch { 
+        } Catch {
             Write-Error $_
         } #Close Out Try Catch
 
@@ -47,7 +42,7 @@
         #---------------------------------------------------------------------------------------------#
         #                                       SCRIPT BODY                                           #
         #---------------------------------------------------------------------------------------------#
-        
+
 
         # Generate report if connection to Horizon Environment Server Connection is successful
         if ($HvServer) {
@@ -60,7 +55,7 @@
             # Define HV Query Services
             $Queryservice = new-object vmware.hv.queryserviceservice
             #$QueryDef = New-Object VMware.Hv.QueryDefinition
-            
+
             # Virtual Centers
             $vCenterServers = $hzServices.VirtualCenter.VirtualCenter_List()
 
@@ -75,7 +70,7 @@
 
             # DataStores
             $datastores = $vCenterHealth
-            
+
             # Domains
             $domains = $hzServices.ADDomainHealth.ADDomainHealth_List()
 
@@ -83,7 +78,7 @@
             $connectionservers = $hzServices.ConnectionServer.ConnectionServer_List()
 
             # Security Server Info
-            $SecurityServers = $hzServices.SecurityServer.SecurityServer_List()
+            #$SecurityServers = $hzServices.SecurityServer.SecurityServer_List()
 
             # GateWay Server Info
             $GatewayServers = $hzServices.Gateway.Gateway_List()
@@ -128,7 +123,7 @@
             $AppqueryResults = $Queryservice.QueryService_Create($hzServices, $AppQueryDefn)
             $Apps = foreach ($Appresult in $AppqueryResults.results){$hzServices.Application.Application_Get($Appresult.id)}
             $queryservice.QueryService_DeleteAll($hzServices)
-            
+
             # Thin Apps
 
             # Global Entitlements
@@ -188,13 +183,18 @@
             $RDSServerqueryResults = $Queryservice.QueryService_Create($hzServices, $RDSServerQueryDefn)
             $RDSServers = foreach ($RDSServerresult in $RDSServerqueryResults.results){$hzServices.RDSServer.RDSServer_GetSummaryView($RDSServerresult.id)}
             $queryservice.QueryService_DeleteAll($hzServices)
-            
+
             # Persistent Disks
-            $PersistentDisksQueryDefn = New-Object VMware.Hv.QueryDefinition
-            $PersistentDisksQueryDefn.queryentitytype='PersistentDiskInfo'
-            $PersistentDisksqueryResults = $Queryservice.QueryService_Create($hzServices, $PersistentDisksQueryDefn)
-            $PersistentDisks = foreach ($PersistentDisksresult in $PersistentDisksqueryResults.results){$hzServices.PersistentDisk.PersistentDisk_Get($PersistentDisksresult.id)}
-            $queryservice.QueryService_DeleteAll($hzServices)
+            try {
+                $PersistentDisksQueryDefn = New-Object VMware.Hv.QueryDefinition
+                $PersistentDisksQueryDefn.queryentitytype='PersistentDiskInfo'
+                $PersistentDisksqueryResults = $Queryservice.QueryService_Create($hzServices, $PersistentDisksQueryDefn)
+                $PersistentDisks = foreach ($PersistentDisksresult in $PersistentDisksqueryResults.results){$hzServices.PersistentDisk.PersistentDisk_Get($PersistentDisksresult.id)}
+                $queryservice.QueryService_DeleteAll($hzServices)
+            }
+            catch {
+                Write-PscriboMessage -IsWarning $_.Exception.Message
+            }
 
             # Global Policies
 
@@ -206,14 +206,19 @@
             $queryservice.QueryService_DeleteAll($hzServices)
 
             # Base Images
-            $BaseImageVMList = $hzServices.BaseImageVM.BaseImageVM_List($vCenterServers.id)
-            $CompatibleBaseImageVMs = $BaseImageVMList | Where-Object {
-                ($_.IncompatibleReasons.InUseByDesktop -eq $false) -and
-                ($_.IncompatibleReasons.InUseByLinkedCloneDesktop -eq $false) -and
-                ($_.IncompatibleReasons.ViewComposerReplica -eq $false) -and
-                ($_.IncompatibleReasons.UnsupportedOS -eq $false) -and
-                ($_.IncompatibleReasons.NoSnapshots -eq $false) -and
-                (($null -eq $_.IncompatibleReasons.InstantInternal) -or ($_.IncompatibleReasons.InstantInternal -eq $false))
+            try {
+                $BaseImageVMList = $hzServices.BaseImageVM.BaseImageVM_List($vCenterServers.id)
+                $CompatibleBaseImageVMs = $BaseImageVMList | Where-Object {
+                    ($_.IncompatibleReasons.InUseByDesktop -eq $false) -and
+                    ($_.IncompatibleReasons.InUseByLinkedCloneDesktop -eq $false) -and
+                    ($_.IncompatibleReasons.ViewComposerReplica -eq $false) -and
+                    ($_.IncompatibleReasons.UnsupportedOS -eq $false) -and
+                    ($_.IncompatibleReasons.NoSnapshots -eq $false) -and
+                    (($null -eq $_.IncompatibleReasons.InstantInternal) -or ($_.IncompatibleReasons.InstantInternal -eq $false))
+                }
+            }
+            catch {
+                Write-PscriboMessage -IsWarning $_.Exception.Message
             }
 
             # Home Site Info
@@ -226,14 +231,14 @@
             # Unauthenticated Access
             $unauthenticatedAccessList = $hzServices.UnauthenticatedAccessUser.UnauthenticatedAccessUser_List()
 
-        } # Close out if ($HvServer) 
+        } # Close out if ($HvServer)
 
         section -Style Heading1 "Horizon Server $($HVEnvironment)" {}
 
         #---------------------------------------------------------------------------------------------#
         #                                 Users And Groups                                            #
         #---------------------------------------------------------------------------------------------#
-        
+
         if ($EntitledUserOrGroupLocalMachines -or $HomeSites -or $unauthenticatedAccessList) {
             section -Style Heading1 'Users and Groups' {
                 LineBreak
@@ -273,7 +278,7 @@
                                             } # Close out if($Machine.Id.id -eq $Entitledlocalmachine)
                                         } # Close out foreach($Machine in $Machines)
                                             if($Entitledlocalmachines.count -gt 1){
-                                                $MachineIDNameResults += "$MachineIDName, " 
+                                                $MachineIDNameResults += "$MachineIDName, "
                                                 $MachineIDName = $MachineIDNameResults.TrimEnd(', ')
                                             } #Close Out if($Entitledlocalmachines.count -gt 1)
                                     } # Close out foreach($Entitledlocalmachine in $Entitledlocalmachines)
@@ -281,7 +286,7 @@
                                     {
                                         '' {$MachineIDName = 'N/A'}
                                         ' ' {$MachineIDName = 'N/A'}
-                                    }                        
+                                    }
 
                                     # Find Desktop ID Name
                                     $PoolIDName = ''
@@ -294,7 +299,7 @@
                                             } # Close out if($Pool.Id.id -eq $Entitledlocalmachine)
                                         } # Close out foreach($Pool in $Pools)
                                             if($Entitledlocalmachines.count -gt 1){
-                                                $PoolIDNameResults += "$PoolIDName, " 
+                                                $PoolIDNameResults += "$PoolIDName, "
                                                 $PoolIDName = $PoolIDNameResults.TrimEnd(', ')
                                             } #Close Out if($Entitledlocalmachines.count -gt 1)
                                     } # Close out foreach($Entitledlocalmachine in $Entitledlocalmachines)
@@ -309,10 +314,10 @@
                                                 $AppIDName = $app.data.DisplayName
                                                 break
                                             } # Close out if($App.Id.id -eq $Entitledlocalmachine)
-                        
+
                                         } # Close out foreach($App in $Apps)
                                             if($Entitledlocalmachines.count -gt 1){
-                                                $AppIDNameResults += "$AppIDName, " 
+                                                $AppIDNameResults += "$AppIDName, "
                                                 $AppIDName = $AppIDNameResults.TrimEnd(', ')
                                             } #Close Out if($Entitledlocalmachines.count -gt 1)
                                     } # Close out foreach($Entitledlocalmachine in $Entitledlocalmachines)
@@ -328,7 +333,7 @@
                                         'False' {$EntitledUserOrGroupLocalMachinegroup = 'User' }
                                     } #Close out Switch ($EntitledUserOrGroupLocalMachine.base.Group)
 
-                                    PageBreak
+                                    #PageBreak
                                     section -Style Heading3 "Local Entitlements Details of $($EntitledUserOrGroupLocalMachine.base.Name)" {
                                         $HorizonEntitledUserOrGroupLocalMachine = [PSCustomObject]@{
                                             'Name' = $EntitledUserOrGroupLocalMachine.base.Name
@@ -372,11 +377,11 @@
 
                 if ($HomeSites) {
                     if ($InfoLevel.UsersAndGroups.UsersAndGroups.HomeSiteAssignments -ge 1) {
-                        PageBreak
+                        #PageBreak
                         section -Style Heading2 "Home Site General Information" {
 
                             $HomeSiteGeneralInfo = foreach($HomeSite in $HomeSites) {
-                                
+
                                 # Clear Var
                                 $HomeSiteUserIDName = ''
                                 $HomeSiteUserIDDomain = ''
@@ -424,22 +429,22 @@
                                 } # Close Out $HorizonRole = [PSCustomObject]
                             }
                             $HomeSiteGeneralInfo | Table -Name 'Home Site General Information' -ColumnWidths 17,10,10,18,15,15,15
-                            
-                        } # Close out section -Style Heading4 'Cloud Pod Sites General Information'         
-                    } # Close out if (($InfoLevel.Settings.Sites.Sites -ge 1) {            
+
+                        } # Close out section -Style Heading4 'Cloud Pod Sites General Information'
+                    } # Close out if (($InfoLevel.Settings.Sites.Sites -ge 1) {
                 } # Close out if ($HomeSites)
 
                 #---------------------------------------------------------------------------------------------#
                 #                              Unauthenticated Access                                         #
                 #---------------------------------------------------------------------------------------------#
-                
+
                 if ($unauthenticatedAccessList) {
                     if ($InfoLevel.UsersAndGroups.UsersAndGroups.UnauthenticatedAccess -ge 1) {
-                        PageBreak
+                        #PageBreak
                         section -Style Heading2 "Unauthenticated Access General Information" {
 
                             $unauthenticatedAccessGeneralInfo = foreach($unauthenticatedAccess in $unauthenticatedAccessList) {
-                                
+
                                 # User Info
                                 $unauthenticatedAccessUserIDName = ''
                                 if($unauthenticatedAccess.userdata.UserId){
@@ -463,9 +468,9 @@
                                 } # Close Out $HorizonRole = [PSCustomObject]
                             }
                             $unauthenticatedAccessGeneralInfo | Table -Name 'Unauthenticated Access General Information' -ColumnWidths 20,20,20,20,20
-                            
-                        } # Close out section -Style Heading4 'Unauthenticated Access General Information'         
-                    } # Close out if (($InfoLevel.UsersAndGroups.UsersAndGroups.UnauthenticatedAccess -ge 1) {            
+
+                        } # Close out section -Style Heading4 'Unauthenticated Access General Information'
+                    } # Close out if (($InfoLevel.UsersAndGroups.UsersAndGroups.UnauthenticatedAccess -ge 1) {
                 } # Close out if ($unauthenticatedAccessList)
 
             } # Close out section -Style Heading1 'Users And Groups'
@@ -475,9 +480,9 @@
         #---------------------------------------------------------------------------------------------#
         #                                 Inventory                                                   #
         #---------------------------------------------------------------------------------------------#
-        
+
         if ($Pools -or $Apps -or $Farms -or $Machines -or $RDSServers -or $PersistentDisks -or $ThinApps -or $GlobalEntitlements -or $GlobalApplicationEntitlementGroups) {
-            PageBreak
+            #PageBreak
             section -Style Heading1 'Inventory' {
                 LineBreak
 
@@ -503,7 +508,7 @@
                                 $HorizonPoolGeneralInfo | Table -Name 'Desktop Pools General Information' -ColumnWidths 40,30,30
 
                                 if ($InfoLevel.Inventory.Desktop -ge 2) {
-                                    section -Style Heading3 'Desktop Pool Details' { 
+                                    section -Style Heading3 'Desktop Pool Details' {
                                         foreach($Pool in $Pools) {
                                             # Find out Access Group for Applications
                                             $AccessgroupMatch = $false
@@ -512,10 +517,10 @@
                                                 if($Accessgroup.Id.id = $Pool.base.accessgroup.id) {
                                                     $AccessGroupName = $Accessgroup.base.name
                                                     $AccessgroupMatch = $true
-                                                } # Close out if($Accessgroup.Id.id = $app.accessgroup.id) 
+                                                } # Close out if($Accessgroup.Id.id = $app.accessgroup.id)
                                                 if($AccessgroupMatch) {
                                                     break
-                                                } # Close out if($AccessgroupMatch) 
+                                                } # Close out if($AccessgroupMatch)
                                             } # Close out foreach($Accessgroup in $Accessgroups)
 
                                             # Find out Global Entitlement Group for Applications
@@ -527,7 +532,7 @@
                                                 } # Close out if($InstantCloneDomainAdminGroup.Id.id = $app.executiondata.farm.id)
                                             if($InstantCloneDomainAdminGroupMatch) {
                                                 break
-                                                } #Close out if($InstantCloneDomainAdminGroupMatch) 
+                                                } #Close out if($InstantCloneDomainAdminGroupMatch)
                                             } # Close out foreach($InstantCloneDomainAdminGroup in $InstantCloneDomainAdminGroups)
 
                                             # Find out Global Entitlement Group for Applications
@@ -539,7 +544,7 @@
                                                 } # Close out if($GlobalEntitlement.Id.id = $app.executiondata.farm.id)
                                             if($GlobalEntitlementMatch) {
                                                 break
-                                                } #Close out if($GlobalEntitlementMatch) 
+                                                } #Close out if($GlobalEntitlementMatch)
                                             } # Close out foreach($GlobalEntitlement in $GlobalEntitlements)
 
                                             $farmMatch = $false
@@ -550,9 +555,9 @@
                                                 } # Close out if($farm.Id.id = $pool.rdsdesktopdata.farm.id)
                                                 if($farmMatch) {
                                                     break
-                                                } # Close out if($farmMatch) 
+                                                } # Close out if($farmMatch)
                                             } # Close out foreach($farm in $farms)
-                                            
+
                                             # Find vCenter ID Name
                                             $vCenterServerIDName = ''
                                             $PoolGroups = $pool.manualdesktopdata.virtualcenter.id
@@ -562,10 +567,10 @@
                                                         $vCenterServerIDName = $vCenterServer.serverspec.ServerName
                                                         break
                                                     } # Close out if($vCenterServer.Id.id -eq $Entitledlocalmachine)
-                                
+
                                                 } # Close out foreach($vCenterServer in $vCenterServers)
                                                     if($PoolGroups.count -gt 1){
-                                                        $vCenterServerIDNameResults += "$vCenterServerIDName, " 
+                                                        $vCenterServerIDNameResults += "$vCenterServerIDName, "
                                                         $vCenterServerIDName = $vCenterServerIDNameResults.TrimEnd(', ')
                                                     } #Close Out if($PoolGroups.count -gt 1)
                                             } # Close out foreach($PoolGroup in $PoolGroups)
@@ -579,10 +584,10 @@
                                                         $vCenterServerAutoIDName = $vCenterServer.serverspec.ServerName
                                                         break
                                                     } # Close out if($vCenterServer.Id.id -eq $PoolGroup)
-                                
+
                                                 } # Close out foreach($vCenterServer in $vCenterServers)
                                                     if($PoolGroups.count -gt 1){
-                                                        $vCenterServerAutoIDNameResults += "$vCenterServerAutoIDName, " 
+                                                        $vCenterServerAutoIDNameResults += "$vCenterServerAutoIDName, "
                                                         $vCenterServerAutoIDName = $vCenterServerAutoIDNameResults.TrimEnd(', ')
                                                     } #Close Out if($PoolGroups.count -gt 1)
                                             } # Close out foreach($PoolGroup in $PoolGroups)
@@ -607,7 +612,7 @@
                                             # DataCenters
                                             if($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.Datacenter.id) {
                                                 $DataCenterList = $hzServices.Datacenter.Datacenter_List($Pool.automateddesktopdata.virtualcenter)
-                                            
+
                                                 # Find DataCenter ID Name
                                                 foreach($DataCenter in $DataCenterList) {
                                                     if($DataCenter.id.id -eq $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.Datacenter.id){
@@ -665,7 +670,7 @@
                                                     } # Close out if($Pool.automateddesktopdata.CustomizationSettings.AdContainer.id -like "ADContainer/$ADDomainID/*")
                                                 } # Close out foreach($ADDomain in $ADDomains)
                                             }
-                                            
+
                                             # VM Template
                                             if($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.Template.id){
                                                 foreach($Template in $Template) {
@@ -676,17 +681,17 @@
                                                 } # Close out foreach($Template in $Template)
                                             }
 
-                                            PageBreak
+                                            #PageBreak
                                             section -Style Heading4 "Pool $($Pool.Base.name) Information" {
 
-                                                $SupportedDisplayProtocols = $Pool.DesktopSettings.DisplayProtocolSettings | ForEach-Object { $_.SupportedDisplayProtocols} 
+                                                $SupportedDisplayProtocols = $Pool.DesktopSettings.DisplayProtocolSettings | ForEach-Object { $_.SupportedDisplayProtocols}
                                                 $SupportedDisplayProtocolsresult = $SupportedDisplayProtocols -join ', '
 
-                                                $StorageOvercommit = $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterStorageSettings.datastores | ForEach-Object { $_.StorageOvercommit} 
+                                                $StorageOvercommit = $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterStorageSettings.datastores | ForEach-Object { $_.StorageOvercommit}
                                                 $StorageOvercommitsresult = $StorageOvercommit -join ', '
 
                                                 $DatastoreFinal = ''
-                                                $DatastorePaths = $Pool.automateddesktopdata.VirtualCenterNamesData | ForEach-Object { $_.DatastorePaths} 
+                                                $DatastorePaths = $Pool.automateddesktopdata.VirtualCenterNamesData | ForEach-Object { $_.DatastorePaths}
                                                 foreach($Datastore in $DatastorePaths){
                                                 $Datastorename = $Datastore -replace '^(.*[\\\/])'
                                                 $DatastoreFinal += $DatastoreName -join "`r`n" | Out-String
@@ -729,11 +734,11 @@
                                                     'Pool Host or Cluster' = $VMhostandCluter
                                                     'Pool Host or Cluster Path' = $Pool.automateddesktopdata.VirtualCenterNamesData.HostOrClusterPath
                                                     #'Pool Resource Pool' = $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.ResourcePool.id
-                                                    
+
                                                 } # Closing out $HorizonPoolInfo = [PSCustomObject]
                                                 $HorizonPoolInfoP1 | Table -Name "Pool $($Pool.Base.name) Information Part 1" -List -ColumnWidths 60,40
-                                                PageBreak
-                                                    
+                                                #PageBreak
+
                                                 $HorizonPoolInfoP2 = [PSCustomObject]@{
                                                     'Pool Resource Pool' = $VMResourcePool
                                                     'Pool Resource Pool Path' = $Pool.automateddesktopdata.VirtualCenterNamesData.ResourcePoolPath
@@ -773,8 +778,8 @@
                                                     'Pool Max Resolution of Any One Monitor' = $Pool.DesktopSettings.DisplayProtocolSettings.PcoipDisplaySettings.MaxResolutionOfAnyOneMonitor
                                                 } # Closing out $HorizonPoolInfo = [PSCustomObject]
                                                 $HorizonPoolInfoP2 | Table -Name "Pool $($Pool.Base.name) Information Part 2" -List -ColumnWidths 60,40
-                                                PageBreak
-                                                    
+                                                #PageBreak
+
                                                 $HorizonPoolInfoP3 = [PSCustomObject]@{
                                                     'Pool Flash Quality' = $Pool.DesktopSettings.FlashSettings.Quality
                                                     'Pool Flash Throttling' = $Pool.DesktopSettings.FlashSettings.Throttling
@@ -806,7 +811,7 @@
                                                 $HorizonPoolInfoP3 | Table -Name "Pool $($Pool.Base.name) Information Part 3" -List -ColumnWidths 60,40
                                             } # Closing qut section -Style Heading4 'Pools'
                                         } # Close out $HorizonPools = foreach($Pool in $Pools)
-                                    } # Close out section -Style Heading3 'Pools' 
+                                    } # Close out section -Style Heading3 'Pools'
                                 } # Close out section -Style Heading3 'Desktop Pools General Information'
                             } # Close out if ($InfoLevel.Inventory.Desktop -ge 2) {
                         } # Close out section -Style Heading1 'Desktops'
@@ -819,23 +824,23 @@
 
                 if ($Apps) {
                     if ($InfoLevel.Inventory.Applications -ge 1) {
-                        PageBreak
+                        #PageBreak
                         section -Style Heading2 'Applications' {
                             section -Style Heading3 'Application General Information' {
                                 $HorizonApplicationsGeneral = foreach($App in $Apps) {
                                     [PSCustomObject]@{
-                                        'Horizon Application Display Name' = $App.Data.DisplayName
-                                        'Horizon Application Version' = $App.ExecutionData.Version
-                                        'Horizon Application Enabled' = $App.Data.Enabled
+                                        'Display Name' = $App.Data.DisplayName
+                                        'Version' = $App.ExecutionData.Version
+                                        'Enabled' = $App.Data.Enabled
                                     }
                                 } # Close out $HorizonApplications = foreach($App in $Apps)
                                 $HorizonApplicationsGeneral | Table -Name 'Application General Information' -ColumnWidths 40,30,30
                             } # Close out section -Style Heading3 'Application General Info'
 
                             if ($InfoLevel.Inventory.Applications -ge 2) {
-                                section -Style Heading3 'Applications Details' { 
+                                section -Style Heading3 'Applications Details' {
                                     foreach($App in $Apps) {
-                                    
+
                                         # Find out Farm Name for Applications
                                         $farmMatch = $false
                                         foreach($farm in $farms) {
@@ -845,7 +850,7 @@
                                             } # Close out if($farm.Id.id = $app.executiondata.farm.id)
                                             if($farmMatch) {
                                                 break
-                                            } # Close out if($farmMatch) 
+                                            } # Close out if($farmMatch)
                                         } # Close out foreach($farm in $farms)
 
                                         # Find out Access Group for Applications
@@ -855,12 +860,12 @@
                                             if($Accessgroup.Id.id -eq $app.accessgroup.id) {
                                                 $AccessGroupName = $Accessgroup.base.name
                                                 $AccessgroupMatch = $true
-                                            } # Close out if($Accessgroup.Id.id = $app.accessgroup.id) 
+                                            } # Close out if($Accessgroup.Id.id = $app.accessgroup.id)
                                             if($AccessgroupMatch) {
                                                 break
-                                            } # Close out if($AccessgroupMatch) 
+                                            } # Close out if($AccessgroupMatch)
                                         } # Close out foreach($Accessgroup in $Accessgroups)
-                                        
+
                                         # Find out Global Application Entitlement Group for Applications
                                         $GlobalApplicationEntitlementGroupMatch = $false
                                         foreach($GlobalApplicationEntitlementGroup in $GlobalApplicationEntitlementGroups) {
@@ -870,38 +875,38 @@
                                             } # Close out if($GlobalApplicationEntitlementGroup.Id.id = $app.executiondata.farm.id)
                                         if($GlobalApplicationEntitlementGroupMatch) {
                                             break
-                                            } #Close out if($GlobalApplicationEntitlementGroupMatch) 
+                                            } #Close out if($GlobalApplicationEntitlementGroupMatch)
                                         } # Close out foreach($GlobalApplicationEntitlementGroup in $GlobalApplicationEntitlementGroups)
-                                        
-                                        $ApplicationFileTypes = $App.ExecutionData.FileTypes | ForEach-Object { $_.FileType} 
+
+                                        $ApplicationFileTypes = $App.ExecutionData.FileTypes | ForEach-Object { $_.FileType}
                                         $ApplicationFileTypesresult = $ApplicationFileTypes -join ', '
-                                        
-                                        $OtherApplicationFileTypes = $App.ExecutionData.OtherFileTypes | ForEach-Object { $_.FileType} 
+
+                                        $OtherApplicationFileTypes = $App.ExecutionData.OtherFileTypes | ForEach-Object { $_.FileType}
                                         $OtherApplicationFileTypesresult = $OtherApplicationFileTypes -join ', '
-                                        
-                                        PageBreak
+
+                                        #PageBreak
                                         section -Style Heading4 "Application Details for $($App.Data.DisplayName)" {
                                         $HorizonApplications = [PSCustomObject]@{
 
-                                        'Application Name' = $App.Data.Name
-                                        'Application Display Name' = $App.Data.DisplayName
-                                        'Application Description' = $App.Data.Description
-                                        'Application Enabled' = $App.Data.Enabled
-                                        'Application Global Application Entitlement' = $GlobalApplicationEntitlementGroupDisplayName
-                                        'Application Enable Anti Affinity Rules' = $App.Data.EnableAntiAffinityRules
-                                        'Application Anti Affinity Patterns' = $App.Data.AntiAffinityPatterns
-                                        'Application Anti Affinity Count' = $App.Data.AntiAffinityCount
-                                        'Application Executable Path' = $App.ExecutionData.ExecutablePath
-                                        'Application Version' = $App.ExecutionData.Version
-                                        'Application Publisher' = $App.ExecutionData.Publisher
-                                        'Application Start Folder' = $App.ExecutionData.StartFolder
-                                        'Application Argument' = $App.ExecutionData.Args
-                                        'Application Farm' = $ApplicationFarmName
-                                        'Application File Types' = $ApplicationFileTypesresult
-                                        'Application Auto Update File Types' = $App.ExecutionData.AutoUpdateFileTypes
-                                        'Application Other File Types' = $OtherApplicationFileTypesresult
-                                        'Application Auto Update Other File Types' = $App.ExecutionData.AutoUpdateFileTypes
-                                        'Application Access Group' = $AccessGroupName
+                                        'Name' = $App.Data.Name
+                                        'Display Name' = $App.Data.DisplayName
+                                        'Description' = $App.Data.Description
+                                        'Enabled' = $App.Data.Enabled
+                                        'Global Application Entitlement' = $GlobalApplicationEntitlementGroupDisplayName
+                                        'Enable Anti Affinity Rules' = $App.Data.EnableAntiAffinityRules
+                                        'Anti Affinity Patterns' = $App.Data.AntiAffinityPatterns
+                                        'Anti Affinity Count' = $App.Data.AntiAffinityCount
+                                        'Executable Path' = $App.ExecutionData.ExecutablePath
+                                        'Version' = $App.ExecutionData.Version
+                                        'Publisher' = $App.ExecutionData.Publisher
+                                        'Start Folder' = $App.ExecutionData.StartFolder
+                                        'Argument' = $App.ExecutionData.Args
+                                        'Farm' = $ApplicationFarmName
+                                        'File Types' = $ApplicationFileTypesresult
+                                        'Auto Update File Types' = $App.ExecutionData.AutoUpdateFileTypes
+                                        'Other File Types' = $OtherApplicationFileTypesresult
+                                        'Auto Update Other File Types' = $App.ExecutionData.AutoUpdateFileTypes
+                                        'Access Group' = $AccessGroupName
                                         } # Close out $HorizonApplications = [PSCustomObject]
                                         $HorizonApplications | Table -Name "Application Details for $($App.Data.DisplayName)" -List -ColumnWidths 60,40
                                         } # Close Out section -Style Heading4 'Applications'
@@ -918,7 +923,7 @@
 
                 if ($Farms) {
                     if ($InfoLevel.Inventory.Farms -ge 1) {
-                        PageBreak
+                        #PageBreak
                         section -Style Heading2 'Farms' {
                             section -Style Heading3 'Farms General Information' {
                                 $FarmsGeneralInfo = foreach($Farm in $Farms) {
@@ -929,12 +934,12 @@
                                     }
                                 }
                                 $FarmsGeneralInfo | Table -Name 'Farms General Information' -ColumnWidths 40,30,30
-                            
+
                                 if ($InfoLevel.Inventory.Farms -ge 2) {
                                     section -Style Heading4 'Farms Details' {
-                                        PageBreak
+                                        #PageBreak
                                         foreach($Farm in $Farms) {
-                                            
+
                                             # Find out Access Group for Applications
                                             $AccessgroupMatch = $false
                                             $Accessgroups = $hzServices.AccessGroup.AccessGroup_List()
@@ -942,10 +947,10 @@
                                                 if($Accessgroup.Id.id -eq $Farm.data.accessgroup.id) {
                                                     $AccessGroupName = $Accessgroup.base.name
                                                     $AccessgroupMatch = $true
-                                                } # Close out if($Accessgroup.Id.id = $app.accessgroup.id) 
+                                                } # Close out if($Accessgroup.Id.id = $app.accessgroup.id)
                                                 if($AccessgroupMatch) {
                                                     break
-                                                } # Close out if($AccessgroupMatch) 
+                                                } # Close out if($AccessgroupMatch)
                                             } # Close out foreach($Accessgroup in $Accessgroups)
 
                                             section -Style Heading5 "Farm $($Farm.Data.name) Info" {
@@ -1003,9 +1008,9 @@
                 #---------------------------------------------------------------------------------------------#
                 #                                   Machines                                                  #
                 #---------------------------------------------------------------------------------------------#
-                
+
                 if ($Machines -or $RDSServers) {
-                    PageBreak
+                    #PageBreak
                     section -Style Heading2 'Machines' {
 
                         #---------------------------------------------------------------------------------------------#
@@ -1030,7 +1035,7 @@
                                         $MachineGeneralInfo | Table -Name "vCenter VM's General Information $($i) in Total" -ColumnWidths 30,40,30
 
                                         if ($InfoLevel.Inventory.Machines.vCenterVM -ge 2) {
-                                            PageBreak
+                                            #PageBreak
                                             section -Style Heading5 "Machine Details for $($i) VM's" {
                                                 $ii = 0
                                                 foreach($Machine in $Machines) {
@@ -1058,9 +1063,9 @@
                                                             break
                                                         } # Close out if($EntitledUserOrGroupLocalMachine.id.id -eq $Machine.base.user.id)
                                                     } # Close out foreach($EntitledUserOrGroupLocalMachine in $EntitledUserOrGroupLocalMachines)
-                                                    
+
                                                     if(($ii % 2) -eq 1){
-                                                        PageBreak
+                                                        #PageBreak
                                                     }
                                                     $ii++
                                                     section -Style Heading6 "vCenter VM Details for $($Machine.base.Name)" {
@@ -1084,10 +1089,10 @@
                                                     } # Close out section -Style Heading6 "Machine Details for $($Machine.base.Name)"
                                                 } # Close out foreach($Machine in $Machines)
                                             } # Close out section -Style Heading5 'Machine Details'
-                                        } # Close out if ($InfoLevel.Inventory.Machines -ge 2)  
+                                        } # Close out if ($InfoLevel.Inventory.Machines -ge 2)
                                     } # Close out section -Style Heading4 'Machine General Information'
                                 } # Close out section -Style Heading3 "vCenter VM's"
-                            } # Close out if ($InfoLevel.Inventory.Machines -ge 1) {            
+                            } # Close out if ($InfoLevel.Inventory.Machines -ge 1) {
                         } # Close out if ($Machines)
 
                         #---------------------------------------------------------------------------------------------#
@@ -1096,7 +1101,7 @@
 
                         if ($RDSServers) {
                             if ($InfoLevel.Inventory.Machines.RDSHosts -ge 1) {
-                                PageBreak
+                                #PageBreak
                                 section -Style Heading3 'RDS Servers' {
                                     section -Style Heading4 "RDS Hosts General Information" {
 
@@ -1111,7 +1116,7 @@
 
                                         if ($InfoLevel.Inventory.Machines.RDSHosts -ge 2) {
                                             section -Style Heading5 "RDS Hosts Details" {
-                                                PageBreak
+                                                #PageBreak
                                                 $ii = 0
                                                 foreach($RDSServer in $RDSServers) {
 
@@ -1122,9 +1127,9 @@
                                                             break
                                                         } # if($AccessGroup.Id.id -eq $RDSServers.base.accessgroup.id)
                                                     } # Close out foreach($AccessGroup in $AccessGroups)
-                                                    
+
                                                     if(($ii % 2) -eq 1){
-                                                        PageBreak
+                                                        #PageBreak
                                                     }
                                                     $ii++
                                                     section -Style Heading6 "RDS Host Details for $($RDSServer.base.Name)" {
@@ -1154,10 +1159,10 @@
                                                     } # Close out section -Style Heading6 "RDS Host Details for $($RDSServer.base.Name)"
                                                 } # Close out foreach($RDSServer in $RDSServers)
                                             } # Close out section -Style Heading5 'RDS Host Details'
-                                        } # Close out if ($InfoLevel.Inventory.Machines.RDSHosts -ge 2)  
+                                        } # Close out if ($InfoLevel.Inventory.Machines.RDSHosts -ge 2)
                                     } # Close out section -Style Heading4 'RDS Host General Information'
                                 } # Close out section -Style Heading3 'Machines'
-                            } # Close out if ($InfoLevel.Inventory.Machines.RDSHosts -ge 1) {            
+                            } # Close out if ($InfoLevel.Inventory.Machines.RDSHosts -ge 1) {
                         } # Close out if ($RDSServers)
 
                     } # Close out section -Style Heading1 'Machines'
@@ -1166,10 +1171,10 @@
                 #---------------------------------------------------------------------------------------------#
                 #                              Persistent Disks                                               #
                 #---------------------------------------------------------------------------------------------#
-                
+
                 if ($PersistentDisks) {
                     if ($InfoLevel.Inventory.PersistentDisks -ge 1) {
-                        PageBreak
+                        #PageBreak
                         section -Style Heading2 'Persistent Disks' {
                             section -Style Heading3 "Persistent Disks General Information" {
 
@@ -1185,7 +1190,7 @@
                                 if ($InfoLevel.Inventory.PersistentDisks -ge 2) {
                                     section -Style Heading4 "Persistent Disks Details" {
                                         foreach($PersistentDisk in $PersistentDisks) {
-                                            
+
                                             # Find Access Group ID Name
                                             foreach($AccessGroup in $AccessGroups) {
                                                 if($AccessGroup.Id.id -eq $PersistentDisk.General.Access.id){
@@ -1220,16 +1225,16 @@
                                             } # Close out section -Style Heading5 "Persistent Disk Details"
                                         } # Close out foreach($PersistentDisk in $PersistentDisks)
                                     } # Close out section -Style Heading4 'Persistent Disks Details'
-                                } # Close out if ($InfoLevel.Inventory.Machines -ge 2)  
-                            } # Close out section -Style Heading3 'Persistent Disks General Information'         
+                                } # Close out if ($InfoLevel.Inventory.Machines -ge 2)
+                            } # Close out section -Style Heading3 'Persistent Disks General Information'
                         } # Close out section -Style Heading2 'Persistent Disks'
-                    } # Close out if ($InfoLevel.Inventory.Machines -ge 1)      
+                    } # Close out if ($InfoLevel.Inventory.Machines -ge 1)
                 } # Close out if ($PersistentDisks)
-                
+
                 #---------------------------------------------------------------------------------------------#
                 #                                  ThinApps                                                   #
                 #---------------------------------------------------------------------------------------------#
-                
+
                 <#
                 section -Style Heading2 'ThinApps' {
 
@@ -1243,10 +1248,10 @@
                                     }
                                 }
                                 $ThinAppGeneralInfo | Table -Name 'ThinApps General Information' -ColumnWidths 40,30,30
-                            
+
                                 if ($InfoLevel.Inventory.ThinApps -ge 2) {
                                     section -Style Heading1 'ThinApps Details' {
-                                    
+
                                             foreach($ThinApp in $ThinApps) {
                                                 section -Style Heading2 'ThinApp' {
                                                     $HorizonThinApp = [PSCustomObject]@{
@@ -1272,7 +1277,7 @@
 
                 if ($GlobalEntitlements -or $GlobalApplicationEntitlementGroups) {
                         if ($InfoLevel.Inventory.GlobalEntitlements -ge 1) {
-                            PageBreak
+                            #PageBreak
                             section -Style Heading2 'Global Entitlements' {
                                 section -Style Heading3 'Global Entitlements General Information' {
                                     if ($GlobalEntitlements) {
@@ -1298,7 +1303,7 @@
                                         }
                                         $GlobalApplicationEntitlementsGeneralInfo | Table -Name 'Global Entitlements General Information' -ColumnWidths 40,30,30
                                     }
-                                
+
                                     if ($InfoLevel.Inventory.GlobalEntitlements -ge 2) {
                                         section -Style Heading4 'Global Entitlement Details' {
                                             if ($GlobalEntitlements) {
@@ -1312,21 +1317,21 @@
                                                         $PodIDList += $PodID.DisplayName -join "`r`n" | Out-String
 
                                                     } # Close out foreach($EntitlementGroupPod in $EntitlementGroupPodList)
-                                                    
+
                                                     foreach($Pool in $Pools){
                                                         if($Pool.GlobalEntitlementData.GlobalEntitlement.id -eq $GlobalEntitlement.Id.id) {
                                                             $LocalSitePool = $pool.Base.Name
                                                         } # Close out if($Pool.GlobalEntitlementData.GlobalEntitlement.id -eq $GlobalEntitlement.Id.id)
                                                     } # Close out foreach($Pool in $Pools)
-                                                
-                            
-                                                    $GESupportedDisplayProtocols = $GlobalEntitlement.Base | ForEach-Object { $_.SupportedDisplayProtocols} 
+
+
+                                                    $GESupportedDisplayProtocols = $GlobalEntitlement.Base | ForEach-Object { $_.SupportedDisplayProtocols}
                                                     $GESupportedDisplayProtocolsresult = $GESupportedDisplayProtocols -join ', '
-                                                    
-                                                    PageBreak
+
+                                                    #PageBreak
                                                     section -Style Heading5 "Global Entitlement $($GlobalEntitlement.Base.DisplayName)" {
                                                         $HorizonGlobalEntitlements = [PSCustomObject]@{
-                            
+
                                                             'Global Entitlement Display Name' = $GlobalEntitlement.Base.DisplayName
                                                             'Global Entitlement Description' = $GlobalEntitlement.Base.Description
                                                             'Global Entitlement Base Scope' = $GlobalEntitlement.Base.Scope
@@ -1372,7 +1377,7 @@
                                                             $GlobalEntitlementsUsersList | Table -Name "Global Entitlement $($GlobalEntitlement.Base.DisplayName) Users and Groups List" -ColumnWidths 40,30,30
                                                         }
                                                     } # Close out section -Style Heading6 "Global Entitlement $($GlobalEntitlement.Base.DisplayName) Users and Groups List"
-                                                    
+
                                                     if ($InfoLevel.Inventory.GlobalEntitlements -ge 3) {
                                                         foreach($EntitledUserOrGroupGlobalMachine in $EntitledUserOrGroupGlobalMachines) {
                                                             if($EntitledUserOrGroupGlobalMachine.globaldata.GlobalEntitlements.id -eq $GlobalEntitlement.id.id) {
@@ -1381,7 +1386,7 @@
                                                                     'True' {$EntitledUserOrGroupGlobalMachinegroup = 'Group' }
                                                                     'False' {$EntitledUserOrGroupGlobalMachinegroup = 'User' }
                                                                 }
-                                                                
+
                                                                 # Home Site Info
                                                                 $EUGGMHomeSiteName = ''
                                                                 if($EntitledUserOrGroupGlobalMachine.GlobalData.UserHomeSites){
@@ -1402,7 +1407,7 @@
                                                                     $EUGGMPodDetails = $hzServices.Pod.Pod_Get($EUGGMPodAssignment.data.pod)
                                                                 }
 
-                                                                PageBreak
+                                                                #PageBreak
                                                                 section -Style Heading7 "Global Entitlement $($EntitledUserOrGroupGlobalMachinegroup) Details for $($EntitledUserOrGroupGlobalMachine.base.Name)" {
                                                                     $HorizonEntitledUserOrGroupGlobalMachine = [PSCustomObject]@{
                                                                         'Global Entitlement Name' = $EntitledUserOrGroupGlobalMachine.base.Name
@@ -1442,7 +1447,7 @@
                                                         $ApplicationPodID = $hzServices.Pod.Pod_Get($ApplicationEntitlementGroupPod)
                                                         $ApplicationPodIDList += $ApplicationPodID.DisplayName -join "`r`n" | Out-String
                                                     } # Close out foreach($ApplicationEntitlementGroupPod in $ApplicationEntitlementGroupPodList)
-                                                    
+
                                                     foreach($Pool in $Pools){
                                                         if($Pool.GlobalEntitlementData.GlobalEntitlement.id -eq $GlobalEntitlement.Id.id) {
                                                             $LocalSitePool = $pool.Base.Name
@@ -1458,14 +1463,14 @@
                                                         $ApplicationEntitlementGroupApplicationIconSource += $ApplicationEntitlementGroupApplicationIconID.base.IconSource -join "`r`n" | Out-String
                                                         $ApplicationEntitlementGroupApplicationIconApplication += $ApplicationEntitlementGroupApplicationIconID.base.Applications -join "`r`n" | Out-String
                                                     } # Close out foreach($ApplicationEntitlementGroupApplicationIcon in $ApplicationEntitlementGroupApplicationIconList)
-                            
-                                                    $GESupportedDisplayProtocols = $GlobalApplicationEntitlementGroup.Base | ForEach-Object { $_.SupportedDisplayProtocols} 
+
+                                                    $GESupportedDisplayProtocols = $GlobalApplicationEntitlementGroup.Base | ForEach-Object { $_.SupportedDisplayProtocols}
                                                     $GESupportedDisplayProtocolsresult = $GESupportedDisplayProtocols -join ', '
 
-                                                    PageBreak
+                                                    #PageBreak
                                                     section -Style Heading5 "Global Application Entitlement $($GlobalApplicationEntitlementGroup.Base.DisplayName)" {
                                                         $HorizonGlobalEntitlements = [PSCustomObject]@{
-                            
+
                                                             'Global Entitlement Display Name' = $GlobalApplicationEntitlementGroup.Base.DisplayName
                                                             'Global Entitlement Description' = $GlobalApplicationEntitlementGroup.Base.Description
                                                             'Global Entitlement Base Scope' = $GlobalApplicationEntitlementGroup.Base.Scope
@@ -1514,9 +1519,9 @@
                                                                     $GlobalAplicationEntitlementsUsersList | Table -Name "Global Application Entitlement $($GlobalApplicationEntitlementGroup.Base.DisplayName) Users and Groups List" -ColumnWidths 40,30,30
                                                             } # Close out if($EntitledUserOrGroupGlobalMachine.globaldata.GlobalEntitlements.id -eq $GlobalEntitlement.id.id)
                                                         } # Close out foreach($EntitledUserOrGroupGlobalMachine in $EntitledUserOrGroupGlobalMachines)
-                                                        
+
                                                     } # Close out section -Style Heading6 "Global Entitlement $($GlobalEntitlement.Base.DisplayName) Users and Groups List"
-                                                    
+
 
                                                     if ($InfoLevel.Inventory.GlobalEntitlements -ge 3) {
                                                         foreach($EntitledUserOrGroupGlobalMachine in $EntitledUserOrGroupGlobalMachines) {
@@ -1539,7 +1544,7 @@
                                                                     }
                                                                     $EUGGMHomeSiteNameListTrim = $EUGGMHomeSiteNameList.TrimEnd(', ')
                                                                 }
-                                                                
+
                                                                 # Pod Details
                                                                 $EUGGMPodDetails = ''
                                                                 if($EntitledUserOrGroupGlobalMachine.GlobalData.PodAssignments){
@@ -1581,37 +1586,37 @@
                             } # Close out section -Style Heading2 'Global Entitlements'
                         } # Close out if ($InfoLevel.Inventory.GlobalEntitlements -ge 1)
                 } # Close out if ($GlobalEntitlements -or $GlobalApplicationEntitlementGroups)
-            
+
             } # Close out section -Style Heading1 'Inventory'
         } # Close out if ($Pools -or $Apps -or $Farms -or $Machines -or $RDSServers -or $PersistentDisks -or $ThinApps -or $GlobalEntitlements -or $GlobalApplicationEntitlementGroups)
 
         #---------------------------------------------------------------------------------------------#
         #                                      Settings                                               #
         #---------------------------------------------------------------------------------------------#
-        
+
         if ($vCenterServers -or $vCenterHealth -or $Composers -or $Domains -or $SecurityServers -or $GatewayServers -or $ConnectionServers -or $InstantCloneDomainAdmins -or $ProductLicenseingInfo -or $GlobalSettings -or $RDSServers -or $Administrators -or $Roles -or $Permissions -or $AccessGroups -or $CloudPodFederation -or $CloudPodSites -or $EventDataBases -or $GlobalPolicies) {
-            PageBreak
+            #PageBreak
             section -Style Heading1 'Settings' {
                 LineBreak
 
                 #---------------------------------------------------------------------------------------------#
                 #                                      Servers                                                #
                 #---------------------------------------------------------------------------------------------#
-                
+
                 if ($vCenterServers -or $vCenterHealth -or $Composers -or $Domains -or $SecurityServers -or $GatewayServers -or $ConnectionServers) {
                     section -Style Heading2 'Servers' {
 
                         #---------------------------------------------------------------------------------------------#
                         #                              vCenter Servers                                                #
                         #---------------------------------------------------------------------------------------------#
-                        
+
                         if ($vCenterServers -or $vCenterHealth -or $Composers -or $Domains) {
                             section -Style Heading3 'vCenter Servers' {
 
                                 #---------------------------------------------------------------------------------------------#
                                 #                                vCenterServers                                               #
                                 #---------------------------------------------------------------------------------------------#
-                                
+
                                 if ($vCenterServers) {
                                     if ($InfoLevel.Settings.Servers.vCenterServers.vCenter -ge 1) {
                                         section -Style Heading4 'Virtual Centers Information' {
@@ -1639,7 +1644,7 @@
                                                             'vCenter Server User SSL' = $vCenterServer.serverspec.UseSSL
                                                             'vCenter Server User Name' = $vCenterServer.serverspec.UserName
                                                             'vCenter Server Type' = $vCenterServer.serverspec.ServerType
-                                                            'vCenter Server Port Num' = $vCenterServer.serverspec.Port                  
+                                                            'vCenter Server Port Num' = $vCenterServer.serverspec.Port
                                                             'Max Concurrent vCenter Provisioning Operations' = $vCenterServer.Limits.VcProvisioningLimit
                                                             'Max Concurrent Power Operations' = $vCenterServer.Limits.VcPowerOperationsLimit
                                                             'Max Concurrent View Composer Maintenance Operations' = $vCenterServer.Limits.ViewComposerProvisioningLimit
@@ -1649,8 +1654,8 @@
                                                             'Storage Accelerator Default Cache Size in MB' = $vCenterServer.StorageAcceleratorData.DefaultCacheSizeMB
                                                         } # Close Out $HorizonVirtualCenter = [PSCustomObject]
                                                         $HorizonVirtualCenter | Table -Name "Virtual Center $($vCenterServer.serverspec.ServerName)" -List
-                                                        
-                                                        $HorizonVirtualCenterStorageAcceleratorHostOverrides = $vCenterServer.StorageAcceleratorData.HostOverrides        
+
+                                                        $HorizonVirtualCenterStorageAcceleratorHostOverrides = $vCenterServer.StorageAcceleratorData.HostOverrides
                                                         foreach($HorizonVirtualCenterStorageAcceleratorHostOverride in $HorizonVirtualCenterStorageAcceleratorHostOverrides) {
                                                             section -Style Heading6 'Horizon Virtual Center Storage Accelerator Overrides' {
                                                                 $HorizonVirtualCenterStorageAcceleratorOverrides = [PSCustomObject]@{
@@ -1660,7 +1665,7 @@
                                                                 $HorizonVirtualCenterStorageAcceleratorOverrides | Table -Name 'Horizon Virtual Center Storage Accelerator Overrides' -List
                                                             } # Close out section -Style Heading6 'Horizon Virtual Center Storage Accelerator Overrides'
                                                         } # Close Out foreach($HorizonVirtualCenterStorageAcceleratorHostOverride in $HorizonVirtualCenterStorageAcceleratorHostOverrides)
-                                                        
+
                                                         $vCenterHealthData = $vCenterHealth.data
                                                         foreach($vCenterHeathInfo in $vCenterHealthData) {
                                                             section -Style Heading6 "vCenter $($vCenterServer.serverspec.ServerName) Version Information" {
@@ -1675,7 +1680,7 @@
                                                         } # Close out foreach($vCenterHeathInfo in $vCenterHealthData)
                                                     } # Close out section -Style Heading5 'Horizon Virtual Center'
                                                 } # Close out foreach($vCenterServer in $vCenterServers)
-                                            } # Close out if ($InfoLevel.Settings.Servers.vCenterServers.vCenter -ge 2) 
+                                            } # Close out if ($InfoLevel.Settings.Servers.vCenterServers.vCenter -ge 2)
                                         } # Close out section -Style Heading4 'Horizon Virtual Centers'
                                     } # Close out if ($InfoLevel.ViewConfiguration.Servers.ESXHosts -ge 1)
                                 } # Close out if ($vCenterServers)
@@ -1683,10 +1688,10 @@
                                 #---------------------------------------------------------------------------------------------#
                                 #                                ESX Hosts                                                    #
                                 #---------------------------------------------------------------------------------------------#
-                                
+
                                 if ($vCenterHealth) {
                                     if ($InfoLevel.Settings.Servers.vCenterServers.ESXiHosts -ge 1) {
-                                        PageBreak
+                                        #PageBreak
                                         section -Style Heading4 'ESXi Hosts Information' {
                                             $ESXHosts = $vCenterHealth.hostdata
 
@@ -1709,9 +1714,9 @@
                                                     else {
                                                         $vGPUTypes="n/a"
                                                     } # Close Else
-                                                    
+
                                                     if(($ii % 5) -eq 0){
-                                                        PageBreak
+                                                        #PageBreak
                                                     }
                                                     $ii++
 
@@ -1727,7 +1732,7 @@
                                                     $HorizonESXHost | Table -Name "ESXi Host $($ESXHost.Name) Information" -List -ColumnWidths 60,40
                                                     } # Close out section -Style Heading5 'ESXi Host Info'
                                                 } # Close out foreach($ESXHost in $ESXHosts)
-                                            } # Close out if ($InfoLevel.Settings.Servers.vCenterServers.ESXiHosts -ge 2) 
+                                            } # Close out if ($InfoLevel.Settings.Servers.vCenterServers.ESXiHosts -ge 2)
                                         } # Close out section -Style Heading4 'ESXi Host Info'
                                     } # Close out if ($InfoLevel.Settings.Servers.vCenterServers.ESXiHosts -ge 1)
                                 } # Close out if ($ESXHosts)
@@ -1735,10 +1740,10 @@
                                 #---------------------------------------------------------------------------------------------#
                                 #                                DataStores                                                   #
                                 #---------------------------------------------------------------------------------------------#
-                                
+
                                 if ($vCenterHealth) {
                                     if ($InfoLevel.Settings.Servers.vCenterServers.DataStores -ge 1) {
-                                        PageBreak
+                                        #PageBreak
                                         section -Style Heading4 'Datastore Information' {
                                             $datastores = $vCenterHealth.datastoredata
                                             section -Style Heading5 "Datastore General Information" {
@@ -1747,7 +1752,7 @@
                                                         'Horizon Datastore Name' = $DataStore.name
                                                         'Horizon Datastore Accessible' = $DataStore.Accessible
                                                     } # Close Out $HorizonDataStoreGeneral = [PSCustomObject]
-                                                } # Close out $HorizonDataStoreGeneral = foreach($DataStore in $datastores)    
+                                                } # Close out $HorizonDataStoreGeneral = foreach($DataStore in $datastores)
                                                 $HorizonDataStoreGeneral | Table -Name 'Datastore General Information' -ColumnWidths 60,40
                                             } # Close out section -Style Heading5 "Datastore General Information"
 
@@ -1755,7 +1760,7 @@
                                                 $ii = 0
                                                 foreach($DataStore in $datastores) {
                                                     if(($ii % 5) -eq 0){
-                                                        PageBreak
+                                                        #PageBreak
                                                     }
                                                     $ii++
                                                     section -Style Heading5 "Horizon Datastore $($DataStore.name) Information" {
@@ -1766,7 +1771,7 @@
                                                             'Horizon Datastore Type' = $DataStore.DataStoreType
                                                             'Horizon Datastore Capacity in MB' = $DataStore.CapacityMB
                                                             'Horizon Datastore Free Space in MB' = $DataStore.FreeSpaceMB
-                                                        } # Close Out $HorizonDataStore = [PSCustomObject]                                            
+                                                        } # Close Out $HorizonDataStore = [PSCustomObject]
                                                     $HorizonDataStore | Table -Name "Horizon Datastore $($DataStore.name) Information" -List -ColumnWidths 50,50
                                                     } # Close out section -Style Heading5 'Horizon DataStore Info'
                                                 } # Close out foreach($DataStore in $DataStores)
@@ -1778,10 +1783,10 @@
                                 #---------------------------------------------------------------------------------------------#
                                 #                                             Composer                                        #
                                 #---------------------------------------------------------------------------------------------#
-                                
+
                                 if ($Composers) {
                                     if ($InfoLevel.Settings.Servers.vCenterServers.Composers -ge 1) {
-                                        PageBreak
+                                        #PageBreak
                                         section -Style Heading4 'Composer Information' {
                                             foreach($Composer in $Composers) {
                                                 $HorizonComposer = [PSCustomObject]@{
@@ -1795,22 +1800,22 @@
                                             $HorizonComposer | Table -Name 'Composer Information' -ColumnWidths 60,50
                                         } # Close out section -Style Heading4 'Composer Information'
                                     } # Close out if ($InfoLevel.Settings.Servers.vCenterServers.Composers -ge 1) {
-                                } # Close out if ($Composers) 
+                                } # Close out if ($Composers)
 
                                 #---------------------------------------------------------------------------------------------#
                                 #                            Active Directory Domains                                         #
                                 #---------------------------------------------------------------------------------------------#
-                                
+
                                 if ($Domains) {
                                     if ($InfoLevel.Settings.Servers.vCenterServers.ADDomains -ge 1) {
-                                        PageBreak
+                                        #PageBreak
                                         section -Style Heading4 'Active Directory Domains' {
                                             section -Style Heading5 "Active Directory Domains General Information" {
                                                 $HorizonDomainGeneral = foreach($Domain in $Domains) {
                                                     [PSCustomObject]@{
                                                     'Domain DNS Name' = $Domain.DNSName
                                                     'Domain NetBIOS Name' = $Domain.NetBiosName
-                                                    'NT4 Domain' = $Domain.Nt4Domain                                                
+                                                    'NT4 Domain' = $Domain.Nt4Domain
                                                     } # Close Out $HorizonDomain = [PSCustomObject]
                                                 } # Close Out section -Style Heading5 "Active Directory Domains General Information"
                                                 $HorizonDomainGeneral | Table -Name 'Active Directory Domains General Information' -ColumnWidths 34,33,33
@@ -1818,12 +1823,12 @@
 
                                             if ($InfoLevel.Settings.Servers.vCenterServers.ADDomains -ge 2) {
                                                 foreach($Domain in $Domains) {
-                                                    PageBreak
+                                                    #PageBreak
                                                     section -Style Heading5 "Active Directory Domains $($Domain.DNSName)" {
                                                         $HorizonDomain = [PSCustomObject]@{
                                                             'Domain DNS Name' = $Domain.DNSName
                                                             'Domain NetBIOS Name' = $Domain.NetBiosName
-                                                            'NT4 Domain' = $Domain.Nt4Domain                                                
+                                                            'NT4 Domain' = $Domain.Nt4Domain
                                                         } # Close Out $HorizonDomain = [PSCustomObject]
                                                         $HorizonDomain | Table -Name "Active Directory Domains $($Domain.DNSName) Information" -List -ColumnWidths 60,40
 
@@ -1839,11 +1844,11 @@
                                                             } # Close Out $HorizonDomain = [PSCustomObject]
                                                             $HorizonDomainCSStatus | Table -Name "Active Directory Domains $($Domain.DNSName) Connection Server Status Information" -List -ColumnWidths 60,40
                                                         } # Close Out foreach($DomainConnectionServer in $DomainConnectionServers
-                                                    } # Close out section -Style Heading5 "Horizon Domain $($Domain.DNSName)" 
+                                                    } # Close out section -Style Heading5 "Horizon Domain $($Domain.DNSName)"
                                                 } # Close out foreach($Domain in $Domains)
                                             } # Close out if ($InfoLevel.Settings.Servers.vCenterServers.ADDomains -ge 1)
                                         } # Close out section -Style Heading4 'Horizon Domains'
-                                    } # Close out if ($InfoLevel.Settings.Servers.vCenterServers.ADDomains -ge 1) 
+                                    } # Close out if ($InfoLevel.Settings.Servers.vCenterServers.ADDomains -ge 1)
                                 } # Close out if ($Domains)
 
                             } # Close out section -Style Heading3 'vCenter Servers'
@@ -1855,7 +1860,7 @@
 
                         if ($SecurityServers) {
                             if ($InfoLevel.Settings.Servers.SecurityServers.SecurityServers -ge 1) {
-                                PageBreak
+                                #PageBreak
                                 section -Style Heading3 'Security Servers' {
                                     section -Style Heading4 'Security Server General Information' {
                                         $SecurityServerGeneralInfo = foreach($SecurityServer in $SecurityServers) {
@@ -1888,11 +1893,11 @@
                                                     } # Close out section -Style Heading6 "Security Server Details for $($SecurityServer.base.Name)"
                                                 } # Close out foreach($SecurityServer in $SecurityServers)
                                             } # Close out section -Style Heading5 'Security Server Details'
-                                        } # Close out if ($InfoLevel.Settings.Servers.SecurityServers.SecurityServers -ge 2)  
-                                    } # Close out section -Style Heading4 'Security Server General Information'         
+                                        } # Close out if ($InfoLevel.Settings.Servers.SecurityServers.SecurityServers -ge 2)
+                                    } # Close out section -Style Heading4 'Security Server General Information'
                                 } # Close out section -Style Heading3 'Security Servers'
                             } # Close out if ($InfoLevel.Settings.Servers.SecurityServers.SecurityServers -ge 1)
-                        } # Close out if ($SecurityServers)            
+                        } # Close out if ($SecurityServers)
 
 
                         #---------------------------------------------------------------------------------------------#
@@ -1901,7 +1906,7 @@
 
                         if ($GatewayServers) {
                             if ($InfoLevel.Settings.Servers.GatewayServers.GatewayServers -ge 1) {
-                                PageBreak
+                                #PageBreak
                                 section -Style Heading3 'Gateway Servers' {
                                     section -Style Heading4 'Gateway Servers General Information' {
                                         $HorizonGatewayServersGeneral = foreach($GatewayServer in $GatewayServers.generaldata) {
@@ -1916,8 +1921,8 @@
                                         } # Close out $HorizonGatewayServersGeneral = foreach($GatewayServer in $GatewayServers.generaldata)
                                         $HorizonGatewayServersGeneral | Table -Name 'Gateway Servers General Information' -ColumnWidths 60,40
                                     } # Close out section -Style Heading4 'Gateway Servers General Information'
-                                        
-                                    if ($InfoLevel.Settings.Servers.GatewayServers.GatewayServers -ge 2) {    
+
+                                    if ($InfoLevel.Settings.Servers.GatewayServers.GatewayServers -ge 2) {
                                         foreach($GatewayServer in $GatewayServers.generaldata) {
                                             Switch ($GatewayServer.Type)
                                             {
@@ -1925,7 +1930,7 @@
                                             }
 
                                             if(($ii % 5) -eq 0){
-                                                PageBreak
+                                                #PageBreak
                                             }
                                             $ii++
 
@@ -1948,10 +1953,10 @@
                         #---------------------------------------------------------------------------------------------#
                         #                            Connection Servers                                               #
                         #---------------------------------------------------------------------------------------------#
-                        
+
                         if ($ConnectionServers) {
                             if ($InfoLevel.Settings.Servers.ConnectionServers.ConnectionServers -ge 1) {
-                                PageBreak
+                                #PageBreak
                                 section -Style Heading3 'Connection Servers' {
                                     section -Style Heading4 'Connection Servers General Information' {
                                         $HorizonConnectionServerGeneralInfo = foreach($ConnectionServer in $ConnectionServers) {
@@ -1962,19 +1967,19 @@
                                         } # Close out $HorizonConnectionServerGeneralInfo = foreach($ConnectionServer in $ConnectionServers)
                                         $HorizonConnectionServerGeneralInfo | Table -Name 'VMware Horizon Connection Server Information' -ColumnWidths 60,40
                                     } # Close out section -Style Heading4 'Connection Servers General Information'
-                                    
+
                                     if ($InfoLevel.Settings.Servers.ConnectionServers.ConnectionServers -ge 2) {
-                                        
+
                                         foreach($ConnectionServer in $ConnectionServers) {
-                                            $ConnectionServerTags = $ConnectionServer.General | ForEach-Object { $_.Tags} 
+                                            $ConnectionServerTags = $ConnectionServer.General | ForEach-Object { $_.Tags}
                                             $ConnectionServerTagsresult = $ConnectionServerTags -join ', '
-                                            PageBreak
+                                            #PageBreak
                                             section -Style Heading4 "Connection Server $($ConnectionServer.General.Name)" {
                                                 $HorizonConnectionServerInfo = [PSCustomObject]@{
                                                     'Host Name' = $ConnectionServer.General.Name
-                                                    'Server Address' = $ConnectionServer.General.ServerAddress                    
+                                                    'Server Address' = $ConnectionServer.General.ServerAddress
                                                     'Enabled' = $ConnectionServer.General.Enabled
-                                                    'Tags' = $ConnectionServerTagsresult            
+                                                    'Tags' = $ConnectionServerTagsresult
                                                     'External URL' = $ConnectionServer.General.ExternalURL
                                                     'External PCoIP URL' = $ConnectionServer.General.ExternalPCoIPURL
                                                     'AuxillaryExternalPCoIPIPv4Address' = $ConnectionServer.General.AuxillaryExternalPCoIPIPv4Address
@@ -1999,7 +2004,7 @@
                                             #section -Style Heading4 'Connection Server Authentication' {
                                                 $HorizonConnectionServerAuthInfo = [PSCustomObject]@{
                                                     'Smart Card Support' = $ConnectionServer.Authentication.SmartCardSupport
-                                                    'Log off When Smart Card Removed' = $ConnectionServer.Authentication.LogoffWhenRemoveSmartCard                    
+                                                    'Log off When Smart Card Removed' = $ConnectionServer.Authentication.LogoffWhenRemoveSmartCard
                                                     'RSA Secure ID Enabled' = $ConnectionServer.Authentication.RsaSecureIdConfig.SecureIdEnabled
                                                     'RSA Secure ID Name Mapping' = $ConnectionServer.Authentication.RsaSecureIdConfig.NameMapping
                                                     'RSA Secure ID Clear Node Secret' = $ConnectionServer.Authentication.RsaSecureIdConfig.ClearNodeSecret
@@ -2023,7 +2028,7 @@
                                             #section -Style Heading4 'Connection Server Backup' {
                                                 $HorizonConnectionServerBackupInfo = [PSCustomObject]@{
                                                     'LDAP Backup Frequency Time' = $ConnectionServer.Backup.LdapBackupFrequencyTime
-                                                    'LDAP Backup Max Number' = $ConnectionServer.Backup.LdapBackupMaxNumber                    
+                                                    'LDAP Backup Max Number' = $ConnectionServer.Backup.LdapBackupMaxNumber
                                                     'LDAP Backup Location Folder' = $ConnectionServer.Backup.LdapBackupFolder
                                                 } # Close Out $HorizonConnectionServerAuthInfo = [PSCustomObject]
                                             $HorizonConnectionServerBackupInfo | Table -Name "Connection Server $($ConnectionServer.General.Name) Backup Information" -List -ColumnWidths 60,40
@@ -2032,7 +2037,7 @@
 
                                             #section -Style Heading4 'Connection Server Security Pairing' {
                                                 #$HorizonConnectionServerSecurityPairing = [PSCustomObject]@{
-                                                    
+
                                                     # Need to find all the security pairing API Calls
 
                                                 #} # Close Out $HorizonConnectionServerAuthInfo = [PSCustomObject]
@@ -2047,21 +2052,21 @@
                                             $HorizonConnectionServerMessageSecurity | Table -Name "Connection Server $($ConnectionServer.General.Name) Message Security Information" -List -ColumnWidths 60,40
                                             #} # Close out section -Style Heading4 'Connection Server Message Security'
                                         } # Close out foreach($ConnectionServer in $ConnectionServers)
-                                    } # Close out if ($InfoLevel.Settings.Servers.ConnectionServers.ConnectionServers -ge 2) 
+                                    } # Close out if ($InfoLevel.Settings.Servers.ConnectionServers.ConnectionServers -ge 2)
                                 } # Close out section -Style Heading3 'Connection Servers'
                             } # Close out if ($InfoLevel.Settings.Servers.ConnectionServers.ConnectionServers -ge 1)
                         } # Close out if ($ConnectionServers)
-                    
+
                     } # Close out section -Style Heading2 'Servers'
                 } # Close out if ($vCenterServers -or $vCenterHealth -or $Composers -or $Domains -or $SecurityServers -or $GatewayServers -or $ConnectionServers)
 
                 #---------------------------------------------------------------------------------------------#
                 #                          Instant Clone Domain Accounts                                      #
                 #---------------------------------------------------------------------------------------------#
-                
+
                 if ($InstantCloneDomainAdmins) {
                     if ($InfoLevel.Settings.InstantClone.InstantCloneDomainAccounts -ge 1) {
-                        PageBreak
+                        #PageBreak
                         section -Style Heading2 'Instant Clone Domain Accounts' {
                             section -Style Heading3 'Instant Clone Domain Admins' {
                                 $HorizonInstantCloneDomainAdmin = foreach($InstantCloneDomainAdmin in $InstantCloneDomainAdmins) {
@@ -2079,21 +2084,21 @@
                 #---------------------------------------------------------------------------------------------#
                 #                            Product Licensing and Usage                                      #
                 #---------------------------------------------------------------------------------------------#
-                
+
                 if ($ProductLicenseingInfo) {
                     if ($InfoLevel.Settings.ProductLicensing.ProductLicensingandUsage -ge 1) {
                         section -Style Heading2 'Product Licensing and Usage' {
                             section -Style Heading3 'Product Licensing and Usage Info' {
                                 foreach($ProductLic in $ProductLicenseingInfo) {
                                     $HorizonProductLicInfo = [PSCustomObject]@{
-                                        'Is Horizon Environment Licensed' = $ProductLic.Licensed
-                                        'Horizon Environment License Key' = $ProductLic.LicenseKey
-                                        'Horizon Environment License Expiration' = $ProductLic.ExpirationTime
-                                        'Horizon Environment enabled for Composer' = $ProductLic.ViewComposerEnabled
-                                        'Horizon Environment enabled for Desktop Launching' = $ProductLic.DesktopLaunchingEnabled
-                                        'Horizon Environment enabled for Application Launching' = $ProductLic.ApplicationLaunchingEnabled
-                                        'Horizon Environment enabled for Instant Clone' = $ProductLic.InstantCloneEnabled
-                                        'Horizon Environment License Usage Model' = $ProductLic.UsageModel
+                                        'Is Licensed' = $ProductLic.Licensed
+                                        'License Key' = $ProductLic.LicenseKey
+                                        'License Expiration' = $ProductLic.ExpirationTime
+                                        'enabled for Composer' = $ProductLic.ViewComposerEnabled
+                                        'Enabled for Desktop Launching' = $ProductLic.DesktopLaunchingEnabled
+                                        'Enabled for Application Launching' = $ProductLic.ApplicationLaunchingEnabled
+                                        'Enabled for Instant Clone' = $ProductLic.InstantCloneEnabled
+                                        'License Usage Model' = $ProductLic.UsageModel
                                     } # Close Out $HorizonInstantCloneDomainAdmin = [PSCustomObject]
                                     $HorizonProductLicInfo | Table -Name 'Product Licensing and Usage Information' -List -ColumnWidths 60,40
                                 } # Close out foreach($ProductLic in $ProductLicenseingInfo)
@@ -2101,54 +2106,53 @@
                         } # Close out section -Style Heading2 'Product Licensing and Usage'
                     } # Close out if ($InfoLevel.Settings.Servers.ProductLicensing.ProductLicensingandUsage -ge 1)
                 } # Close out if ($ProductLicenseingInfo)
-                
+
                 #---------------------------------------------------------------------------------------------#
                 #                                   Global Settings                                           #
                 #---------------------------------------------------------------------------------------------#
-                
+
                 if ($GlobalSettings) {
                     if ($InfoLevel.Settings.GlobalSettings.GlobalSettings -ge 1) {
-                        PageBreak
+                        #PageBreak
                         section -Style Heading2 'Global Settings' {
                             section -Style Heading3 'Global Server Settings' {
                                 $HorizonGlobalSettings = [PSCustomObject]@{
-                                    'Global Settings Client Session Time Out Policy' = $GlobalSettings.GeneralData.ClientIdleSessionTimeoutPolicy
-                                    'Global Settings Client Max Session Time Minutes ' = $GlobalSettings.GeneralData.ClientMaxSessionTimeMinutes
-                                    'Global Settings Client Idle Session Timeout Policy' = $GlobalSettings.GeneralData.ClientIdleSessionTimeoutPolicy
-                                    'Global Settings Client Idle Session Timeout Minutes' = $GlobalSettings.GeneralData.ClientIdleSessionTimeoutMinutes
-                                    'Global Settings Client Session Timeout Minutes ' = $GlobalSettings.GeneralData.ClientSessionTimeoutMinutes
-                                    'Global Settings Desktop SSO Timeout Policy' = $GlobalSettings.GeneralData.DesktopSSOTimeoutPolicy
-                                    'Global Settings Desktop SSO Timeout Minutes' = $GlobalSettings.GeneralData.DesktopSSOTimeoutMinutes
-                                    'Global Settings Application SSO Timeout Policy' = $GlobalSettings.GeneralData.ApplicationSSOTimeoutPolicy
-                                    'Global Settings Application SSO Timeout Minutes' = $GlobalSettings.GeneralData.ApplicationSSOTimeoutMinutes
-                                    'Global Settings View API Session Timeout Minutes' = $GlobalSettings.GeneralData.ViewAPISessionTimeoutMinutes
-                                    'Global Settings Pre-Login Message' = $GlobalSettings.GeneralData.PreLoginMessage
-                                    'Global Settings Display Warning Before Forced Logoff' = $GlobalSettings.GeneralData.DisplayWarningBeforeForcedLogoff
-                                    'Global Settings Forced Logoff Timeout Minutes' = $GlobalSettings.GeneralData.ForcedLogoffTimeoutMinutes
-                                    'Global Settings Forced Logoff Message' = $GlobalSettings.GeneralData.ForcedLogoffMessage
-                                    'Global Settings Enable Server in Single User Mode' = $GlobalSettings.GeneralData.EnableServerInSingleUserMode
-                                    'Global Settings Store CAL on Broker' = $GlobalSettings.GeneralData.StoreCALOnBroker
-                                    'Global Settings Store CAL on Client' = $GlobalSettings.GeneralData.StoreCALOnClient
-                                    'Global Settings Reauthenticate Secure Tunnel After Interruption' = $GlobalSettings.SecurityData.ReauthSecureTunnelAfterInterruption
-                                    'Global Settings Message Security Mode' = $GlobalSettings.SecurityData.MessageSecurityMode
-                                    'Global Settings Message Security Status' = $GlobalSettings.SecurityData.MessageSecurityStatus
-                                    'Global Settings Enable IP Sec for Security Server Pairing' = $GlobalSettings.SecurityData.EnableIPSecForSecurityServerPairing
-                                    'Global Settings Mirage Configuration Enabled' = $GlobalSettings.MirageConfiguration.Enabled
-                                    'Global Settings Mirage Configuration URL' = $GlobalSettings.MirageConfiguration.Url
+                                    'Client Session Time Out Policy' = $GlobalSettings.GeneralData.ClientIdleSessionTimeoutPolicy
+                                    'Client Idle Session Timeout Policy' = $GlobalSettings.GeneralData.ClientIdleSessionTimeoutPolicy
+                                    'Client Idle Session Timeout Minutes' = $GlobalSettings.GeneralData.ClientIdleSessionTimeoutMinutes
+                                    'Client Session Timeout Minutes ' = $GlobalSettings.GeneralData.ClientSessionTimeoutMinutes
+                                    'Desktop SSO Timeout Policy' = $GlobalSettings.GeneralData.DesktopSSOTimeoutPolicy
+                                    'Desktop SSO Timeout Minutes' = $GlobalSettings.GeneralData.DesktopSSOTimeoutMinutes
+                                    'Application SSO Timeout Policy' = $GlobalSettings.GeneralData.ApplicationSSOTimeoutPolicy
+                                    'Application SSO Timeout Minutes' = $GlobalSettings.GeneralData.ApplicationSSOTimeoutMinutes
+                                    'View API Session Timeout Minutes' = $GlobalSettings.GeneralData.ViewAPISessionTimeoutMinutes
+                                    'Pre-Login Message' = $GlobalSettings.GeneralData.PreLoginMessage
+                                    'Display Warning Before Forced Logoff' = $GlobalSettings.GeneralData.DisplayWarningBeforeForcedLogoff
+                                    'Forced Logoff Timeout Minutes' = $GlobalSettings.GeneralData.ForcedLogoffTimeoutMinutes
+                                    'Forced Logoff Message' = $GlobalSettings.GeneralData.ForcedLogoffMessage
+                                    'Enable Server in Single User Mode' = $GlobalSettings.GeneralData.EnableServerInSingleUserMode
+                                    'Store CAL on Broker' = $GlobalSettings.GeneralData.StoreCALOnBroker
+                                    'Store CAL on Client' = $GlobalSettings.GeneralData.StoreCALOnClient
+                                    'Reauthenticate Secure Tunnel After Interruption' = $GlobalSettings.SecurityData.ReauthSecureTunnelAfterInterruption
+                                    'Message Security Mode' = $GlobalSettings.SecurityData.MessageSecurityMode
+                                    'Message Security Status' = $GlobalSettings.SecurityData.MessageSecurityStatus
+                                    'Enable IP Sec for Security Server Pairing' = $GlobalSettings.SecurityData.EnableIPSecForSecurityServerPairing
+                                    'Mirage Configuration Enabled' = $GlobalSettings.MirageConfiguration.Enabled
+                                    'Mirage Configuration URL' = $GlobalSettings.MirageConfiguration.Url
                                 } # Close Out $HorizonSecurityServers = [PSCustomObject]
-                                $HorizonGlobalSettings | Table -Name 'Global Settings Information' -List -ColumnWidths 60,40            
-                            } # Close out section -Style Heading3 'Global Server Settings'                        
+                                $HorizonGlobalSettings | Table -Name 'Global Settings Information' -List -ColumnWidths 60,40
+                            } # Close out section -Style Heading3 'Global Server Settings'
                         } # Close out section -Style Heading2 'Global Settings'
-                    } # Close out if ($InfoLevel.Settings.Servers.GlobalSettings.GlobalSettings -ge 1) 
+                    } # Close out if ($InfoLevel.Settings.Servers.GlobalSettings.GlobalSettings -ge 1)
                 } # Close out if ($GlobalSettings)
 
                 #---------------------------------------------------------------------------------------------#
                 #                          Registered Machines                                                #
                 #---------------------------------------------------------------------------------------------#
-                
+
                 if ($RDSServers) {
                     if ($InfoLevel.Inventory.Machines.RDSHosts -ge 1) {
-                        PageBreak
+                        #PageBreak
                         section -Style Heading2 'Registered Machines' {
                             section -Style Heading3 'RDS Hosts' {
                                 section -Style Heading4 "RDS Hosts General Information" {
@@ -2164,7 +2168,7 @@
 
                                     if ($InfoLevel.Inventory.Machines.RDSHosts -ge 2) {
                                         section -Style Heading5 "RDS Hosts Details" {
-                                            PageBreak
+                                            #PageBreak
                                             $ii = 0
                                             foreach($RDSServer in $RDSServers) {
 
@@ -2175,39 +2179,39 @@
                                                         break
                                                     } # if($AccessGroup.Id.id -eq $RDSServers.base.accessgroup.id)
                                                 } # Close out foreach($AccessGroup in $AccessGroups)
-                                                
+
                                                 if(($ii % 2) -eq 1){
-                                                    PageBreak
+                                                    #PageBreak
                                                 }
                                                 $ii++
 
                                                 section -Style Heading6 "RDS Host Details for $($RDSServer.base.Name)" {
                                                     $RDSServer = [PSCustomObject]@{
-                                                        'RDS Host Name' = $RDSServer.base.name
-                                                        'RDS Host Description' = $RDSServer.base.Description
-                                                        'RDS Host Farm Name' = $RDSServer.SummaryData.FarmName
-                                                        'RDS Host Desktop Pool Name' = $RDSServer.SummaryData.DesktopName
-                                                        'RDS Host Farm Type' = $RDSServer.SummaryData.FarmType
-                                                        'RDS Host Access Group' = $RDSServerAccessgroup
-                                                        'RDS Host Message Security Mode' = $RDSServer.MessageSecurityData.MessageSecurityMode
-                                                        'RDS Host Message Security Enhanced Mode Supported' = $RDSServer.MessageSecurityData.MessageSecurityEnhancedModeSupported
-                                                        'RDS Host Operating System' = $RDSServer.agentdata.OperatingSystem
-                                                        'RDS Host Agent Version' = $RDSServer.agentdata.AgentVersion
-                                                        'RDS Host Agent Build Number' = $RDSServer.agentdata.AgentBuildNumber
-                                                        'RDS Host Remote Experience Agent Version' = $RDSServer.agentdata.RemoteExperienceAgentVersion
-                                                        'RDS Host Remote Experience Agent Build Number' = $RDSServer.agentdata.RemoteExperienceAgentBuildNumber
-                                                        'RDS Host Max Sessions Type' = $RDSServer.settings.SessionSettings.MaxSessionsType
-                                                        'RDS Host Max Sessions Set By Admin' = $RDSServer.settings.SessionSettings.MaxSessionsSetByAdmin
-                                                        'RDS Host Agent Max Sessions Type' = $RDSServer.settings.AgentMaxSessionsData.MaxSessionsType
-                                                        'RDS Host Agent Max Sessions Set By Admin' = $RDSServer.settings.AgentMaxSessionsData.MaxSessionsSeenByAgent
-                                                        'RDS Host Enabled' = $RDSServer.settings.enabled
-                                                        'RDS Host Status' = $RDSServer.runtimedata.Status
+                                                        'Name' = $RDSServer.base.name
+                                                        'Description' = $RDSServer.base.Description
+                                                        'Farm Name' = $RDSServer.SummaryData.FarmName
+                                                        'Desktop Pool Name' = $RDSServer.SummaryData.DesktopName
+                                                        'Farm Type' = $RDSServer.SummaryData.FarmType
+                                                        'Access Group' = $RDSServerAccessgroup
+                                                        'Message Security Mode' = $RDSServer.MessageSecurityData.MessageSecurityMode
+                                                        'Message Security Enhanced Mode Supported' = $RDSServer.MessageSecurityData.MessageSecurityEnhancedModeSupported
+                                                        'Operating System' = $RDSServer.agentdata.OperatingSystem
+                                                        'Agent Version' = $RDSServer.agentdata.AgentVersion
+                                                        'Agent Build Number' = $RDSServer.agentdata.AgentBuildNumber
+                                                        'Remote Experience Agent Version' = $RDSServer.agentdata.RemoteExperienceAgentVersion
+                                                        'Remote Experience Agent Build Number' = $RDSServer.agentdata.RemoteExperienceAgentBuildNumber
+                                                        'Max Sessions Type' = $RDSServer.settings.SessionSettings.MaxSessionsType
+                                                        'Max Sessions Set By Admin' = $RDSServer.settings.SessionSettings.MaxSessionsSetByAdmin
+                                                        'Agent Max Sessions Type' = $RDSServer.settings.AgentMaxSessionsData.MaxSessionsType
+                                                        'Agent Max Sessions Set By Admin' = $RDSServer.settings.AgentMaxSessionsData.MaxSessionsSeenByAgent
+                                                        'Enabled' = $RDSServer.settings.enabled
+                                                        'Status' = $RDSServer.runtimedata.Status
                                                     } # Close Out $RDSServer = [PSCustomObject]
                                                 $RDSServer | Table -Name "RDS Host Details for $($RDSServer.base.Name)" -List -ColumnWidths 50,50
                                                 } # Close out section -Style Heading6 "RDS Host Details for $($RDSServer.base.Name)"
                                             } # Close out foreach($RDSServer in $RDSServers)
                                         } # Close out section -Style Heading5 'RDS Host Details'
-                                    } # Close out if ($InfoLevel.Inventory.Machines.RDSHosts -ge 2)  
+                                    } # Close out if ($InfoLevel.Inventory.Machines.RDSHosts -ge 2)
                                 } # Close out section -Style Heading4 'RDS Host General Information'
                             } # Close out section -Style Heading3 'Machines'
                         } # Close out section -Style Heading2 'Registered Machines'
@@ -2218,13 +2222,13 @@
                 #                                       Administrators                                        #
                 #---------------------------------------------------------------------------------------------#
                 if ($Administrators -or $Roles -or $Permissions -or $AccessGroups) {
-                    PageBreak
+                    #PageBreak
                     section -Style Heading2 'Administrators' {
 
                         #---------------------------------------------------------------------------------------------#
                         #                                 Administrators and Groups                                   #
                         #---------------------------------------------------------------------------------------------#
-                        
+
                         if ($Administrators) {
                             if ($InfoLevel.Settings.Administrators.AdministratorsandGroups -ge 1) {
                                 section -Style Heading3 'Administrators and Groups' {
@@ -2246,7 +2250,7 @@
                                                                 } # Close out if($Role.Id.id -eq $PermissionGroup)
                                                             } # Close out foreach($Role in $Roles)
                                                                 if($Administrator.PermissionData.Permissions.id.count -gt 1){
-                                                                    $RoleIDNameResults += "$RoleIDName, " 
+                                                                    $RoleIDNameResults += "$RoleIDName, "
                                                                     $RoleIDName = $RoleIDNameResults.TrimEnd(', ')
                                                                 } #Close Out if($PermissionGroups.count -gt 1)
                                                         } # Close out foreach($PermissionGroup in $PermissionGroups)
@@ -2254,7 +2258,7 @@
                                                         {
                                                             '' {$RoleIDName = 'N/A'}
                                                             ' ' {$RoleIDName = 'N/A'}
-                                                        } # Close out Switch($administratorIDName)   
+                                                        } # Close out Switch($administratorIDName)
                                                 } # Close out if($Role.data.Permissions.id -eq $Permission.id.id)
                                             } # Close out foreach($Permission in $Permissions)
                                             [PSCustomObject]@{
@@ -2263,10 +2267,10 @@
                                             } # Close out [PSCustomObject]
                                         } # Close out $HorizonAdministratorsGeneral = foreach($Administrator in $Administrators)
                                         $HorizonAdministratorsGeneral | Table -Name 'Administrators General Information' -ColumnWidths 60, 40
-                                    
+
                                         if ($InfoLevel.Settings.Administrators.AdministratorsandGroups -ge 2) {
                                             section -Style Heading5 'Administrators Details' {
-                                                PageBreak
+                                                #PageBreak
                                                 $ii = 0
                                                 foreach($Administrator in $Administrators) {
                                                     # Find Administrator ID Name
@@ -2285,7 +2289,7 @@
                                                                         } # Close out if($Role.Id.id -eq $PermissionGroup)
                                                                     } # Close out foreach($Role in $Roles)
                                                                         if($Administrator.PermissionData.Permissions.id.count -gt 1){
-                                                                            $RoleIDNameResults += "$RoleIDName, " 
+                                                                            $RoleIDNameResults += "$RoleIDName, "
                                                                             $RoleIDName = $RoleIDNameResults.TrimEnd(', ')
                                                                         } #Close Out if($PermissionGroups.count -gt 1)
                                                                 } # Close out foreach($PermissionGroup in $PermissionGroups)
@@ -2293,7 +2297,7 @@
                                                                 {
                                                                     '' {$RoleIDName = 'N/A'}
                                                                     ' ' {$RoleIDName = 'N/A'}
-                                                                } # Close out Switch($administratorIDName)   
+                                                                } # Close out Switch($administratorIDName)
                                                         } # Close out if($Role.data.Permissions.id -eq $Permission.id.id)
                                                     } # Close out foreach($Permission in $Permissions)
 
@@ -2304,7 +2308,7 @@
                                                     }
 
                                                     if(($ii % 2) -eq 1){
-                                                        PageBreak
+                                                        #PageBreak
                                                     }
                                                     $ii++
 
@@ -2335,15 +2339,15 @@
                                     } # Close out section -Style Heading4 'Administrators General Information'
                                 } # Close out section -Style Heading3 'Administrators and Groups'
                             } # Close out if ($InfoLevel.Settings.Administrators.AdministratorsandGroups -ge 1)
-                        } # Close out if ($Administrators) 
+                        } # Close out if ($Administrators)
 
                         #---------------------------------------------------------------------------------------------#
                         #                                       Role Privileges                                       #
                         #---------------------------------------------------------------------------------------------#
-                        
+
                         if ($Roles) {
                             if ($InfoLevel.Settings.Administrators.RolePrivileges -ge 1) {
-                                PageBreak
+                                #PageBreak
                                 section -Style Heading3 'Role Privileges' {
                                     section -Style Heading4 'Role Privileges General Information' {
                                         $HorizonRole = foreach($Role in $Roles) {
@@ -2370,10 +2374,10 @@
                                                                         $AdministratorIDName = $Administrator.base.name
                                                                         break
                                                                     } # Close out if($Administrator.Id.id -eq $PermissionGroup)
-                                                            
+
                                                                 } # Close out foreach($Administrator in $Administrators)
                                                                     if($PermissionGroups.count -gt 1){
-                                                                        $AdministratorIDNameResults += "$AdministratorIDName, " 
+                                                                        $AdministratorIDNameResults += "$AdministratorIDName, "
                                                                         $AdministratorIDName = $AdministratorIDNameResults.TrimEnd(', ')
                                                                     } #Close Out if($PermissionGroups.count -gt 1)
                                                             } # Close out foreach($PermissionGroup in $PermissionGroups)
@@ -2382,14 +2386,14 @@
                                                                 '' {$AdministratorIDName = 'N/A'}
                                                                 ' ' {$AdministratorIDName = 'N/A'}
                                                             } # Close out Switch($administratorIDName)
-                                                                        
+
                                                         } # Close out if($Role.data.Permissions.id -eq $Permission.id.id)
                                                     } # Close out foreach($Permission in $Permissions)
 
-                                                    $RolePrivileges = $Role.Base | ForEach-Object { $_.Privileges} 
+                                                    $RolePrivileges = $Role.Base | ForEach-Object { $_.Privileges}
                                                     $RolePrivilegessresult = $RolePrivileges -join ', '
-                                                    
-                                                    PageBreak
+
+                                                    #PageBreak
                                                     section -Style Heading6 "Role $($Role.base.Name)" {
                                                         $HorizonRole = [PSCustomObject]@{
                                                             'Role Name' = $Role.base.Name
@@ -2402,23 +2406,23 @@
                                                     } # Close out section -Style Heading6 'Role'
                                                 } # Close out foreach($Role in $Roles)
                                             } # Close out section -Style Heading5 'VMware Roles'
-                                        } # Close out if ($InfoLevel.Settings.Administrators.RolePermissions -ge 2)  
-                                    } # Close out section -Style Heading4 'Permissions Details'         
-                                } # Close out section -Style Heading3 'Role Privileges' 
+                                        } # Close out if ($InfoLevel.Settings.Administrators.RolePermissions -ge 2)
+                                    } # Close out section -Style Heading4 'Permissions Details'
+                                } # Close out section -Style Heading3 'Role Privileges'
                             } # Close out if ($InfoLevel.Settings.Administrators.RolePermissions -ge 1)
                         } # Close out if ($Roles)
 
                         #---------------------------------------------------------------------------------------------#
                         #                                       Role Permissions                                      #
                         #---------------------------------------------------------------------------------------------#
-                        
+
                         if ($Permissions) {
                             if ($InfoLevel.Settings.Administrators.RolePermissions -ge 1) {
-                                PageBreak
+                                #PageBreak
                                 section -Style Heading3 'Role Permissions' {
                                     section -Style Heading4 'Permissions Details' {
                                         $AdministratorIDNameResults = ''
-                                        $HorizonPermission = foreach($Permission in $Permissions) {                                                
+                                        $HorizonPermission = foreach($Permission in $Permissions) {
                                             # Find Administrator ID Name
                                             $AdministratorIDName = ''
                                             $PermissionGroups = $Permission.base.UserOrGroup.id
@@ -2431,7 +2435,7 @@
                                                     } # Close out if($Administrator.Id.id -eq $PermissionGroup)
                                                 } # Close out foreach($Administrator in $Administrators)
                                                     if($PermissionGroups.count -gt 1){
-                                                        $AdministratorIDNameResults += "$AdministratorIDName, " 
+                                                        $AdministratorIDNameResults += "$AdministratorIDName, "
                                                         $AdministratorIDName = $AdministratorIDNameResults.TrimEnd(', ')
                                                     } #Close Out if($PermissionGroups.count -gt 1)
                                             } # Close out foreach($PermissionGroup in $PermissionGroups)
@@ -2440,7 +2444,7 @@
                                                 '' {$AdministratorIDName = 'N/A'}
                                                 ' ' {$AdministratorIDName = 'N/A'}
                                             }
-                                        
+
                                             # Mach Permission Role ID with Role ID
                                             # Find Role ID Name
                                             $RoleIDName = ''
@@ -2452,10 +2456,10 @@
                                                         $RoleIDName = $Role.base.name
                                                         break
                                                     } # Close out if($Role.Id.id -eq $PermissionGroup)
-                                
+
                                                 } # Close out foreach($Role in $Roles)
                                                     if($PermissionGroups.count -gt 1){
-                                                        $RoleIDNameResults += "$RoleIDName, " 
+                                                        $RoleIDNameResults += "$RoleIDName, "
                                                         $RoleIDName = $RoleIDNameResults.TrimEnd(', ')
                                                     } #Close Out if($PermissionGroups.count -gt 1)
                                             } # Close out foreach($PermissionGroup in $PermissionGroups)
@@ -2477,7 +2481,7 @@
                                                     } # Close out if($AccessGroup.Id.id -eq $PermissionGroup)
                                                 } # Close out foreach($AccessGroup in $AccessGroups)
                                                     if($PermissionGroups.count -gt 1){
-                                                        $AccessGroupIDNameResults += "$AccessGroupIDName, " 
+                                                        $AccessGroupIDNameResults += "$AccessGroupIDName, "
                                                         $AccessGroupIDName = $AccessGroupIDNameResults.TrimEnd(', ')
                                                     } #Close Out if($PermissionGroups.count -gt 1)
                                             } # Close out foreach($PermissionGroup in $PermissionGroups)
@@ -2502,10 +2506,10 @@
                         #---------------------------------------------------------------------------------------------#
                         #                                       Access Groups                                         #
                         #---------------------------------------------------------------------------------------------#
-                        
+
                         if ($AccessGroups) {
                             if ($InfoLevel.Settings.Administrators.AccessGroup -ge 1) {
-                                PageBreak
+                                #PageBreak
                                 section -Style Heading3 'Access Groups' {
                                     section -Style Heading4 'Access Group General Information' {
                                         $AccessGroupGeneralInfo = foreach($AccessGroup in $AccessGroups) {
@@ -2533,14 +2537,14 @@
                                                                             break
                                                                         } # Close out if($Administrator.Id.id -eq $PermissionGroup)
                                                                     } # Close out foreach($Administrator in $Administrators)
-                                                                    $AdministratorIDNameResults += "$AdministratorIDName, " 
+                                                                    $AdministratorIDNameResults += "$AdministratorIDName, "
                                                                     $AdministratorIDName = $AdministratorIDNameResults.TrimEnd(', ')
                                                                 } # Close out foreach($PermissionGroup in $PermissionGroups)
                                                                 Switch ($AdministratorIDName)
                                                                 {
                                                                     '' {$AdministratorIDName = 'N/A'}
                                                                     ' ' {$AdministratorIDName = 'N/A'}
-                                                                } # Close out Switch($administratorIDName) 
+                                                                } # Close out Switch($administratorIDName)
                                                             } # if($AccessGroupID -eq $Permission.id.id)
                                                         } # Close out foreach($Permission in $Permissions)
                                                         $AdministratorIDName
@@ -2562,8 +2566,8 @@
                                                     } # Close out section -Style Heading6 'Role'
                                                 } # Close out foreach($AccessGroup in $AccessGroups)
                                             } # Close out section -Style Heading5 'Access Group Details'
-                                        } # Close out if ($InfoLevel.Settings.Administrators.AccessGroup -ge 2)  
-                                    } # Close out section -Style Heading4 'Access Group General Information'         
+                                        } # Close out if ($InfoLevel.Settings.Administrators.AccessGroup -ge 2)
+                                    } # Close out section -Style Heading4 'Access Group General Information'
                                 } # Close out section -Style Heading3 'Access Groups'
                             } # Close out if ($InfoLevel.Settings.Administrators.AccessGroup -ge 1)
                         } # Close out if ($AccessGroups)
@@ -2574,11 +2578,11 @@
                 #---------------------------------------------------------------------------------------------#
                 #                                 Cloud Pod Architecture                                      #
                 #---------------------------------------------------------------------------------------------#
-                
+
                 if ($CloudPodFederation) {
-                    
+
                         if ($InfoLevel.Settings.CloudPodArchitecture.CloudPodArchitecture -ge 1) {
-                            PageBreak
+                            #PageBreak
                             section -Style Heading2 'Cloud Pod Architecture' {
                                 section -Style Heading3 'Cloud Pod Federation General Information' {
                                     $HorizonCloudPodFederationGeneral = [PSCustomObject]@{
@@ -2601,7 +2605,7 @@
                                             $CloudPodListEndpointConnectionServer = $hzServices.PodEndpoint.PodEndpoint_Get($CloudPodListEndpoint)
                                             $CloudPodListEndpointConnectionServerList += $CloudPodListEndpointConnectionServer.name -join "`r`n" | Out-String
                                             }
-                                            
+
                                             # Active Global Entitlements
                                             $CloudPodListActiveGlobalEntitlements = $CloudPodList.ActiveGlobalEntitlements
                                             $CloudPodListActiveGlobalEntitlementList = ''
@@ -2619,7 +2623,7 @@
                                             }
 
                                             if(($ii % 2) -eq 1){
-                                                PageBreak
+                                                #PageBreak
                                             }
                                             $ii++
 
@@ -2639,16 +2643,16 @@
                                 } # Close out if ($InfoLevel.Settings.GlobalSettings.GlobalSettings -ge 1) {
                             } # Close out section -Style Heading2 'Cloud Pod Architecture'
                         } # Close out if ($InfoLevel.Settings.GlobalSettings.GlobalSettings -ge 1)
-                    
+
                 } # Close out if ($CloudPodFederation)
 
                 #---------------------------------------------------------------------------------------------#
                 #                                            Sites                                            #
                 #---------------------------------------------------------------------------------------------#
-                
+
                 if ($CloudPodSites) {
                     if ($InfoLevel.Settings.Sites.Sites -ge 1) {
-                        PageBreak
+                        #PageBreak
                         section -Style Heading2 'Sites' {
                             section -Style Heading3 "Cloud Pod Sites General Information" {
 
@@ -2666,7 +2670,7 @@
                                     section -Style Heading4 "Cloud Pod Sites Details" {
                                         $ii = 0
                                         foreach($CloudPodSite in $CloudPodSites) {
-                                            
+
                                             # Find CloudPod Info
                                             foreach($CloudPodList in $CloudPodLists) {
                                                 if($CloudPodList.Id.id -eq $CloudPodSite.pods.id){
@@ -2674,9 +2678,9 @@
                                                     break
                                                 } # if($AccessGroup.Id.id -eq $RDSServers.base.accessgroup.id)
                                             } # Close out foreach($AccessGroup in $AccessGroups)
-                                            
+
                                             if(($ii % 5) -eq 0){
-                                                PageBreak
+                                                #PageBreak
                                             }
                                             $ii++
 
@@ -2690,9 +2694,9 @@
                                             } # Close out section -Style Heading5 "Cloud Pod Sites Details"
                                         } # Close out foreach($CloudPodSite in $CloudPodSites)
                                     } # Close out section -Style Heading4 'Cloud Pod Sites Details'
-                                } # Close out if (($InfoLevel.Settings.Sites.Sites -ge 2)  
-                            } # Close out section -Style Heading3 'Cloud Pod Sites General Information'         
-                        } # Close out section -Style Heading2 'Sites' 
+                                } # Close out if (($InfoLevel.Settings.Sites.Sites -ge 2)
+                            } # Close out section -Style Heading3 'Cloud Pod Sites General Information'
+                        } # Close out section -Style Heading2 'Sites'
                     } # Close out if (($InfoLevel.Settings.Sites.Sites -ge 1)
                 } # Close out if ($CloudPodSites)
 
@@ -2702,7 +2706,7 @@
 
                 if ($EventDataBases) {
                     if ($InfoLevel.Settings.EventConfiguration.EventConfiguration -ge 1) {
-                        PageBreak
+                        #PageBreak
                         section -Style Heading2 'Event Configuration' {
                             section -Style Heading3 'Horizon Event Database' {
                                 foreach($EventDataBase in $EventDataBases) {
@@ -2723,11 +2727,11 @@
                         } # Close out section -Style Heading2 'Event Configuration'
                     } # Close out if ($InfoLevel.Settings.EventConfiguration.EventConfiguration -ge 1)
                 } # Close out if ($EventDataBase)
-                
+
                 #---------------------------------------------------------------------------------------------#
                 #                                     Global Policies                                         #
                 #---------------------------------------------------------------------------------------------#
-                
+
                 #if ($GlobalPolicies) {
                     #section -Style Heading2 'Global Policies' {
 
@@ -2737,7 +2741,7 @@
                 #---------------------------------------------------------------------------------------------#
                 #                                       JMP Configuration                                     #
                 #---------------------------------------------------------------------------------------------#
-                
+
                 if ($GlobalSettings.JmpConfiguration) {
                     if ($InfoLevel.Settings.JMPConfiguration.JMPConfiguration -ge 1) {
                         section -Style Heading2 'JMP Configuration' {
@@ -2754,7 +2758,7 @@
                 } # Close Out if ($GlobalSettings.JmpConfiguration)
 
             } # Close out section -Style Heading1 'Settings'
-        } # Close out if ($vCenterServers -or $vCenterHealth -or $Composers -or $Domains -or $SecurityServers -or $GatewayServers -or $ConnectionServers -or $InstantCloneDomainAdmins -or $ProductLicenseingInfo -or $GlobalSettings -or $RDSServers -or $Administrators -or $Roles -or $Permissions -or $AccessGroups -or $CloudPodFederation -or $CloudPodSites -or $EventDataBases -or $GlobalPolicies) 
+        } # Close out if ($vCenterServers -or $vCenterHealth -or $Composers -or $Domains -or $SecurityServers -or $GatewayServers -or $ConnectionServers -or $InstantCloneDomainAdmins -or $ProductLicenseingInfo -or $GlobalSettings -or $RDSServers -or $Administrators -or $Roles -or $Permissions -or $AccessGroups -or $CloudPodFederation -or $CloudPodSites -or $EventDataBases -or $GlobalPolicies)
 
     } # Close out foreach ($HVServer in $Target)
 
