@@ -242,15 +242,15 @@
         #---------------------------------------------------------------------------------------------#
 
         if ($EntitledUserOrGroupLocalMachines -or $HomeSites -or $unauthenticatedAccessList) {
-            section -Style Heading1 'Users and Groups' {
-                LineBreak
+            section -Style Heading2 'Users and Groups' {
+
 
                 #---------------------------------------------------------------------------------------------#
                 #                                     Entitlements                                            #
                 #---------------------------------------------------------------------------------------------#
                 if ($EntitledUserOrGroupLocalMachines) {
                     if ($InfoLevel.UsersAndGroups.UsersAndGroups.Entitlements -ge 1) {
-                        section -Style Heading2 'Local Entitlements Information' {
+                        section -Style Heading3 'Local Entitlements Information' {
                             $LocalEntitlementsDetails = foreach($EntitledUserOrGroupLocalMachine in $EntitledUserOrGroupLocalMachines) {
                                 Switch ($EntitledUserOrGroupLocalMachine.base.Group)
                                 {
@@ -336,7 +336,7 @@
                                     } #Close out Switch ($EntitledUserOrGroupLocalMachine.base.Group)
 
                                     #PageBreak
-                                    section -Style Heading3 "Local Entitlements Details of $($EntitledUserOrGroupLocalMachine.base.Name)" {
+                                    section -Style Heading4 "Local Entitlements Details of $($EntitledUserOrGroupLocalMachine.base.Name)" {
                                         $HorizonEntitledUserOrGroupLocalMachine = [PSCustomObject]@{
                                             'Name' = $EntitledUserOrGroupLocalMachine.base.Name
                                             'Group or User' = $EntitledUserOrGroupLocalMachinegroup
@@ -380,7 +380,7 @@
                 if ($HomeSites) {
                     if ($InfoLevel.UsersAndGroups.UsersAndGroups.HomeSiteAssignments -ge 1) {
                         #PageBreak
-                        section -Style Heading2 "Home Site General Information" {
+                        section -Style Heading3 "Home Site General Information" {
 
                             $HomeSiteGeneralInfo = foreach($HomeSite in $HomeSites) {
 
@@ -443,7 +443,7 @@
                 if ($unauthenticatedAccessList) {
                     if ($InfoLevel.UsersAndGroups.UsersAndGroups.UnauthenticatedAccess -ge 1) {
                         #PageBreak
-                        section -Style Heading2 "Unauthenticated Access General Information" {
+                        section -Style Heading4 "Unauthenticated Access General Information" {
 
                             $unauthenticatedAccessGeneralInfo = foreach($unauthenticatedAccess in $unauthenticatedAccessList) {
 
@@ -486,7 +486,7 @@
         if ($Pools -or $Apps -or $Farms -or $Machines -or $RDSServers -or $PersistentDisks -or $ThinApps -or $GlobalEntitlements -or $GlobalApplicationEntitlementGroups) {
             #PageBreak
             section -Style Heading1 'Inventory' {
-                LineBreak
+
 
                 #---------------------------------------------------------------------------------------------#
                 #                                 Desktops                                                    #
@@ -494,7 +494,7 @@
 
                 if ($Pools) {
                     if ($InfoLevel.Inventory.Desktop -ge 1) {
-                        section -Style Heading2 'Desktops' {
+                        section -Style Heading3 'Desktops' {
                             section -Style Heading3 'Desktop Pools General Information' {
                                 $HorizonPoolGeneralInfo = foreach($Pool in $Pools) {
                                     Switch ($Pool.automateddesktopdata.ProvisioningType)
@@ -510,7 +510,7 @@
                                 $HorizonPoolGeneralInfo | Table -Name 'Desktop Pools General Information' -ColumnWidths 40,30,30
 
                                 if ($InfoLevel.Inventory.Desktop -ge 2) {
-                                    section -Style Heading3 'Desktop Pool Details' {
+                                    section -Style Heading4 'Desktop Pool Details' {
                                         foreach($Pool in $Pools) {
                                             # Find out Access Group for Applications
                                             $AccessgroupMatch = $false
@@ -684,7 +684,7 @@
                                             }
 
                                             #PageBreak
-                                            section -Style Heading4 "Pool $($Pool.Base.name) Information" {
+                                            section -Style Heading5 "$($Pool.Base.name) Information" {
 
                                                 $SupportedDisplayProtocols = $Pool.DesktopSettings.DisplayProtocolSettings | ForEach-Object { $_.SupportedDisplayProtocols}
                                                 $SupportedDisplayProtocolsresult = $SupportedDisplayProtocols -join ', '
@@ -827,8 +827,8 @@
                 if ($Apps) {
                     if ($InfoLevel.Inventory.Applications -ge 1) {
                         #PageBreak
-                        section -Style Heading2 'Applications' {
-                            section -Style Heading3 'General Information' {
+                        section -Style Heading3 'Applications' {
+                            section -Style Heading4 'General Information' {
                                 $HorizonApplicationsGeneral = foreach($App in $Apps) {
                                     [PSCustomObject]@{
                                         'Display Name' = $App.Data.DisplayName
@@ -840,7 +840,7 @@
                             } # Close out section -Style Heading3 'Application General Info'
 
                             if ($InfoLevel.Inventory.Applications -ge 2) {
-                                section -Style Heading3 'Applications Details' {
+                                section -Style Heading4 'Applications Details' {
                                     foreach($App in $Apps) {
 
                                         # Find out Farm Name for Applications
@@ -887,7 +887,7 @@
                                         $OtherApplicationFileTypesresult = $OtherApplicationFileTypes -join ', '
 
                                         #PageBreak
-                                        section -Style Heading4 "Application Details for $($App.Data.DisplayName)" {
+                                        section -Style Heading5 "Application Details for $($App.Data.DisplayName)" {
                                         $HorizonApplications = [PSCustomObject]@{
 
                                         'Name' = $App.Data.Name
@@ -926,8 +926,8 @@
                 if ($Farms) {
                     if ($InfoLevel.Inventory.Farms -ge 1) {
                         #PageBreak
-                        section -Style Heading2 'Farms' {
-                            section -Style Heading3 'Farms General Information' {
+                        section -Style Heading3 'Farms' {
+                            section -Style Heading4 'Farms General Information' {
                                 $FarmsGeneralInfo = foreach($Farm in $Farms) {
                                     [PSCustomObject]@{
                                         'Display Name' = $Farm.Data.displayName
@@ -938,7 +938,7 @@
                                 $FarmsGeneralInfo | Table -Name 'Farms General Information' -ColumnWidths 40,30,30
 
                                 if ($InfoLevel.Inventory.Farms -ge 2) {
-                                    section -Style Heading4 'Farms Details' {
+                                    section -Style Heading5 'Farms Details' {
                                         #PageBreak
                                         foreach($Farm in $Farms) {
 
@@ -955,7 +955,7 @@
                                                 } # Close out if($AccessgroupMatch)
                                             } # Close out foreach($Accessgroup in $Accessgroups)
 
-                                            section -Style Heading5 "Farm $($Farm.Data.name) Info" {
+                                            section -Style Heading6 "Farm $($Farm.Data.name) Info" {
                                             $HorizonFarmInfo = [PSCustomObject]@{
                                                 'Pool Name' = $Farm.Data.name
                                                 'Display Name' = $Farm.Data.displayName
@@ -1066,10 +1066,6 @@
                                                         } # Close out if($EntitledUserOrGroupLocalMachine.id.id -eq $Machine.base.user.id)
                                                     } # Close out foreach($EntitledUserOrGroupLocalMachine in $EntitledUserOrGroupLocalMachines)
 
-                                                    if(($ii % 2) -eq 1){
-                                                        #PageBreak
-                                                    }
-                                                    $ii++
                                                     section -Style Heading6 "vCenter VM Details for $($Machine.base.Name)" {
                                                         $Machine = [PSCustomObject]@{
                                                             'Name' = $Machine.base.name
@@ -1130,11 +1126,7 @@
                                                         } # if($AccessGroup.Id.id -eq $RDSServers.base.accessgroup.id)
                                                     } # Close out foreach($AccessGroup in $AccessGroups)
 
-                                                    if(($ii % 2) -eq 1){
-                                                        #PageBreak
-                                                    }
-                                                    $ii++
-                                                    section -Style Heading6 "RDS Host Details for $($RDSServer.base.Name)" {
+                                                    section -Style Heading6 "$($RDSServer.base.Name)" {
                                                         $RDSServer = [PSCustomObject]@{
                                                             'Host Name' = $RDSServer.base.name
                                                             'Host Description' = $RDSServer.base.Description
@@ -1281,7 +1273,7 @@
                         if ($InfoLevel.Inventory.GlobalEntitlements -ge 1) {
                             #PageBreak
                             section -Style Heading2 'Global Entitlements' {
-                                section -Style Heading3 'Global Entitlements General Information' {
+                                section -Style Heading3 'General Information' {
                                     if ($GlobalEntitlements) {
                                         $GlobalEntitlementsGeneralInfo = foreach($GlobalEntitlement in $GlobalEntitlements) {
                                             $GlobalEntitlementPodCount = ($GlobalEntitlement.data.memberpods.id).count
@@ -1331,111 +1323,111 @@
                                                     $GESupportedDisplayProtocolsresult = $GESupportedDisplayProtocols -join ', '
 
                                                     #PageBreak
-                                                    section -Style Heading5 "Global Entitlement $($GlobalEntitlement.Base.DisplayName)" {
+                                                    section -Style Heading5 "$($GlobalEntitlement.Base.DisplayName)" {
                                                         $HorizonGlobalEntitlements = [PSCustomObject]@{
-
                                                             'Display Name' = $GlobalEntitlement.Base.DisplayName
                                                             'Description' = $GlobalEntitlement.Base.Description
                                                             'Base Scope' = $GlobalEntitlement.Base.Scope
                                                             'Dedicated' = $GlobalEntitlement.Base.Dedicated
                                                             'From Home' = $GlobalEntitlement.Base.FromHome
                                                             'Require Home Site' = $GlobalEntitlement.Base.RequireHomeSite
-                                                            'Global Entitlement Multiple Session Auto Clean' = $GlobalEntitlement.Base.MultipleSessionAutoClean
-                                                            'Global Entitlement Enabled' = $GlobalEntitlement.Base.Enabled
-                                                            'Global Entitlement Supported Display Protocols' = $GESupportedDisplayProtocolsresult
-                                                            'Global Entitlement Default Display Protocol' = $GlobalEntitlement.Base.DefaultDisplayProtocol
-                                                            'Global Entitlement Allow Users to Choose Protocol' = $GlobalEntitlement.Base.AllowUsersToChooseProtocol
-                                                            'Global Entitlement Allow Users to Reset Machines' = $GlobalEntitlement.Base.AllowUsersToResetMachines
-                                                            'Global Entitlement Enable HTML Access' = $GlobalEntitlement.Base.EnableHTMLAccess
-                                                            'Global Entitlement Allow Multiple Sessions Per User' = $GlobalEntitlement.Base.AllowMultipleSessionsPerUser
-                                                            'Global Entitlement Connection Server Restrictions' = $GlobalEntitlement.Base.ConnectionServerRestrictions
-                                                            'Global Entitlement Category Folder Name' = $GlobalEntitlement.Base.CategoryFolderName
-                                                            'Global Entitlement Client Restrictions' = $GlobalEntitlement.Base.ClientRestrictions
-                                                            'Global Entitlement Enable Collaboration' = $GlobalEntitlement.Base.EnableCollaboration
-                                                            'Global Entitlement Shortcut Locations' = $($GlobalEntitlement.Base.ShortcutLocations)
-                                                            'Global Entitlement Cloud Managed' = $GlobalEntitlement.Base.CloudManaged
-                                                            'Global Entitlement Local Desktop Count' = $GlobalEntitlement.Data.LocalDesktopCount
-                                                            'Global Entitlement Remote Desktop Count' = $GlobalEntitlement.Data.RemoteDesktopCount
-                                                            'Global Entitlement User Count' = $GlobalEntitlement.Data.UserCount
-                                                            'Global Entitlement User Group Count' = $GlobalEntitlement.Data.UserGroupCount
-                                                            'Global Entitlement User Group Site Override Count' = $GlobalEntitlement.Data.UserGroupSiteOverrideCount
-                                                            'Global Entitlement Member Pods' = $PodIDList
-                                                            'Global Entitlement Local Site Pool' = $LocalSitePool
+                                                            'Multiple Session Auto Clean' = $GlobalEntitlement.Base.MultipleSessionAutoClean
+                                                            'Enabled' = $GlobalEntitlement.Base.Enabled
+                                                            'Supported Display Protocols' = $GESupportedDisplayProtocolsresult
+                                                            'Default Display Protocol' = $GlobalEntitlement.Base.DefaultDisplayProtocol
+                                                            'Allow Users to Choose Protocol' = $GlobalEntitlement.Base.AllowUsersToChooseProtocol
+                                                            'Allow Users to Reset Machines' = $GlobalEntitlement.Base.AllowUsersToResetMachines
+                                                            'Enable HTML Access' = $GlobalEntitlement.Base.EnableHTMLAccess
+                                                            'Allow Multiple Sessions Per User' = $GlobalEntitlement.Base.AllowMultipleSessionsPerUser
+                                                            'Connection Server Restrictions' = $GlobalEntitlement.Base.ConnectionServerRestrictions
+                                                            'Category Folder Name' = $GlobalEntitlement.Base.CategoryFolderName
+                                                            'Client Restrictions' = $GlobalEntitlement.Base.ClientRestrictions
+                                                            'Enable Collaboration' = $GlobalEntitlement.Base.EnableCollaboration
+                                                            'Shortcut Locations' = $($GlobalEntitlement.Base.ShortcutLocations)
+                                                            'Cloud Managed' = $GlobalEntitlement.Base.CloudManaged
+                                                            'Local Desktop Count' = $GlobalEntitlement.Data.LocalDesktopCount
+                                                            'Remote Desktop Count' = $GlobalEntitlement.Data.RemoteDesktopCount
+                                                            'User Count' = $GlobalEntitlement.Data.UserCount
+                                                            'User Group Count' = $GlobalEntitlement.Data.UserGroupCount
+                                                            'User Group Site Override Count' = $GlobalEntitlement.Data.UserGroupSiteOverrideCount
+                                                            'Member Pods' = $PodIDList
+                                                            'Local Site Pool' = $LocalSitePool
                                                         } # Close Out $HorizonGlobalEntitlements = [PSCustomObject]
                                                     $HorizonGlobalEntitlements | Table -Name "Global Entitlement $($GlobalEntitlement.Base.DisplayName)" -List -ColumnWidths 60,40
                                                     } # Close out section -Style Heading2 '$Global Entitlement'
-
-                                                    section -Style Heading6 "Global Entitlement $($GlobalEntitlement.Base.DisplayName) Users and Groups List" {
-                                                        $GlobalEntitlementsUsersList = foreach($EntitledUserOrGroupGlobalMachine in $EntitledUserOrGroupGlobalMachines) {
-                                                            if($EntitledUserOrGroupGlobalMachine.globaldata.GlobalEntitlements.id -eq $GlobalEntitlement.id.id) {
-                                                                [PSCustomObject]@{
-                                                                    'User or Group Name' = $EntitledUserOrGroupGlobalMachine.base.name
-                                                                    'Domain' = $EntitledUserOrGroupGlobalMachine.base.domain
-                                                                    'Email' = $EntitledUserOrGroupGlobalMachine.base.email
-                                                                }
-                                                            } # Close out if($EntitledUserOrGroupGlobalMachine.globaldata.GlobalEntitlements.id -eq $GlobalEntitlement.id.id)
-                                                        } # Close out foreach($EntitledUserOrGroupGlobalMachine in $EntitledUserOrGroupGlobalMachines)
-                                                        if($GlobalEntitlementsUsersList){
-                                                            $GlobalEntitlementsUsersList | Table -Name "Global Entitlement $($GlobalEntitlement.Base.DisplayName) Users and Groups List" -ColumnWidths 40,30,30
-                                                        }
-                                                    } # Close out section -Style Heading6 "Global Entitlement $($GlobalEntitlement.Base.DisplayName) Users and Groups List"
-
-                                                    if ($InfoLevel.Inventory.GlobalEntitlements -ge 3) {
-                                                        foreach($EntitledUserOrGroupGlobalMachine in $EntitledUserOrGroupGlobalMachines) {
-                                                            if($EntitledUserOrGroupGlobalMachine.globaldata.GlobalEntitlements.id -eq $GlobalEntitlement.id.id) {
-                                                                Switch ($EntitledUserOrGroupGlobalMachine.base.Group)
-                                                                {
-                                                                    'True' {$EntitledUserOrGroupGlobalMachinegroup = 'Group' }
-                                                                    'False' {$EntitledUserOrGroupGlobalMachinegroup = 'User' }
-                                                                }
-
-                                                                # Home Site Info
-                                                                $EUGGMHomeSiteName = ''
-                                                                if($EntitledUserOrGroupGlobalMachine.GlobalData.UserHomeSites){
-                                                                    $EUGGMHomeSites = $hzServices.UserHomeSite.UserHomeSite_GetInfos($EntitledUserOrGroupGlobalMachine.GlobalData.UserHomeSites)
-                                                                    $EUGGMHomeSiteNameList = ''
-                                                                    foreach ($EUGGMHomeSite in $EUGGMHomeSites.base.Site) {
-                                                                        $EUGGMHomeSiteName = $hzServices.Site.Site_Get($EUGGMHomeSite)
-                                                                        $EUGGMHomeSiteDisplayName = $EUGGMHomeSiteName.Base.DisplayName
-                                                                        $EUGGMHomeSiteNameList += "$EUGGMHomeSiteDisplayName, "
+                                                    if ($EntitledUserOrGroupGlobalMachines) {
+                                                        section -Style Heading6 "$($GlobalEntitlement.Base.DisplayName) Users and Groups List" {
+                                                            $GlobalEntitlementsUsersList = foreach($EntitledUserOrGroupGlobalMachine in $EntitledUserOrGroupGlobalMachines) {
+                                                                if($EntitledUserOrGroupGlobalMachine.globaldata.GlobalEntitlements.id -eq $GlobalEntitlement.id.id) {
+                                                                    [PSCustomObject]@{
+                                                                        'User or Group Name' = $EntitledUserOrGroupGlobalMachine.base.name
+                                                                        'Domain' = $EntitledUserOrGroupGlobalMachine.base.domain
+                                                                        'Email' = $EntitledUserOrGroupGlobalMachine.base.email
                                                                     }
-                                                                    $EUGGMHomeSiteNameListTrim = $EUGGMHomeSiteNameList.TrimEnd(', ')
-                                                                }
+                                                                } # Close out if($EntitledUserOrGroupGlobalMachine.globaldata.GlobalEntitlements.id -eq $GlobalEntitlement.id.id)
+                                                            } # Close out foreach($EntitledUserOrGroupGlobalMachine in $EntitledUserOrGroupGlobalMachines)
+                                                            if($GlobalEntitlementsUsersList){
+                                                                $GlobalEntitlementsUsersList | Table -Name "Global Entitlement $($GlobalEntitlement.Base.DisplayName) Users and Groups List" -ColumnWidths 40,30,30
+                                                            }
+                                                        } # Close out section -Style Heading6 "Global Entitlement $($GlobalEntitlement.Base.DisplayName) Users and Groups List"
 
-                                                                # Pod Details
-                                                                $EUGGMPodDetails = ''
-                                                                if($EntitledUserOrGroupGlobalMachine.GlobalData.PodAssignments){
-                                                                    $EUGGMPodAssignment = $hzServices.PodAssignment.PodAssignment_GetInfos($EntitledUserOrGroupGlobalMachine.GlobalData.PodAssignments)
-                                                                    $EUGGMPodDetails = $hzServices.Pod.Pod_Get($EUGGMPodAssignment.data.pod)
-                                                                }
+                                                        if ($InfoLevel.Inventory.GlobalEntitlements -ge 3) {
+                                                            foreach($EntitledUserOrGroupGlobalMachine in $EntitledUserOrGroupGlobalMachines) {
+                                                                if($EntitledUserOrGroupGlobalMachine.globaldata.GlobalEntitlements.id -eq $GlobalEntitlement.id.id) {
+                                                                    Switch ($EntitledUserOrGroupGlobalMachine.base.Group)
+                                                                    {
+                                                                        'True' {$EntitledUserOrGroupGlobalMachinegroup = 'Group' }
+                                                                        'False' {$EntitledUserOrGroupGlobalMachinegroup = 'User' }
+                                                                    }
 
-                                                                #PageBreak
-                                                                section -Style Heading7 "Global Entitlement $($EntitledUserOrGroupGlobalMachinegroup) Details for $($EntitledUserOrGroupGlobalMachine.base.Name)" {
-                                                                    $HorizonEntitledUserOrGroupGlobalMachine = [PSCustomObject]@{
-                                                                        'Global Entitlement Name' = $EntitledUserOrGroupGlobalMachine.base.Name
-                                                                        'Group or User' = $EntitledUserOrGroupGlobalMachinegroup
-                                                                        'Global Entitlement SID' = $EntitledUserOrGroupGlobalMachine.base.Sid
-                                                                        'Global Entitlement Domain' = $EntitledUserOrGroupGlobalMachine.base.Domain
-                                                                        'Global Entitlement Ad Distinguished Name' = $EntitledUserOrGroupGlobalMachine.base.AdDistinguishedName
-                                                                        'Global Entitlement First Name' = $EntitledUserOrGroupGlobalMachine.base.FirstName
-                                                                        'Global Entitlement Group Last Name' = $EntitledUserOrGroupGlobalMachine.base.LastName
-                                                                        'Global Entitlement Login Name' = $EntitledUserOrGroupGlobalMachine.base.LoginName
-                                                                        'Global Entitlement Display Name' = $EntitledUserOrGroupGlobalMachine.base.DisplayName
-                                                                        'Global Entitlement Long Display Name' = $EntitledUserOrGroupGlobalMachine.base.LongDisplayName
-                                                                        'Global Entitlement Email' = $EntitledUserOrGroupGlobalMachine.base.Email
-                                                                        'Global Entitlement Kiosk User' = $EntitledUserOrGroupGlobalMachine.base.KioskUser
-                                                                        'Global Entitlement Phone' = $EntitledUserOrGroupGlobalMachine.base.Phone
-                                                                        'Global Entitlement Description' = $EntitledUserOrGroupGlobalMachine.base.Description
-                                                                        'Global Entitlement In Folder' = $EntitledUserOrGroupGlobalMachine.base.InFolder
-                                                                        'Global Entitlement User Principal Name' = $EntitledUserOrGroupGlobalMachine.base.UserPrincipalName
-                                                                        'Global Entitlement User Home Site' = $EUGGMHomeSiteNameListTrim
-                                                                        'Global Entitlement Pod Assignment' = $EUGGMPodDetails.DisplayName
-                                                                    } # Close Out $HorizonEntitledUserOrGroupGlobalMachine = [PSCustomObject]
-                                                                    $HorizonEntitledUserOrGroupGlobalMachine | Table -Name "Global Entitlement $($EntitledUserOrGroupGlobalMachinegroup) Details for $($EntitledUserOrGroupGlobalMachine.base.Name)" -List -ColumnWidths 60,40
-                                                                } # Close out section -Style Heading6 "Global Entitlement Details for $($EntitledUserOrGroupGlobalMachine.base.Name)"
-                                                            } # Close out if($EntitledUserOrGroupGlobalMachine.globaldata.GlobalEntitlements.id -eq $GlobalEntitlement.id.id)
-                                                        } # Close out foreach($EntitledUserOrGroupGlobalMachine in $EntitledUserOrGroupGlobalMachines)
-                                                    } # Close out if ($InfoLevel.Inventory.GlobalEntitlements -ge 3)
+                                                                    # Home Site Info
+                                                                    $EUGGMHomeSiteName = ''
+                                                                    if($EntitledUserOrGroupGlobalMachine.GlobalData.UserHomeSites){
+                                                                        $EUGGMHomeSites = $hzServices.UserHomeSite.UserHomeSite_GetInfos($EntitledUserOrGroupGlobalMachine.GlobalData.UserHomeSites)
+                                                                        $EUGGMHomeSiteNameList = ''
+                                                                        foreach ($EUGGMHomeSite in $EUGGMHomeSites.base.Site) {
+                                                                            $EUGGMHomeSiteName = $hzServices.Site.Site_Get($EUGGMHomeSite)
+                                                                            $EUGGMHomeSiteDisplayName = $EUGGMHomeSiteName.Base.DisplayName
+                                                                            $EUGGMHomeSiteNameList += "$EUGGMHomeSiteDisplayName, "
+                                                                        }
+                                                                        $EUGGMHomeSiteNameListTrim = $EUGGMHomeSiteNameList.TrimEnd(', ')
+                                                                    }
+
+                                                                    # Pod Details
+                                                                    $EUGGMPodDetails = ''
+                                                                    if($EntitledUserOrGroupGlobalMachine.GlobalData.PodAssignments){
+                                                                        $EUGGMPodAssignment = $hzServices.PodAssignment.PodAssignment_GetInfos($EntitledUserOrGroupGlobalMachine.GlobalData.PodAssignments)
+                                                                        $EUGGMPodDetails = $hzServices.Pod.Pod_Get($EUGGMPodAssignment.data.pod)
+                                                                    }
+
+                                                                    #PageBreak
+                                                                    section -Style Heading7 "Global Entitlement $($EntitledUserOrGroupGlobalMachinegroup) Details for $($EntitledUserOrGroupGlobalMachine.base.Name)" {
+                                                                        $HorizonEntitledUserOrGroupGlobalMachine = [PSCustomObject]@{
+                                                                            'Name' = $EntitledUserOrGroupGlobalMachine.base.Name
+                                                                            'Group or User' = $EntitledUserOrGroupGlobalMachinegroup
+                                                                            'SID' = $EntitledUserOrGroupGlobalMachine.base.Sid
+                                                                            'Domain' = $EntitledUserOrGroupGlobalMachine.base.Domain
+                                                                            'Ad Distinguished Name' = $EntitledUserOrGroupGlobalMachine.base.AdDistinguishedName
+                                                                            'First Name' = $EntitledUserOrGroupGlobalMachine.base.FirstName
+                                                                            'Group Last Name' = $EntitledUserOrGroupGlobalMachine.base.LastName
+                                                                            'Login Name' = $EntitledUserOrGroupGlobalMachine.base.LoginName
+                                                                            'Display Name' = $EntitledUserOrGroupGlobalMachine.base.DisplayName
+                                                                            'Long Display Name' = $EntitledUserOrGroupGlobalMachine.base.LongDisplayName
+                                                                            'Email' = $EntitledUserOrGroupGlobalMachine.base.Email
+                                                                            'Kiosk User' = $EntitledUserOrGroupGlobalMachine.base.KioskUser
+                                                                            'Phone' = $EntitledUserOrGroupGlobalMachine.base.Phone
+                                                                            'Description' = $EntitledUserOrGroupGlobalMachine.base.Description
+                                                                            'In Folder' = $EntitledUserOrGroupGlobalMachine.base.InFolder
+                                                                            'User PriGlobal Entitlement ncipal Name' = $EntitledUserOrGroupGlobalMachine.base.UserPrincipalName
+                                                                            'User Home Site' = $EUGGMHomeSiteNameListTrim
+                                                                            'Pod Assignment' = $EUGGMPodDetails.DisplayName
+                                                                        } # Close Out $HorizonEntitledUserOrGroupGlobalMachine = [PSCustomObject]
+                                                                        $HorizonEntitledUserOrGroupGlobalMachine | Table -Name "Global Entitlement $($EntitledUserOrGroupGlobalMachinegroup) Details for $($EntitledUserOrGroupGlobalMachine.base.Name)" -List -ColumnWidths 60,40
+                                                                    } # Close out section -Style Heading6 "Global Entitlement Details for $($EntitledUserOrGroupGlobalMachine.base.Name)"
+                                                                } # Close out if($EntitledUserOrGroupGlobalMachine.globaldata.GlobalEntitlements.id -eq $GlobalEntitlement.id.id)
+                                                            } # Close out foreach($EntitledUserOrGroupGlobalMachine in $EntitledUserOrGroupGlobalMachines)
+                                                        } # Close out if ($InfoLevel.Inventory.GlobalEntitlements -ge 3)
+                                                    }
                                                 } # Close out foreach($GlobalEntitlement in $GlobalEntitlements)
                                             } # Close out if ($GlobalEntitlements)
 
@@ -1473,35 +1465,35 @@
                                                     section -Style Heading5 "Global Application Entitlement $($GlobalApplicationEntitlementGroup.Base.DisplayName)" {
                                                         $HorizonGlobalEntitlements = [PSCustomObject]@{
 
-                                                            'Global Entitlement Display Name' = $GlobalApplicationEntitlementGroup.Base.DisplayName
-                                                            'Global Entitlement Description' = $GlobalApplicationEntitlementGroup.Base.Description
-                                                            'Global Entitlement Base Scope' = $GlobalApplicationEntitlementGroup.Base.Scope
-                                                            'Global Entitlement From Home' = $GlobalApplicationEntitlementGroup.Base.FromHome
-                                                            'Global Entitlement Require Home Site' = $GlobalApplicationEntitlementGroup.Base.RequireHomeSite
-                                                            'Global Entitlement Multiple Session Auto Clean' = $GlobalApplicationEntitlementGroup.Base.MultipleSessionAutoClean
-                                                            'Global Entitlement Enabled' = $GlobalApplicationEntitlementGroup.Base.Enabled
-                                                            'Global Entitlement Supported Display Protocols' = $GESupportedDisplayProtocolsresult
-                                                            'Global Entitlement Default Display Protocol' = $GlobalApplicationEntitlementGroup.Base.DefaultDisplayProtocol
-                                                            'Global Entitlement Allow Users to Choose Protocol' = $GlobalApplicationEntitlementGroup.Base.AllowUsersToChooseProtocol
-                                                            'Global Entitlement Allow Users to Reset Machines' = $GlobalApplicationEntitlementGroup.Base.AllowUsersToResetMachines
-                                                            'Global Entitlement Enable HTML Access' = $GlobalApplicationEntitlementGroup.Base.EnableHTMLAccess
-                                                            'Global Entitlement Allow Multiple Sessions Per User' = $GlobalApplicationEntitlementGroup.Base.AllowMultipleSessionsPerUser
-                                                            'Global Entitlement Connection Server Restrictions' = $GlobalApplicationEntitlementGroup.Base.ConnectionServerRestrictions
-                                                            'Global Entitlement Enable Pre-Launch' = $GlobalApplicationEntitlementGroup.Base.EnablePreLaunch
-                                                            'Global Entitlement Category Folder Name' = $GlobalApplicationEntitlementGroup.Base.CategoryFolderName
-                                                            'Global Entitlement Client Restrictions' = $GlobalApplicationEntitlementGroup.Base.ClientRestrictions
-                                                            'Global Entitlement Shortcut Locations' = $($GlobalApplicationEntitlementGroup.Base.ShortcutLocations)
-                                                            'Global Entitlement Multi Session Mode' = $GlobalApplicationEntitlementGroup.Base.MultiSessionMode
-                                                            'Global Entitlement Local Application Count' = $GlobalApplicationEntitlementGroup.data.LocalApplicationCount
-                                                            'Global Entitlement Remote Application Count' = $GlobalApplicationEntitlementGroup.data.RemoteApplicationCount
-                                                            'Global Entitlement User Count' = $GlobalApplicationEntitlementGroup.data.UserCount
-                                                            'Global Entitlement User Group Count' = $GlobalApplicationEntitlementGroup.data.UserGroupCount
-                                                            'Global Entitlement User Group Site Override Count' = $GlobalApplicationEntitlementGroup.data.UserGroupSiteOverrideCount
-                                                            'Global Entitlement Member Pods' = $ApplicationPodIDList
-                                                            'Global Entitlement Local Site Pool' = $LocalSitePool
-                                                            'Global Entitlement Executable Path' = $GlobalApplicationEntitlementGroup.ExecutionData.ExecutablePath
-                                                            'Global Entitlement Publisher' = $GlobalApplicationEntitlementGroup.ExecutionData.Publisher
-                                                            'Global Entitlement Version' = $GlobalApplicationEntitlementGroup.ExecutionData.Version
+                                                            'Display Name' = $GlobalApplicationEntitlementGroup.Base.DisplayName
+                                                            'Description' = $GlobalApplicationEntitlementGroup.Base.Description
+                                                            'Base Scope' = $GlobalApplicationEntitlementGroup.Base.Scope
+                                                            'From Home' = $GlobalApplicationEntitlementGroup.Base.FromHome
+                                                            'Require Home Site' = $GlobalApplicationEntitlementGroup.Base.RequireHomeSite
+                                                            'Multiple Session Auto Clean' = $GlobalApplicationEntitlementGroup.Base.MultipleSessionAutoClean
+                                                            'Enabled' = $GlobalApplicationEntitlementGroup.Base.Enabled
+                                                            'Supported Display Protocols' = $GESupportedDisplayProtocolsresult
+                                                            'Default Display Protocol' = $GlobalApplicationEntitlementGroup.Base.DefaultDisplayProtocol
+                                                            'Allow Users to Choose Protocol' = $GlobalApplicationEntitlementGroup.Base.AllowUsersToChooseProtocol
+                                                            'Allow Users to Reset Machines' = $GlobalApplicationEntitlementGroup.Base.AllowUsersToResetMachines
+                                                            'Enable HTML Access' = $GlobalApplicationEntitlementGroup.Base.EnableHTMLAccess
+                                                            'Allow Multiple Sessions Per User' = $GlobalApplicationEntitlementGroup.Base.AllowMultipleSessionsPerUser
+                                                            'Connection Server Restrictions' = $GlobalApplicationEntitlementGroup.Base.ConnectionServerRestrictions
+                                                            'Enable Pre-Launch' = $GlobalApplicationEntitlementGroup.Base.EnablePreLaunch
+                                                            'Category Folder Name' = $GlobalApplicationEntitlementGroup.Base.CategoryFolderName
+                                                            'Client Restrictions' = $GlobalApplicationEntitlementGroup.Base.ClientRestrictions
+                                                            'Shortcut Locations' = $($GlobalApplicationEntitlementGroup.Base.ShortcutLocations)
+                                                            'Multi Session Mode' = $GlobalApplicationEntitlementGroup.Base.MultiSessionMode
+                                                            'Local Application Count' = $GlobalApplicationEntitlementGroup.data.LocalApplicationCount
+                                                            'Remote Application Count' = $GlobalApplicationEntitlementGroup.data.RemoteApplicationCount
+                                                            'User Count' = $GlobalApplicationEntitlementGroup.data.UserCount
+                                                            'User Group Count' = $GlobalApplicationEntitlementGroup.data.UserGroupCount
+                                                            'User Group Site Override Count' = $GlobalApplicationEntitlementGroup.data.UserGroupSiteOverrideCount
+                                                            'Member Pods' = $ApplicationPodIDList
+                                                            'Local Site Pool' = $LocalSitePool
+                                                            'Executable Path' = $GlobalApplicationEntitlementGroup.ExecutionData.ExecutablePath
+                                                            'Publisher' = $GlobalApplicationEntitlementGroup.ExecutionData.Publisher
+                                                            'Version' = $GlobalApplicationEntitlementGroup.ExecutionData.Version
                                                             #'Global Entitlement Icon Source' = $ApplicationEntitlementGroupApplicationIconSource
                                                             #'Global Entitlement Icon Application' = $ApplicationEntitlementGroupApplicationIconApplication
                                                         } # Close Out $HorizonGlobalEntitlements = [PSCustomObject]
@@ -1509,19 +1501,19 @@
                                                     } # Close out section -Style Heading2 '$Global Entitlement'
 
                                                     section -Style Heading6 "Global Application Entitlement $($GlobalApplicationEntitlementGroup.Base.DisplayName) Users and Groups List" {
+                                                        $GlobalAplicationEntitlementsUsersList = @()
                                                         foreach($EntitledUserOrGroupGlobalMachine in $EntitledUserOrGroupGlobalMachines) {
                                                             if($EntitledUserOrGroupGlobalMachine.globaldata.GlobalApplicationEntitlements.id -eq $GlobalApplicationEntitlementGroup.id.id) {
                                                                     $EntitledUserorGroupEmail = $EntitledUserOrGroupGlobalMachine.base.email
                                                                     if(!($EntitledUserorGroupEmail)) {$EntitledUserorGroupEmail = 'N/A'}
-                                                                    $GlobalAplicationEntitlementsUsersList = [PSCustomObject]@{
+                                                                    $GlobalAplicationEntitlementsUsersList += [PSCustomObject]@{
                                                                         'User or Group Name' = $EntitledUserOrGroupGlobalMachine.base.name
                                                                         'Domain' = $EntitledUserOrGroupGlobalMachine.base.domain
                                                                         'Email' = $EntitledUserorGroupEmail
                                                                     }
-                                                                    $GlobalAplicationEntitlementsUsersList | Table -Name "Global Application Entitlement $($GlobalApplicationEntitlementGroup.Base.DisplayName) Users and Groups List" -ColumnWidths 40,30,30
                                                             } # Close out if($EntitledUserOrGroupGlobalMachine.globaldata.GlobalEntitlements.id -eq $GlobalEntitlement.id.id)
                                                         } # Close out foreach($EntitledUserOrGroupGlobalMachine in $EntitledUserOrGroupGlobalMachines)
-
+                                                        $GlobalAplicationEntitlementsUsersList | Table -Name "Global Application Entitlement $($GlobalApplicationEntitlementGroup.Base.DisplayName) Users and Groups List" -ColumnWidths 40,30,30
                                                     } # Close out section -Style Heading6 "Global Entitlement $($GlobalEntitlement.Base.DisplayName) Users and Groups List"
 
 
@@ -1556,24 +1548,24 @@
 
                                                                 section -Style Heading7 "Global Entitlement $($EntitledUserOrGroupGlobalMachinegroup) Details for $($EntitledUserOrGroupGlobalMachine.base.Name)" {
                                                                     $HorizonEntitledUserOrGroupGlobalMachine = [PSCustomObject]@{
-                                                                        'Global Entitlement Name' = $EntitledUserOrGroupGlobalMachine.base.Name
+                                                                        'Name' = $EntitledUserOrGroupGlobalMachine.base.Name
                                                                         'Group or User' = $EntitledUserOrGroupGlobalMachinegroup
-                                                                        'Global Entitlement SID' = $EntitledUserOrGroupGlobalMachine.base.Sid
-                                                                        'Global Entitlement Domain' = $EntitledUserOrGroupGlobalMachine.base.Domain
-                                                                        'Global Entitlement Ad Distinguished Name' = $EntitledUserOrGroupGlobalMachine.base.AdDistinguishedName
-                                                                        'Global Entitlement First Name' = $EntitledUserOrGroupGlobalMachine.base.FirstName
-                                                                        'Global Entitlement Group Last Name' = $EntitledUserOrGroupGlobalMachine.base.LastName
-                                                                        'Global Entitlement Login Name' = $EntitledUserOrGroupGlobalMachine.base.LoginName
-                                                                        'Global Entitlement Display Name' = $EntitledUserOrGroupGlobalMachine.base.DisplayName
-                                                                        'Global Entitlement Long Display Name' = $EntitledUserOrGroupGlobalMachine.base.LongDisplayName
-                                                                        'Global Entitlement Email' = $EntitledUserOrGroupGlobalMachine.base.Email
-                                                                        'Global Entitlement Kiosk User' = $EntitledUserOrGroupGlobalMachine.base.KioskUser
-                                                                        'Global Entitlement Phone' = $EntitledUserOrGroupGlobalMachine.base.Phone
-                                                                        'Global Entitlement Description' = $EntitledUserOrGroupGlobalMachine.base.Description
-                                                                        'Global Entitlement In Folder' = $EntitledUserOrGroupGlobalMachine.base.InFolder
-                                                                        'Global Entitlement User Principal Name' = $EntitledUserOrGroupGlobalMachine.base.UserPrincipalName
-                                                                        'Global Entitlement User Home Site' = $EUGGMHomeSiteNameListTrim
-                                                                        'Global Entitlement Pod Assignment' = $EUGGMPodDetails.DisplayName
+                                                                        'SID' = $EntitledUserOrGroupGlobalMachine.base.Sid
+                                                                        'Domain' = $EntitledUserOrGroupGlobalMachine.base.Domain
+                                                                        'Ad Distinguished Name' = $EntitledUserOrGroupGlobalMachine.base.AdDistinguishedName
+                                                                        'First Name' = $EntitledUserOrGroupGlobalMachine.base.FirstName
+                                                                        'Group Last Name' = $EntitledUserOrGroupGlobalMachine.base.LastName
+                                                                        'Login Name' = $EntitledUserOrGroupGlobalMachine.base.LoginName
+                                                                        'Display Name' = $EntitledUserOrGroupGlobalMachine.base.DisplayName
+                                                                        'Long Display Name' = $EntitledUserOrGroupGlobalMachine.base.LongDisplayName
+                                                                        'Email' = $EntitledUserOrGroupGlobalMachine.base.Email
+                                                                        'Kiosk User' = $EntitledUserOrGroupGlobalMachine.base.KioskUser
+                                                                        'Phone' = $EntitledUserOrGroupGlobalMachine.base.Phone
+                                                                        'Description' = $EntitledUserOrGroupGlobalMachine.base.Description
+                                                                        'In Folder' = $EntitledUserOrGroupGlobalMachine.base.InFolder
+                                                                        'User Principal Name' = $EntitledUserOrGroupGlobalMachine.base.UserPrincipalName
+                                                                        'User Home Site' = $EUGGMHomeSiteNameListTrim
+                                                                        'Pod Assignment' = $EUGGMPodDetails.DisplayName
                                                                     } # Close Out $HorizonEntitledUserOrGroupGlobalMachine = [PSCustomObject]
                                                                     $HorizonEntitledUserOrGroupGlobalMachine | Table -Name "Global Entitlement $($EntitledUserOrGroupGlobalMachinegroup) Details for $($EntitledUserOrGroupGlobalMachine.base.Name)" -List -ColumnWidths 60,40
                                                                 } # Close out section -Style Heading6 "Global Entitlement Details for $($EntitledUserOrGroupGlobalMachine.base.Name)"
@@ -1599,7 +1591,7 @@
         if ($vCenterServers -or $vCenterHealth -or $Composers -or $Domains -or $SecurityServers -or $GatewayServers -or $ConnectionServers -or $InstantCloneDomainAdmins -or $ProductLicenseingInfo -or $GlobalSettings -or $RDSServers -or $Administrators -or $Roles -or $Permissions -or $AccessGroups -or $CloudPodFederation -or $CloudPodSites -or $EventDataBases -or $GlobalPolicies) {
             #PageBreak
             section -Style Heading1 'Settings' {
-                LineBreak
+
 
                 #---------------------------------------------------------------------------------------------#
                 #                                      Servers                                                #
@@ -1625,8 +1617,8 @@
                                             section -Style Heading5 "Virtual Center General Information" {
                                                 $HorizonVirtualCenterGeneral = foreach($vCenterServer in $vCenterServers) {
                                                     [PSCustomObject]@{
-                                                        'vCenter Server Name' = $vCenterServer.serverspec.ServerName
-                                                        'vCenter Server Provisioning Enabled' = $vCenterServer.Enabled
+                                                        'Name' = $vCenterServer.serverspec.ServerName
+                                                        'Provisioning Enabled' = $vCenterServer.Enabled
                                                     }
                                                 } # Close out $HorizonVirtualCenterGeneral = foreach($vCenterServer in $vCenterServers)
                                                 $HorizonVirtualCenterGeneral | Table -Name 'Virtual Center General Information' -ColumnWidths 60,40
@@ -1636,17 +1628,17 @@
                                                 foreach($vCenterServer in $vCenterServers) {
                                                     section -Style Heading5 "Virtual Center $($vCenterServer.serverspec.ServerName)" {
                                                         $HorizonVirtualCenter = [PSCustomObject]@{
-                                                            'vCenter Server Name' = $vCenterServer.serverspec.ServerName
-                                                            'vCenter Server Description' = $vCenterServer.Description
+                                                            'Name' = $vCenterServer.serverspec.ServerName
+                                                            'Description' = $vCenterServer.Description
                                                             #'vCenter Server Display Name' = $vCenterServer.DisplayName
-                                                            'vCenter Server Certificate Override' = $vCenterServer.CertificateOverride
-                                                            'vCenter Server Provisioning Enabled' = $vCenterServer.Enabled
-                                                            'vCenter Server Reclaim Disk Space' = $vCenterServer.SeSparseReclamationEnabled
-                                                            'vCenter Server Port' = $vCenterServer.serverspec.Port
-                                                            'vCenter Server User SSL' = $vCenterServer.serverspec.UseSSL
-                                                            'vCenter Server User Name' = $vCenterServer.serverspec.UserName
-                                                            'vCenter Server Type' = $vCenterServer.serverspec.ServerType
-                                                            'vCenter Server Port Num' = $vCenterServer.serverspec.Port
+                                                            'Certificate Override' = $vCenterServer.CertificateOverride
+                                                            'Provisioning Enabled' = $vCenterServer.Enabled
+                                                            'Reclaim Disk Space' = $vCenterServer.SeSparseReclamationEnabled
+                                                            'Port' = $vCenterServer.serverspec.Port
+                                                            'User SSL' = $vCenterServer.serverspec.UseSSL
+                                                            'User Name' = $vCenterServer.serverspec.UserName
+                                                            'Type' = $vCenterServer.serverspec.ServerType
+                                                            ' Port Num' = $vCenterServer.serverspec.Port
                                                             'Max Concurrent vCenter Provisioning Operations' = $vCenterServer.Limits.VcProvisioningLimit
                                                             'Max Concurrent Power Operations' = $vCenterServer.Limits.VcPowerOperationsLimit
                                                             'Max Concurrent View Composer Maintenance Operations' = $vCenterServer.Limits.ViewComposerProvisioningLimit
@@ -1672,10 +1664,10 @@
                                                         foreach($vCenterHeathInfo in $vCenterHealthData) {
                                                             section -Style Heading6 "vCenter $($vCenterServer.serverspec.ServerName) Version Information" {
                                                                 $HorizonvCenterHeathInfo = [PSCustomObject]@{
-                                                                    'vCenter Name' = $vCenterHeathInfo.Name
-                                                                    'vCenter Version' = $vCenterHeathInfo.Version
-                                                                    'vCenter Build Number' = $vCenterHeathInfo.Build
-                                                                    'vCenter API Version' = $vCenterHeathInfo.ApiVersion
+                                                                    'Name' = $vCenterHeathInfo.Name
+                                                                    'Version' = $vCenterHeathInfo.Version
+                                                                    'Build Number' = $vCenterHeathInfo.Build
+                                                                    'API Version' = $vCenterHeathInfo.ApiVersion
                                                                 } # Close Out $HorizonvCenterHeathInfo = [PSCustomObject]
                                                                 $HorizonvCenterHeathInfo | Table -Name "vCenter $($vCenterServer.serverspec.ServerName) Version Information" -List
                                                             } # Close out section -Style Heading6 "vCenter $($ESXHost.Name) Version Information"
@@ -1700,8 +1692,8 @@
                                             section -Style Heading5 "ESXi Host General Information" {
                                                 $HorizonESXHostGeneral = foreach($ESXHost in $ESXHosts) {
                                                     [PSCustomObject]@{
-                                                    'ESXi Host Name' = $ESXHost.Name
-                                                    'ESXi Host Status' = $ESXHost.Status
+                                                    'Host Name' = $ESXHost.Name
+                                                    'Host Status' = $ESXHost.Status
                                                     } # Close Out [PSCustomObject]
                                                 } # Close Out $HorizonESXHostGeneral = foreach($ESXHost in $ESXHosts)
                                                 $HorizonESXHostGeneral | Table -Name 'ESXi Host General Information' -ColumnWidths 60,40
@@ -1717,19 +1709,14 @@
                                                         $vGPUTypes="n/a"
                                                     } # Close Else
 
-                                                    if(($ii % 5) -eq 0){
-                                                        #PageBreak
-                                                    }
-                                                    $ii++
-
                                                     section -Style Heading5 "ESXi Host $($ESXHost.Name) Information" {
                                                         $HorizonESXHost = [PSCustomObject]@{
-                                                            'ESXi Host Name' = $ESXHost.Name
-                                                            'ESXi Host Version' = $ESXHost.Version
-                                                            'ESXi Host API Version' = $ESXHost.APIVersion
-                                                            'ESXi Host Status' = $ESXHost.Status
-                                                            'ESXi Host Cluster Name' = $ESXHost.ClusterName
-                                                            'ESXi Host vGPU Types' = $vGPUTypes
+                                                            'Host Name' = $ESXHost.Name
+                                                            'Host Version' = $ESXHost.Version
+                                                            'Host API Version' = $ESXHost.APIVersion
+                                                            'Host Status' = $ESXHost.Status
+                                                            'Host Cluster Name' = $ESXHost.ClusterName
+                                                            'Host vGPU Types' = $vGPUTypes
                                                         } # Close Out $HorizonESXHost = [PSCustomObject]
                                                     $HorizonESXHost | Table -Name "ESXi Host $($ESXHost.Name) Information" -List -ColumnWidths 60,40
                                                     } # Close out section -Style Heading5 'ESXi Host Info'
@@ -1751,8 +1738,8 @@
                                             section -Style Heading5 "Datastore General Information" {
                                                 $HorizonDataStoreGeneral = foreach($DataStore in $datastores) {
                                                     [PSCustomObject]@{
-                                                        'Horizon Datastore Name' = $DataStore.name
-                                                        'Horizon Datastore Accessible' = $DataStore.Accessible
+                                                        'Name' = $DataStore.name
+                                                        'Accessible' = $DataStore.Accessible
                                                     } # Close Out $HorizonDataStoreGeneral = [PSCustomObject]
                                                 } # Close out $HorizonDataStoreGeneral = foreach($DataStore in $datastores)
                                                 $HorizonDataStoreGeneral | Table -Name 'Datastore General Information' -ColumnWidths 60,40
@@ -1761,18 +1748,14 @@
                                             if ($InfoLevel.Settings.Servers.vCenterServers.DataStores -ge 2) {
                                                 $ii = 0
                                                 foreach($DataStore in $datastores) {
-                                                    if(($ii % 5) -eq 0){
-                                                        #PageBreak
-                                                    }
-                                                    $ii++
-                                                    section -Style Heading5 "Horizon Datastore $($DataStore.name) Information" {
+                                                    section -Style Heading5 "$($DataStore.name) Information" {
                                                         $HorizonDataStore = [PSCustomObject]@{
-                                                            'Horizon Datastore Name' = $DataStore.name
-                                                            'Horizon Datastore Accessible' = $DataStore.Accessible
-                                                            'Horizon Datastore Path' = $DataStore.Path
-                                                            'Horizon Datastore Type' = $DataStore.DataStoreType
-                                                            'Horizon Datastore Capacity in MB' = $DataStore.CapacityMB
-                                                            'Horizon Datastore Free Space in MB' = $DataStore.FreeSpaceMB
+                                                            'Name' = $DataStore.name
+                                                            'Accessibility' = $DataStore.Accessible
+                                                            'Path' = $DataStore.Path
+                                                            'Type' = $DataStore.DataStoreType
+                                                            'Capacity in MB' = $DataStore.CapacityMB
+                                                            'Free Space in MB' = $DataStore.FreeSpaceMB
                                                         } # Close Out $HorizonDataStore = [PSCustomObject]
                                                     $HorizonDataStore | Table -Name "Horizon Datastore $($DataStore.name) Information" -List -ColumnWidths 50,50
                                                     } # Close out section -Style Heading5 'Horizon DataStore Info'
@@ -1787,19 +1770,19 @@
                                 #---------------------------------------------------------------------------------------------#
 
                                 if ($Composers) {
-                                    if ($InfoLevel.Settings.Servers.vCenterServers.Composers -ge 1) {
+                                    if ($InfoLevel.Settings.Servers.vCenterServers.Composers -ge 1 -and $Composer.ViewComposerType -eq 'ENABLED') {
                                         #PageBreak
                                         section -Style Heading4 'Composer Information' {
                                             foreach($Composer in $Composers) {
                                                 $HorizonComposer = [PSCustomObject]@{
-                                                    'Composer Enabled' = $Composer.ViewComposerType
-                                                    'Composer Server Address' = $Composer.ServerSpec.ServerName
-                                                    'Composer Admin Username' = $Composer.ServerSpec.UserName
-                                                    'Composer Port' = $Composer.ServerSpec.Port
-                                                    'Composer SSL Enabled' = $Composer.ServerSpec.UseSSL
+                                                    'Enabled' = $Composer.ViewComposerType
+                                                    'Server Address' = $Composer.ServerSpec.ServerName
+                                                    'Admin Username' = $Composer.ServerSpec.UserName
+                                                    'Port' = $Composer.ServerSpec.Port
+                                                    'SSL Enabled' = $Composer.ServerSpec.UseSSL
                                                 } # Close Out $HorizonComposer = [PSCustomObject]
                                             } # Close out foreach($Composer in $Composers)
-                                            $HorizonComposer | Table -Name 'Composer Information' -ColumnWidths 60,50
+                                            $HorizonComposer | Table -Name 'Composer Information' -List -ColumnWidths 50,50
                                         } # Close out section -Style Heading4 'Composer Information'
                                     } # Close out if ($InfoLevel.Settings.Servers.vCenterServers.Composers -ge 1) {
                                 } # Close out if ($Composers)
@@ -1837,7 +1820,6 @@
                                                         $DomainConnectionServers = $domain.ConnectionServerState
                                                         foreach($DomainConnectionServer in $DomainConnectionServers) {
                                                             $HorizonDomainCSStatus = [PSCustomObject]@{
-                                                                '=========================================' = '============================='
                                                                 "Horizon Domain Connection Server $($DomainConnectionServer.Connectionservername) Status" = ''
                                                                 'Connection Server Name' = $DomainConnectionServer.Connectionservername
                                                                 'Connection Server Status' = $DomainConnectionServer.Status
@@ -1867,9 +1849,9 @@
                                     section -Style Heading4 'Security Server General Information' {
                                         $SecurityServerGeneralInfo = foreach($SecurityServer in $SecurityServers) {
                                             [PSCustomObject]@{
-                                                'Security Server Name' = $SecurityServer.general.name
-                                                'Security Server Version' = $SecurityServer.general.version
-                                                'Security Server Connection Server' = $SecurityServer.general.ConnectionServerName
+                                                'Name' = $SecurityServer.general.name
+                                                'Version' = $SecurityServer.general.version
+                                                'Connection Server' = $SecurityServer.general.ConnectionServerName
                                             } # Close Out $HorizonRole = [PSCustomObject]
                                         }
                                         $SecurityServerGeneralInfo | Table -Name 'Security Server General Information' -ColumnWidths 40,30,30
@@ -1879,15 +1861,15 @@
                                                 foreach($SecurityServer in $SecurityServers) {
                                                     section -Style Heading6 "Security Server Details for $($SecurityServer.base.Name)" {
                                                         $SecurityServer = [PSCustomObject]@{
-                                                            'Security Server Name' = $SecurityServer.general.name
-                                                            'Security Server Address' = $SecurityServer.general.ServerAddress
-                                                            'Security Server Connection Server' = $SecurityServer.general.ConnectionServerName
-                                                            'Security Server Version' = $SecurityServer.general.version
-                                                            'Security Server PCoIP Gateway Installed' = $SecurityServer.general.PcoipSecureGatewayInstalled
-                                                            'Security Server External URL' = $SecurityServer.general.ExternalURL
-                                                            'Security Server External PCoIP URL' = $SecurityServer.general.ExternalPCoIPURL
-                                                            'Security Server External PCoIP IP' = $SecurityServer.general.AuxillaryExternalPCoIPIPv4Address
-                                                            'Security Server External Blast URL' = $SecurityServer.general.ExternalAppblastURL
+                                                            'Name' = $SecurityServer.general.name
+                                                            'Address' = $SecurityServer.general.ServerAddress
+                                                            'Connection Server' = $SecurityServer.general.ConnectionServerName
+                                                            'Version' = $SecurityServer.general.version
+                                                            'PCoIP Gateway Installed' = $SecurityServer.general.PcoipSecureGatewayInstalled
+                                                            'External URL' = $SecurityServer.general.ExternalURL
+                                                            'External PCoIP URL' = $SecurityServer.general.ExternalPCoIPURL
+                                                            'External PCoIP IP' = $SecurityServer.general.AuxillaryExternalPCoIPIPv4Address
+                                                            'External Blast URL' = $SecurityServer.general.ExternalAppblastURL
                                                             'Message Security Mode' = $SecurityServer.messagesecurity.MessageSecurityMode
                                                             'Message Security Enhanced Mode Supported' = $SecurityServer.messagesecurity.MessageSecurityEnhancedModeSupported
                                                         } # Close Out $SecurityServer = [PSCustomObject]
@@ -1917,8 +1899,8 @@
                                                     'AP' {$GatewayType = 'UAG' }
                                                 }
                                             [PSCustomObject]@{
-                                                'Gateway Server Name' = $GatewayServer.name
-                                                'Gateway Type' = $GatewayType
+                                                'Server Name' = $GatewayServer.name
+                                                'Type' = $GatewayType
                                             } # Close Out $HorizonGatewayServers = [PSCustomObject]
                                         } # Close out $HorizonGatewayServersGeneral = foreach($GatewayServer in $GatewayServers.generaldata)
                                         $HorizonGatewayServersGeneral | Table -Name 'Gateway Servers General Information' -ColumnWidths 60,40
@@ -1931,18 +1913,13 @@
                                                 'AP' {$GatewayType = 'UAG' }
                                             }
 
-                                            if(($ii % 5) -eq 0){
-                                                #PageBreak
-                                            }
-                                            $ii++
-
                                             section -Style Heading5 "Gateway Server $($GatewayServer.name)" {
                                                 $HorizonGatewayServers = [PSCustomObject]@{
-                                                    'Gateway Server Name' = $GatewayServer.name
-                                                    'Gateway Server IP' = $GatewayServer.Address
-                                                    'Gateway Zone Internal' = $GatewayServer.GatewayZoneInternal
-                                                    'Gateway Version' = $GatewayServer.Version
-                                                    'Gateway Type' = $GatewayType
+                                                    'Server Name' = $GatewayServer.name
+                                                    'Server IP' = $GatewayServer.Address
+                                                    'Zone Internal' = $GatewayServer.GatewayZoneInternal
+                                                    'Version' = $GatewayServer.Version
+                                                    'Type' = $GatewayType
                                                 } # Close Out $HorizonGatewayServers = [PSCustomObject]
                                             $HorizonGatewayServers | Table -Name "Gateway Server $($GatewayServer.name)" -List -ColumnWidths 60,40
                                             } # Close out section -Style Heading5 'Gateway Server'
@@ -2073,8 +2050,8 @@
                             section -Style Heading3 'Instant Clone Domain Admins' {
                                 $HorizonInstantCloneDomainAdmin = foreach($InstantCloneDomainAdmin in $InstantCloneDomainAdmins) {
                                     [PSCustomObject]@{
-                                        'Instant Clone Domain Admin User Name' = $InstantCloneDomainAdmin.Base.UserName
-                                        'Instant Clone Domain Name' = $InstantCloneDomainAdmin.NamesData.DnsName
+                                        'Domain Admin User Name' = $InstantCloneDomainAdmin.Base.UserName
+                                        'Domain Name' = $InstantCloneDomainAdmin.NamesData.DnsName
                                     } # Close Out $HorizonInstantCloneDomainAdmin = [PSCustomObject]
                                 } # Close out foreach($InstantCloneDomainAdmin in $InstantCloneDomainAdmins)
                                 $HorizonInstantCloneDomainAdmin | Table -Name 'Instant Clone Domain Admin Information' -ColumnWidths 60,40
@@ -2161,9 +2138,9 @@
 
                                     $RDSServerGeneralInfo = foreach($RDSServer in $RDSServers) {
                                         [PSCustomObject]@{
-                                            'RDS Host Name' = $RDSServer.base.name
-                                            'RDS Host Farm Name' = $RDSServer.SummaryData.FarmName
-                                            'RDS Host State' = $RDSServer.runtimedata.Status
+                                            'Name' = $RDSServer.base.name
+                                            'Farm Name' = $RDSServer.SummaryData.FarmName
+                                            'State' = $RDSServer.runtimedata.Status
                                         } # Close Out $HorizonRole = [PSCustomObject]
                                     }
                                     $RDSServerGeneralInfo | Table -Name 'RDS Hosts General Information' -ColumnWidths 40,30,30
@@ -2181,11 +2158,6 @@
                                                         break
                                                     } # if($AccessGroup.Id.id -eq $RDSServers.base.accessgroup.id)
                                                 } # Close out foreach($AccessGroup in $AccessGroups)
-
-                                                if(($ii % 2) -eq 1){
-                                                    #PageBreak
-                                                }
-                                                $ii++
 
                                                 section -Style Heading6 "RDS Host Details for $($RDSServer.base.Name)" {
                                                     $RDSServer = [PSCustomObject]@{
@@ -2308,11 +2280,6 @@
                                                         'True' {$Administratorbasegroup = 'Group' }
                                                         'False' {$Administratorbasegroup = 'User' }
                                                     }
-
-                                                    if(($ii % 2) -eq 1){
-                                                        #PageBreak
-                                                    }
-                                                    $ii++
 
                                                     section -Style Heading6 "Administrator Details for $($Administrator.base.Name)" {
                                                         $HorizonAdministrators = [PSCustomObject]@{
@@ -2525,7 +2492,6 @@
 
                                         if ($InfoLevel.Settings.Administrators.AccessGroup -ge 2) {
                                             section -Style Heading5 'Access Group Details' {
-                                                $ii = 0
                                                 foreach($AccessGroup in $AccessGroups) {
                                                     # Find Administrator ID Name
                                                     $AdministratorIDName = ''
@@ -2549,13 +2515,7 @@
                                                                 } # Close out Switch($administratorIDName)
                                                             } # if($AccessGroupID -eq $Permission.id.id)
                                                         } # Close out foreach($Permission in $Permissions)
-                                                        $AdministratorIDName
                                                     } # Close out foreach($AccessGroupID in $AccessGroup.data.Permissions.id)
-
-                                                    if(($ii % 3) -eq 0){
-                                                        PageBreak
-                                                    }
-                                                    $ii++
 
                                                     section -Style Heading6 "Access Group Details for $($AccessGroup.base.Name)" {
                                                         $HorizonRole = [PSCustomObject]@{
@@ -2624,11 +2584,6 @@
                                             $CloudPodListActiveGlobalApplicationEntitlementList += $CloudPodListActiveGlobalApplicationEntitlementInfo.Base.DisplayName -join "`r`n" | Out-String
                                             }
 
-                                            if(($ii % 2) -eq 1){
-                                                #PageBreak
-                                            }
-                                            $ii++
-
                                             $HorizonCloudPodFederationP1 = [PSCustomObject]@{
                                                 'Pod Name' = $CloudPodList.DisplayName
                                                 'Pod Local' = $CloudPodList.Localpod
@@ -2680,11 +2635,6 @@
                                                     break
                                                 } # if($AccessGroup.Id.id -eq $RDSServers.base.accessgroup.id)
                                             } # Close out foreach($AccessGroup in $AccessGroups)
-
-                                            if(($ii % 5) -eq 0){
-                                                #PageBreak
-                                            }
-                                            $ii++
 
                                             section -Style Heading5 "Cloud Pod Site Details for $($CloudPodSite.General.name)" {
                                                 $CloudPodSite = [PSCustomObject]@{
