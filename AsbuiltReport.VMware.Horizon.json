@@ -13,11 +13,9 @@
     "InfoLevel": {
         "_comment_": "0 = Disabled, 1 = Summary, 2 = Informative, 3 = Detailed",
         "UsersAndGroups": {
-            "UsersAndGroups": {
-                "Entitlements": 1,
-                "HomeSiteAssignments": 1,
-                "UnauthenticatedAccess": 1
-            }
+            "Entitlements": 1,
+            "HomeSiteAssignments": 1,
+            "UnauthenticatedAccess": 1
         },
         "Inventory": {
             "Desktop": 1,
