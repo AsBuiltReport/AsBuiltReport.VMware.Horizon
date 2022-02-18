@@ -1,8 +1,12 @@
 {
 	"Report": {
         "Name": "VMware Horizon As Built Report",
-        "Version": "0.1.1",
-        "Status": "Released"
+        "Version": "1.0",
+        "Status": "Released",
+        "ShowCoverPageImage": true,
+        "ShowTableOfContents": true,
+        "ShowHeaderFooter": true,
+        "ShowTableCaptions": true
     },
     "Options": {
     },
