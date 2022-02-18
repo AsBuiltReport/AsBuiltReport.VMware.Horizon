@@ -5,10 +5,12 @@
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        0.1.1
+        Version:        0.2.0
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
-        Github:         https://github.com/AsBuiltReport
+        Editor:         Jonathan Colon, @jcolonfzenpr
+        Twitter:        @asbuiltreport
+        Github:         AsBuiltReport
         Credits:        Iain Brighton (@iainbrighton) - PScribo module
 
 
@@ -700,39 +702,39 @@
 
 
                                                 $HorizonPoolInfoP1 = [PSCustomObject]@{
-                                                    'Pool Name' = $Pool.Base.name
-                                                    'Pool Display Name' = $Pool.base.displayName
-                                                    'Pool Description' = $Pool.base.description
-                                                    'Pool Access Group' = $AccessGroupName
-                                                    'Pool Enabled' = $Pool.DesktopSettings.Enabled
-                                                    'Pool Deleting' = $Pool.DesktopSettings.Deleting
+                                                    'Name' = $Pool.Base.name
+                                                    'Display Name' = $Pool.base.displayName
+                                                    'Description' = $Pool.base.description
+                                                    'Access Group' = $AccessGroupName
+                                                    'Enabled' = $Pool.DesktopSettings.Enabled
+                                                    'Deleting' = $Pool.DesktopSettings.Deleting
                                                     'Connection Server Restrictions' = $Pool.DesktopSettings.ConnectionServerRestrictions
-                                                    'Pool Type' = $Pool.Type
-                                                    'Pool Source' = $pool.Source
+                                                    'Type' = $Pool.Type
+                                                    'Source' = $pool.Source
                                                     'Virtual Center' = $vCenterServerAutoIDName
                                                     'Provisioning Type' = $Pool.automateddesktopdata.ProvisioningType
-                                                    'Pool Naming Method' = $Pool.automateddesktopdata.VmNamingSettings.NamingMethod
-                                                    'Pool Naming Pattern' = $pool.automateddesktopdata.vmnamingsettings.patternnamingsettings.namingpattern
-                                                    'Pool Max Number of Machines' = $pool.automateddesktopdata.vmnamingsettings.patternnamingsettings.MaxNumberOfMachines
-                                                    'Pool Number of Spare Machines' = $pool.automateddesktopdata.vmnamingsettings.patternnamingsettings.NumberOfSpareMachines
-                                                    'Pool Provisioning Time' = $pool.automateddesktopdata.vmnamingsettings.patternnamingsettings.ProvisioningTime
-                                                    'Pool Min number of Machines' = $pool.automateddesktopdata.vmnamingsettings.patternnamingsettings.MinNumberOfMachines
-                                                    'Pool Enabled for Provisioning' = $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.EnableProvisioning
+                                                    'Naming Method' = $Pool.automateddesktopdata.VmNamingSettings.NamingMethod
+                                                    'Naming Pattern' = $pool.automateddesktopdata.vmnamingsettings.patternnamingsettings.namingpattern
+                                                    'Max Number of Machines' = $pool.automateddesktopdata.vmnamingsettings.patternnamingsettings.MaxNumberOfMachines
+                                                    'Number of Spare Machines' = $pool.automateddesktopdata.vmnamingsettings.patternnamingsettings.NumberOfSpareMachines
+                                                    'Provisioning Time' = $pool.automateddesktopdata.vmnamingsettings.patternnamingsettings.ProvisioningTime
+                                                    'Min number of Machines' = $pool.automateddesktopdata.vmnamingsettings.patternnamingsettings.MinNumberOfMachines
+                                                    'Enabled for Provisioning' = $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.EnableProvisioning
                                                     'Stop Provisioning on Error' = $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.StopProvisioningOnError
                                                     'Min Ready VMs on vComposer Maintenance' = $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.MinReadyVMsOnVComposerMaintenance
-                                                    'Pool Template' = $PoolTemplateName
-                                                    'Pool Parent VM' = $PoolBaseImage
-                                                    'Pool Parent VM Path' = $PoolBaseImagePath
-                                                    'Pool Snapshot' = $BaseImageSnapshotListLast.name
-                                                    'Pool Snapshot Path' = $BaseImageSnapshotListLast.path
-                                                    'Pool Datacenter' = $PoolDataCenterName
-                                                    'Pool Datacenter Path' = $PoolDatacenterPath
+                                                    'Template' = $PoolTemplateName
+                                                    'Parent VM' = $PoolBaseImage
+                                                    'Parent VM Path' = $PoolBaseImagePath
+                                                    'Snapshot' = $BaseImageSnapshotListLast.name
+                                                    'Snapshot Path' = $BaseImageSnapshotListLast.path
+                                                    'Datacenter' = $PoolDataCenterName
+                                                    'Datacenter Path' = $PoolDatacenterPath
                                                     #'Pool VM Folder' = $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.VmFolder.id
-                                                    'Pool VM Folder' = $VMFolder
-                                                    'Pool VM Folder Path' = $Pool.automateddesktopdata.VirtualCenterNamesData.VmFolderPath
+                                                    'VM Folder' = $VMFolder
+                                                    'VM Folder Path' = $Pool.automateddesktopdata.VirtualCenterNamesData.VmFolderPath
                                                     #'Pool Host or Cluster' = $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.HostOrCluster.id
-                                                    'Pool Host or Cluster' = $VMhostandCluter
-                                                    'Pool Host or Cluster Path' = $Pool.automateddesktopdata.VirtualCenterNamesData.HostOrClusterPath
+                                                    'Host or Cluster' = $VMhostandCluter
+                                                    'Host or Cluster Path' = $Pool.automateddesktopdata.VirtualCenterNamesData.HostOrClusterPath
                                                     #'Pool Resource Pool' = $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.ResourcePool.id
 
                                                 } # Closing out $HorizonPoolInfo = [PSCustomObject]
@@ -740,73 +742,73 @@
                                                 #PageBreak
 
                                                 $HorizonPoolInfoP2 = [PSCustomObject]@{
-                                                    'Pool Resource Pool' = $VMResourcePool
-                                                    'Pool Resource Pool Path' = $Pool.automateddesktopdata.VirtualCenterNamesData.ResourcePoolPath
+                                                    'Resource Pool' = $VMResourcePool
+                                                    'Resource Pool Path' = $Pool.automateddesktopdata.VirtualCenterNamesData.ResourcePoolPath
                                                     #'Pool Datastores' = $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterStorageSettings.datastores.datastore.id
-                                                    'Pool Datastores' = $DatastoreFinal
-                                                    'Pool Datastores Paths' = $DatastorePathsresult
-                                                    'Pool Datastores Storage Over-Commit' = $StorageOvercommitsresult
-                                                    'Pool Persistent Disk Datastore' = $VMPersistentDiskDatastore
-                                                    'Pool Persistent Disk Datastore Paths' = $Pool.automateddesktopdata.VirtualCenterNamesData.PersistentDiskDatastorePaths
-                                                    'Pool Replica Disk Datastore Path' = $Pool.automateddesktopdata.VirtualCenterNamesData.ReplicaDiskDatastorePath
-                                                    'Pool Network Interface Card Name' = "$($Pool.automateddesktopdata.VirtualCenterNamesData.NicNames)"
-                                                    'Pool Network Interface Card MAC Address' = $NetworkInterfaceCardList.data.MacAddress
-                                                    'Pool Network Interface Card Enabled' = $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterNetworkingSettings.nics.NetworkLabelAssignmentSpecs.Enabled
-                                                    'Pool Network Interface Card Network Label' = "$($Pool.automateddesktopdata.VirtualCenterNamesData.NetworkLabelNames)"
-                                                    'Pool Network Label Name' = "$($Pool.automateddesktopdata.VirtualCenterNamesData.NetworkLabelNames)"
-                                                    'Pool Network Interface Card Max Label Type' = $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterNetworkingSettings.nics.NetworkLabelAssignmentSpecs.MaxLabelType
-                                                    'Pool Network Interface Card Max Label' = $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterNetworkingSettings.nics.NetworkLabelAssignmentSpecs.MaxLabel
-                                                    'Pool Customization Spec Name' = $Pool.automateddesktopdata.VirtualCenterNamesData.CustomizationSpecName
-                                                    'Pool Power Policy' = $Pool.DesktopSettings.LogoffSettings.PowerPolicy
-                                                    'Pool Automatic Logoff Policy' = $Pool.DesktopSettings.LogoffSettings.AutomaticLogoffPolicy
-                                                    'Pool Automatic Logoff Minutes' = $Pool.DesktopSettings.LogoffSettings.AutomaticLogoffMinutes
-                                                    'Pool Allow Users to Reset Machines' = $Pool.DesktopSettings.LogoffSettings.AllowUsersToResetMachines
-                                                    'Pool Allow Multiple Sessions Per User' = $Pool.DesktopSettings.LogoffSettings.AllowMultipleSessionsPerUser
-                                                    'Pool Delete or Refresh Machine After Logoff' = $Pool.DesktopSettings.LogoffSettings.DeleteOrRefreshMachineAfterLogoff
-                                                    'Pool Refresh OS Disk After Logoff' = $Pool.DesktopSettings.LogoffSettings.RefreshOsDiskAfterLogoff
-                                                    'Pool Refresh Period Days for Replica OS Disk' = $Pool.DesktopSettings.LogoffSettings.RefreshPeriodDaysForReplicaOsDisk
-                                                    'Pool Refresh Threshold Percentage For Replica OS Disk' = $Pool.DesktopSettings.LogoffSettings.RefreshThresholdPercentageForReplicaOsDisk
-                                                    'Pool Supported Display Protocols' = $SupportedDisplayProtocolsresult
-                                                    'Pool Default Display Protocol' = $Pool.DesktopSettings.DisplayProtocolSettings.DefaultDisplayProtocol
-                                                    'Pool Allow Users to Choose Protocol' = $Pool.DesktopSettings.DisplayProtocolSettings.AllowUsersToChooseProtocol
-                                                    'Pool Enable HTML Access' = $Pool.DesktopSettings.DisplayProtocolSettings.EnableHTMLAccess
-                                                    'Pool Renderer 3D' = $Pool.DesktopSettings.DisplayProtocolSettings.PcoipDisplaySettings.Renderer3D
-                                                    'Pool Enable GRID vGPUs' = $Pool.DesktopSettings.DisplayProtocolSettings.PcoipDisplaySettings.EnableGRIDvGPUs
-                                                    'Pool vGPU Grid Profile' = $Pool.DesktopSettings.DisplayProtocolSettings.PcoipDisplaySettings.VGPUGridProfile
-                                                    'Pool vRam Size MB' = $Pool.DesktopSettings.DisplayProtocolSettings.PcoipDisplaySettings.VRamSizeMB
-                                                    'Pool Max Number of Monitors' = $Pool.DesktopSettings.DisplayProtocolSettings.PcoipDisplaySettings.MaxNumberOfMonitors
-                                                    'Pool Max Resolution of Any One Monitor' = $Pool.DesktopSettings.DisplayProtocolSettings.PcoipDisplaySettings.MaxResolutionOfAnyOneMonitor
+                                                    'Datastores' = $DatastoreFinal
+                                                    'Datastores Paths' = $DatastorePathsresult
+                                                    'Datastores Storage Over-Commit' = $StorageOvercommitsresult
+                                                    'Persistent Disk Datastore' = $VMPersistentDiskDatastore
+                                                    'Persistent Disk Datastore Paths' = $Pool.automateddesktopdata.VirtualCenterNamesData.PersistentDiskDatastorePaths
+                                                    'Replica Disk Datastore Path' = $Pool.automateddesktopdata.VirtualCenterNamesData.ReplicaDiskDatastorePath
+                                                    'Network Interface Card Name' = "$($Pool.automateddesktopdata.VirtualCenterNamesData.NicNames)"
+                                                    'Network Interface Card MAC Address' = $NetworkInterfaceCardList.data.MacAddress
+                                                    'Network Interface Card Enabled' = $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterNetworkingSettings.nics.NetworkLabelAssignmentSpecs.Enabled
+                                                    'Network Interface Card Network Label' = "$($Pool.automateddesktopdata.VirtualCenterNamesData.NetworkLabelNames)"
+                                                    'Network Label Name' = "$($Pool.automateddesktopdata.VirtualCenterNamesData.NetworkLabelNames)"
+                                                    'Network Interface Card Max Label Type' = $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterNetworkingSettings.nics.NetworkLabelAssignmentSpecs.MaxLabelType
+                                                    'Network Interface Card Max Label' = $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterNetworkingSettings.nics.NetworkLabelAssignmentSpecs.MaxLabel
+                                                    'Customization Spec Name' = $Pool.automateddesktopdata.VirtualCenterNamesData.CustomizationSpecName
+                                                    'Power Policy' = $Pool.DesktopSettings.LogoffSettings.PowerPolicy
+                                                    'Automatic Logoff Policy' = $Pool.DesktopSettings.LogoffSettings.AutomaticLogoffPolicy
+                                                    'Automatic Logoff Minutes' = $Pool.DesktopSettings.LogoffSettings.AutomaticLogoffMinutes
+                                                    'Allow Users to Reset Machines' = $Pool.DesktopSettings.LogoffSettings.AllowUsersToResetMachines
+                                                    'Allow Multiple Sessions Per User' = $Pool.DesktopSettings.LogoffSettings.AllowMultipleSessionsPerUser
+                                                    'Delete or Refresh Machine After Logoff' = $Pool.DesktopSettings.LogoffSettings.DeleteOrRefreshMachineAfterLogoff
+                                                    'Refresh OS Disk After Logoff' = $Pool.DesktopSettings.LogoffSettings.RefreshOsDiskAfterLogoff
+                                                    'Refresh Period Days for Replica OS Disk' = $Pool.DesktopSettings.LogoffSettings.RefreshPeriodDaysForReplicaOsDisk
+                                                    'Refresh Threshold Percentage For Replica OS Disk' = $Pool.DesktopSettings.LogoffSettings.RefreshThresholdPercentageForReplicaOsDisk
+                                                    'Supported Display Protocols' = $SupportedDisplayProtocolsresult
+                                                    'Default Display Protocol' = $Pool.DesktopSettings.DisplayProtocolSettings.DefaultDisplayProtocol
+                                                    'Allow Users to Choose Protocol' = $Pool.DesktopSettings.DisplayProtocolSettings.AllowUsersToChooseProtocol
+                                                    'Enable HTML Access' = $Pool.DesktopSettings.DisplayProtocolSettings.EnableHTMLAccess
+                                                    'Renderer 3D' = $Pool.DesktopSettings.DisplayProtocolSettings.PcoipDisplaySettings.Renderer3D
+                                                    'Enable GRID vGPUs' = $Pool.DesktopSettings.DisplayProtocolSettings.PcoipDisplaySettings.EnableGRIDvGPUs
+                                                    'vGPU Grid Profile' = $Pool.DesktopSettings.DisplayProtocolSettings.PcoipDisplaySettings.VGPUGridProfile
+                                                    'vRam Size MB' = $Pool.DesktopSettings.DisplayProtocolSettings.PcoipDisplaySettings.VRamSizeMB
+                                                    'Max Number of Monitors' = $Pool.DesktopSettings.DisplayProtocolSettings.PcoipDisplaySettings.MaxNumberOfMonitors
+                                                    'Max Resolution of Any One Monitor' = $Pool.DesktopSettings.DisplayProtocolSettings.PcoipDisplaySettings.MaxResolutionOfAnyOneMonitor
                                                 } # Closing out $HorizonPoolInfo = [PSCustomObject]
                                                 $HorizonPoolInfoP2 | Table -Name "Pool $($Pool.Base.name) Information Part 2" -List -ColumnWidths 60,40
                                                 #PageBreak
 
                                                 $HorizonPoolInfoP3 = [PSCustomObject]@{
-                                                    'Pool Flash Quality' = $Pool.DesktopSettings.FlashSettings.Quality
-                                                    'Pool Flash Throttling' = $Pool.DesktopSettings.FlashSettings.Throttling
-                                                    'Pool Last Provisioning Error' = $Pool.automateddesktopdata.ProvisioningStatusData.LastProvisioningError
-                                                    'Pool Last Provisioning Error Time' = $Pool.automateddesktopdata.ProvisioningStatusData.LastProvisioningErrorTime
-                                                    'Pool Customization Type' = $Pool.automateddesktopdata.CustomizationSettings.CustomizationType
-                                                    'Pool Domain Administrator' = $Pool.automateddesktopdata.CustomizationSettings.DomainAdministrator
-                                                    'Pool Ad Container' = $PoolContainerName
-                                                    'Pool Reuse Pre-Existing Accounts' = $Pool.automateddesktopdata.CustomizationSettings.ReusePreExistingAccounts
-                                                    'Pool No Customization Settings' = $Pool.automateddesktopdata.CustomizationSettings.NoCustomizationSettings
-                                                    'Pool Sys Prep Customization Settings' = $Pool.automateddesktopdata.CustomizationSettings.SysprepCustomizationSettings
-                                                    'Pool Quick Prep Customization Settings' = $Pool.automateddesktopdata.CustomizationSettings.QuickprepCustomizationSettings
-                                                    'Pool Customization Instant Clone Engine Domain Administrator' = $InstantCloneDomainAdminGroupDisplayName
-                                                    'Pool Customization Power Off Script Name' = $Pool.automateddesktopdata.CustomizationSettings.CloneprepCustomizationSettings.PowerOffScriptName
-                                                    'Pool Customization Power Off Script Parameters' = $Pool.automateddesktopdata.CustomizationSettings.CloneprepCustomizationSettings.CloneprepCustomizationSettings.PowerOffScriptParameters
-                                                    'Pool Customization Post Synchronization Script Name' = $Pool.automateddesktopdata.CustomizationSettings.CloneprepCustomizationSettings.CloneprepCustomizationSettings.PostSynchronizationScriptName
-                                                    'Pool Customization Post Synchronization Script Parameters' = $Pool.automateddesktopdata.CustomizationSettings.CloneprepCustomizationSettings.CloneprepCustomizationSettings.PostSynchronizationScriptParameters
-                                                    'Pool Global Entitlement' = $GlobalEntitlementDisplayName
-                                                    'Pool Manual Desktop User Assignment User ' = $pool.manualdesktopdata.userassignment.UserAssignment
-                                                    'Pool Manual Desktop User Assignment User Automatic Assignment' = $pool.manualdesktopdata.userassignment.AutomaticAssignment
-                                                    'Pool Manual Desktop Virtual Center' = $vCenterServerIDName
-                                                    'Pool Manual Desktop Use Storage Accelerator' = $pool.manualdesktopdata.ViewStorageAcceleratorSettings.UseViewStorageAccelerator
-                                                    'Pool Manual Desktop View Composer Disk Types' = $pool.manualdesktopdata.ViewStorageAcceleratorSettings.ViewComposerDiskTypes
-                                                    'Pool Manual Desktop Regenerate View Storage Accelerator Days' = $pool.manualdesktopdata.ViewStorageAcceleratorSettings.RegenerateViewStorageAcceleratorDays
-                                                    'Pool Manual Desktop Blackout Times' = $pool.manualdesktopdata.ViewStorageAcceleratorSettings.BlackoutTimes
-                                                    'Pool Manual Desktop Transparent Page Sharing Scope' = $pool.manualdesktopdata.VirtualCenterManagedCommonSettings.TransparentPageSharingScope
-                                                    'Pool RDS Desktop Farm' = $FarmIDName
+                                                    'Flash Quality' = $Pool.DesktopSettings.FlashSettings.Quality
+                                                    'Flash Throttling' = $Pool.DesktopSettings.FlashSettings.Throttling
+                                                    'Last Provisioning Error' = $Pool.automateddesktopdata.ProvisioningStatusData.LastProvisioningError
+                                                    'Last Provisioning Error Time' = $Pool.automateddesktopdata.ProvisioningStatusData.LastProvisioningErrorTime
+                                                    'Customization Type' = $Pool.automateddesktopdata.CustomizationSettings.CustomizationType
+                                                    'Domain Administrator' = $Pool.automateddesktopdata.CustomizationSettings.DomainAdministrator
+                                                    'Ad Container' = $PoolContainerName
+                                                    'Reuse Pre-Existing Accounts' = $Pool.automateddesktopdata.CustomizationSettings.ReusePreExistingAccounts
+                                                    'No Customization Settings' = $Pool.automateddesktopdata.CustomizationSettings.NoCustomizationSettings
+                                                    'Sys Prep Customization Settings' = $Pool.automateddesktopdata.CustomizationSettings.SysprepCustomizationSettings
+                                                    'Quick Prep Customization Settings' = $Pool.automateddesktopdata.CustomizationSettings.QuickprepCustomizationSettings
+                                                    'Customization Instant Clone Engine Domain Administrator' = $InstantCloneDomainAdminGroupDisplayName
+                                                    'Customization Power Off Script Name' = $Pool.automateddesktopdata.CustomizationSettings.CloneprepCustomizationSettings.PowerOffScriptName
+                                                    'Customization Power Off Script Parameters' = $Pool.automateddesktopdata.CustomizationSettings.CloneprepCustomizationSettings.CloneprepCustomizationSettings.PowerOffScriptParameters
+                                                    'Customization Post Synchronization Script Name' = $Pool.automateddesktopdata.CustomizationSettings.CloneprepCustomizationSettings.CloneprepCustomizationSettings.PostSynchronizationScriptName
+                                                    'Customization Post Synchronization Script Parameters' = $Pool.automateddesktopdata.CustomizationSettings.CloneprepCustomizationSettings.CloneprepCustomizationSettings.PostSynchronizationScriptParameters
+                                                    'Global Entitlement' = $GlobalEntitlementDisplayName
+                                                    'Manual Desktop User Assignment User ' = $pool.manualdesktopdata.userassignment.UserAssignment
+                                                    'Manual Desktop User Assignment User Automatic Assignment' = $pool.manualdesktopdata.userassignment.AutomaticAssignment
+                                                    'Manual Desktop Virtual Center' = $vCenterServerIDName
+                                                    'Manual Desktop Use Storage Accelerator' = $pool.manualdesktopdata.ViewStorageAcceleratorSettings.UseViewStorageAccelerator
+                                                    'Manual Desktop View Composer Disk Types' = $pool.manualdesktopdata.ViewStorageAcceleratorSettings.ViewComposerDiskTypes
+                                                    'Manual Desktop Regenerate View Storage Accelerator Days' = $pool.manualdesktopdata.ViewStorageAcceleratorSettings.RegenerateViewStorageAcceleratorDays
+                                                    'Manual Desktop Blackout Times' = $pool.manualdesktopdata.ViewStorageAcceleratorSettings.BlackoutTimes
+                                                    'Manual Desktop Transparent Page Sharing Scope' = $pool.manualdesktopdata.VirtualCenterManagedCommonSettings.TransparentPageSharingScope
+                                                    'RDS Desktop Farm' = $FarmIDName
                                                 } # Closing out $HorizonPoolInfo = [PSCustomObject]
                                                 $HorizonPoolInfoP3 | Table -Name "Pool $($Pool.Base.name) Information Part 3" -List -ColumnWidths 60,40
                                             } # Closing qut section -Style Heading4 'Pools'
@@ -826,7 +828,7 @@
                     if ($InfoLevel.Inventory.Applications -ge 1) {
                         #PageBreak
                         section -Style Heading2 'Applications' {
-                            section -Style Heading3 'Application General Information' {
+                            section -Style Heading3 'General Information' {
                                 $HorizonApplicationsGeneral = foreach($App in $Apps) {
                                     [PSCustomObject]@{
                                         'Display Name' = $App.Data.DisplayName
@@ -834,7 +836,7 @@
                                         'Enabled' = $App.Data.Enabled
                                     }
                                 } # Close out $HorizonApplications = foreach($App in $Apps)
-                                $HorizonApplicationsGeneral | Table -Name 'Application General Information' -ColumnWidths 40,30,30
+                                $HorizonApplicationsGeneral | Table -Name 'General Information' -ColumnWidths 40,30,30
                             } # Close out section -Style Heading3 'Application General Info'
 
                             if ($InfoLevel.Inventory.Applications -ge 2) {
@@ -1070,20 +1072,20 @@
                                                     $ii++
                                                     section -Style Heading6 "vCenter VM Details for $($Machine.base.Name)" {
                                                         $Machine = [PSCustomObject]@{
-                                                            'Machine Name' = $Machine.base.name
-                                                            'Machine DNS Name' = $Machine.base.DnsName
-                                                            'Machine Assigned User' = $MachinePermission
-                                                            'Machine Access Group' = $MachineAccessgroup
-                                                            'Machine Pool Name' = $Machine.base.DesktopName
-                                                            'Machine Connected User' = $MachineSession
-                                                            'Machine State' = $Machine.base.basicstate
-                                                            'Machine Type' = $Machine.base.Type
-                                                            'Machine Operating System' = $Machine.base.OperatingSystem
-                                                            'Machine Operating System Architecture' = $Machine.base.OperatingSystemArchitecture
-                                                            'Machine Agent Version' = $Machine.base.AgentVersion
-                                                            'Machine Agent Build Number' = $Machine.base.AgentBuildNumber
-                                                            'Machine Remote Experience Agent Version' = $Machine.base.RemoteExperienceAgentVersion
-                                                            'Machine Remote Experience Agent Build Number' = $Machine.base.RemoteExperienceAgentBuildNumber
+                                                            'Name' = $Machine.base.name
+                                                            'DNS Name' = $Machine.base.DnsName
+                                                            'Assigned User' = $MachinePermission
+                                                            'Access Group' = $MachineAccessgroup
+                                                            'Pool Name' = $Machine.base.DesktopName
+                                                            'Connected User' = $MachineSession
+                                                            'State' = $Machine.base.basicstate
+                                                            'Type' = $Machine.base.Type
+                                                            'Operating System' = $Machine.base.OperatingSystem
+                                                            'Operating System Architecture' = $Machine.base.OperatingSystemArchitecture
+                                                            'Agent Version' = $Machine.base.AgentVersion
+                                                            'Agent Build Number' = $Machine.base.AgentBuildNumber
+                                                            'Remote Experience Agent Version' = $Machine.base.RemoteExperienceAgentVersion
+                                                            'Remote Experience Agent Build Number' = $Machine.base.RemoteExperienceAgentBuildNumber
                                                         } # Close Out $Machine = [PSCustomObject]
                                                     $Machine | Table -Name "vCenter VM Details for $($Machine.base.Name)" -List -ColumnWidths 50,50
                                                     } # Close out section -Style Heading6 "Machine Details for $($Machine.base.Name)"
@@ -1107,9 +1109,9 @@
 
                                         $RDSServerGeneralInfo = foreach($RDSServer in $RDSServers) {
                                             [PSCustomObject]@{
-                                                'RDS Host Name' = $RDSServer.base.name
-                                                'RDS Host Farm Name' = $RDSServer.SummaryData.FarmName
-                                                'RDS Host State' = $RDSServer.runtimedata.Status
+                                                'Host Name' = $RDSServer.base.name
+                                                'Host Farm Name' = $RDSServer.SummaryData.FarmName
+                                                'Host State' = $RDSServer.runtimedata.Status
                                             } # Close Out $HorizonRole = [PSCustomObject]
                                         }
                                         $RDSServerGeneralInfo | Table -Name 'RDS Hosts General Information' -ColumnWidths 40,30,30
@@ -1134,23 +1136,23 @@
                                                     $ii++
                                                     section -Style Heading6 "RDS Host Details for $($RDSServer.base.Name)" {
                                                         $RDSServer = [PSCustomObject]@{
-                                                            'RDS Host Name' = $RDSServer.base.name
-                                                            'RDS Host Description' = $RDSServer.base.Description
-                                                            'RDS Host Farm Name' = $RDSServer.SummaryData.FarmName
-                                                            'RDS Host Desktop Pool Name' = $RDSServer.SummaryData.DesktopName
-                                                            'RDS Host Farm Type' = $RDSServer.SummaryData.FarmType
-                                                            'RDS Host Access Group' = $RDSServerAccessgroup
-                                                            'RDS Host Message Security Mode' = $RDSServer.MessageSecurityData.MessageSecurityMode
-                                                            'RDS Host Message Security Enhanced Mode Supported' = $RDSServer.MessageSecurityData.MessageSecurityEnhancedModeSupported
-                                                            'RDS Host Operating System' = $RDSServer.agentdata.OperatingSystem
-                                                            'RDS Host Agent Version' = $RDSServer.agentdata.AgentVersion
-                                                            'RDS Host Agent Build Number' = $RDSServer.agentdata.AgentBuildNumber
-                                                            'RDS Host Remote Experience Agent Version' = $RDSServer.agentdata.RemoteExperienceAgentVersion
-                                                            'RDS Host Remote Experience Agent Build Number' = $RDSServer.agentdata.RemoteExperienceAgentBuildNumber
-                                                            'RDS Host Max Sessions Type' = $RDSServer.settings.SessionSettings.MaxSessionsType
-                                                            'RDS Host Max Sessions Set By Admin' = $RDSServer.settings.SessionSettings.MaxSessionsSetByAdmin
-                                                            'RDS Host Agent Max Sessions Type' = $RDSServer.settings.AgentMaxSessionsData.MaxSessionsType
-                                                            'RDS Host Agent Max Sessions Set By Admin' = $RDSServer.settings.AgentMaxSessionsData.MaxSessionsSeenByAgent
+                                                            'Host Name' = $RDSServer.base.name
+                                                            'Host Description' = $RDSServer.base.Description
+                                                            'Host Farm Name' = $RDSServer.SummaryData.FarmName
+                                                            'Host Desktop Pool Name' = $RDSServer.SummaryData.DesktopName
+                                                            'Host Farm Type' = $RDSServer.SummaryData.FarmType
+                                                            'Host Access Group' = $RDSServerAccessgroup
+                                                            'Host Message Security Mode' = $RDSServer.MessageSecurityData.MessageSecurityMode
+                                                            'Host Message Security Enhanced Mode Supported' = $RDSServer.MessageSecurityData.MessageSecurityEnhancedModeSupported
+                                                            'Host Operating System' = $RDSServer.agentdata.OperatingSystem
+                                                            'Host Agent Version' = $RDSServer.agentdata.AgentVersion
+                                                            'Host Agent Build Number' = $RDSServer.agentdata.AgentBuildNumber
+                                                            'Host Remote Experience Agent Version' = $RDSServer.agentdata.RemoteExperienceAgentVersion
+                                                            'Host Remote Experience Agent Build Number' = $RDSServer.agentdata.RemoteExperienceAgentBuildNumber
+                                                            'Host Max Sessions Type' = $RDSServer.settings.SessionSettings.MaxSessionsType
+                                                            'Host Max Sessions Set By Admin' = $RDSServer.settings.SessionSettings.MaxSessionsSetByAdmin
+                                                            'Host Agent Max Sessions Type' = $RDSServer.settings.AgentMaxSessionsData.MaxSessionsType
+                                                            'Host Agent Max Sessions Set By Admin' = $RDSServer.settings.AgentMaxSessionsData.MaxSessionsSeenByAgent
                                                             'RDS Host Enabled' = $RDSServer.settings.enabled
                                                             'RDS Host Status' = $RDSServer.runtimedata.Status
 
@@ -1180,9 +1182,9 @@
 
                                 $PersistentDiskGeneralInfo = foreach($PersistentDisk in $PersistentDisks) {
                                     [PSCustomObject]@{
-                                        'Persistent Disk Name' = $PersistentDisk.General.name
-                                        'Persistent Disk Usage' = $PersistentDisk.General.Usage
-                                        'Persistent Disk Status' = $PersistentDisk.General.Status
+                                        'Disk Name' = $PersistentDisk.General.name
+                                        'Disk Usage' = $PersistentDisk.General.Usage
+                                        'Disk Status' = $PersistentDisk.General.Status
                                     } # Close Out $HorizonRole = [PSCustomObject]
                                 }
                                 $PersistentDiskGeneralInfo | Table -Name 'Persistent Disks General Information' -ColumnWidths 40,30,30
@@ -1211,15 +1213,15 @@
 
                                             section -Style Heading5 "Persistent Disk for $($PersistentDisk.General.name)" {
                                                 $PersistentDisk = [PSCustomObject]@{
-                                                    'Persistent Disk Name' = $PersistentDisk.General.name
-                                                    'Persistent Disk Desktop' = $DesktopInfo.DesktopSummaryData.Name
-                                                    'Persistent Disk User' = $UserorGroupInfo.Base.DisplayName
-                                                    'Persistent Disk Access Group' = $PersistentDiskAccessgroup
-                                                    'Persistent Disk Usage' = $PersistentDisk.General.Usage
-                                                    'Persistent Disk Status' = $PersistentDisk.General.Status
-                                                    'Persistent Disk vCenter' = $vCenterInfo.DisplayName
-                                                    'Persistent Disk DataStore Name' = $PersistentDisk.Storage.DatastoreName
-                                                    'Persistent Disk Capacity in MB' = $PersistentDisk.Storage.CapacityMB
+                                                    'Disk Name' = $PersistentDisk.General.name
+                                                    'Disk Desktop' = $DesktopInfo.DesktopSummaryData.Name
+                                                    'Disk User' = $UserorGroupInfo.Base.DisplayName
+                                                    'Disk Access Group' = $PersistentDiskAccessgroup
+                                                    'Disk Usage' = $PersistentDisk.General.Usage
+                                                    'Disk Status' = $PersistentDisk.General.Status
+                                                    'Disk vCenter' = $vCenterInfo.DisplayName
+                                                    'Disk DataStore Name' = $PersistentDisk.Storage.DatastoreName
+                                                    'Disk Capacity in MB' = $PersistentDisk.Storage.CapacityMB
                                                 } # Close Out $PersistentDisk = [PSCustomObject]
                                             $PersistentDisk | Table -Name "Persistent Disk for $($PersistentDisk.General.name)" -List -ColumnWidths 50,50
                                             } # Close out section -Style Heading5 "Persistent Disk Details"
@@ -1284,9 +1286,9 @@
                                         $GlobalEntitlementsGeneralInfo = foreach($GlobalEntitlement in $GlobalEntitlements) {
                                             $GlobalEntitlementPodCount = ($GlobalEntitlement.data.memberpods.id).count
                                             [PSCustomObject]@{
-                                                'Entitlement Name' = $GlobalEntitlement.base.DisplayName
-                                                'Entitlement Type' = 'Desktop'
-                                                'Entitlement Number of Pods' = $GlobalEntitlementPodCount
+                                                'Name' = $GlobalEntitlement.base.DisplayName
+                                                'Type' = 'Desktop'
+                                                'Number of Pods' = $GlobalEntitlementPodCount
                                             }
                                         }
                                         $GlobalEntitlementsGeneralInfo | Table -Name 'Global Entitlements General Information' -ColumnWidths 40,30,30
@@ -1296,9 +1298,9 @@
                                         $GlobalApplicationEntitlementsGeneralInfo = foreach($GlobalApplicationEntitlementGroup in $GlobalApplicationEntitlementGroups) {
                                             $GlobalEntitlementPodCount = ($GlobalApplicationEntitlementGroup.data.memberpods.id).count
                                             [PSCustomObject]@{
-                                                'Entitlement Name' = $GlobalApplicationEntitlementGroup.base.DisplayName
-                                                'Entitlement Type' = 'Application'
-                                                'Entitlement Number of Pods' = $GlobalEntitlementPodCount
+                                                'Name' = $GlobalApplicationEntitlementGroup.base.DisplayName
+                                                'Type' = 'Application'
+                                                'Number of Pods' = $GlobalEntitlementPodCount
                                             }
                                         }
                                         $GlobalApplicationEntitlementsGeneralInfo | Table -Name 'Global Entitlements General Information' -ColumnWidths 40,30,30
@@ -1332,12 +1334,12 @@
                                                     section -Style Heading5 "Global Entitlement $($GlobalEntitlement.Base.DisplayName)" {
                                                         $HorizonGlobalEntitlements = [PSCustomObject]@{
 
-                                                            'Global Entitlement Display Name' = $GlobalEntitlement.Base.DisplayName
-                                                            'Global Entitlement Description' = $GlobalEntitlement.Base.Description
-                                                            'Global Entitlement Base Scope' = $GlobalEntitlement.Base.Scope
-                                                            'Global Entitlement Dedicated' = $GlobalEntitlement.Base.Dedicated
-                                                            'Global Entitlement From Home' = $GlobalEntitlement.Base.FromHome
-                                                            'Global Entitlement Require Home Site' = $GlobalEntitlement.Base.RequireHomeSite
+                                                            'Display Name' = $GlobalEntitlement.Base.DisplayName
+                                                            'Description' = $GlobalEntitlement.Base.Description
+                                                            'Base Scope' = $GlobalEntitlement.Base.Scope
+                                                            'Dedicated' = $GlobalEntitlement.Base.Dedicated
+                                                            'From Home' = $GlobalEntitlement.Base.FromHome
+                                                            'Require Home Site' = $GlobalEntitlement.Base.RequireHomeSite
                                                             'Global Entitlement Multiple Session Auto Clean' = $GlobalEntitlement.Base.MultipleSessionAutoClean
                                                             'Global Entitlement Enabled' = $GlobalEntitlement.Base.Enabled
                                                             'Global Entitlement Supported Display Protocols' = $GESupportedDisplayProtocolsresult
