@@ -30,19 +30,6 @@ function Get-AbrHRZHomeSite {
     process {
         if ($InfoLevel.UsersAndGroups.HomeSiteAssignments -ge 1) {
             try {
-                try {
-                    # Home Site Info
-                    $HomesiteQueryDefn = New-Object VMware.Hv.QueryDefinition
-                    $HomesiteQueryDefn.queryentitytype='UserHomeSiteInfo'
-                    $HomesitequeryResults = $Queryservice.QueryService_Create($hzServices, $HomesiteQueryDefn)
-                    $Homesites = foreach ($Homesiteresult in $HomesitequeryResults.results) {
-                        $hzServices.UserHomeSite.UserHomeSite_GetInfos($Homesiteresult.id)
-                    }
-                    $queryservice.QueryService_DeleteAll($hzServices)
-                }
-                catch {
-                    Write-PscriboMessage -IsWarning $_.Exception.Message
-                }
                 if ($Homesites) {
                     Section -Style Heading3 'Home Site General Information' {
                         $OutObj = @()
@@ -92,7 +79,7 @@ function Get-AbrHRZHomeSite {
                                     'Global Entitlement' = $HomeSiteGlobalEntitlementIDName
                                     'Global Application Entitlement' = $HomeSiteGlobalApplicationEntitlementIDName
                                 }
-                                $OutObj += [pscustomobject]$inobj
+                                $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                             }
                             catch {
                                 Write-PscriboMessage -IsWarning $_.Exception.Message

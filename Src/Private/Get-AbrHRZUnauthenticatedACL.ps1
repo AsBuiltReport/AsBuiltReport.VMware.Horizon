@@ -30,13 +30,6 @@ function Get-AbrHRZUnauthenticatedACL {
     process {
         if ($InfoLevel.UsersAndGroups.HomeSiteAssignments -ge 1) {
             try {
-                try {
-                    # Unauthenticated Access
-                    $unauthenticatedAccessList = $hzServices.UnauthenticatedAccessUser.UnauthenticatedAccessUser_List()
-                }
-                catch {
-                    Write-PscriboMessage -IsWarning $_.Exception.Message
-                }
                 $OutObj = @()
                 if ($unauthenticatedAccessList) {
                     if ($InfoLevel.UsersAndGroups.UsersAndGroups.UnauthenticatedAccess -ge 1) {
@@ -61,7 +54,7 @@ function Get-AbrHRZUnauthenticatedACL {
                                     'Hybrid Logon Config' = $unauthenticatedAccess.userdata.HybridLogonConfig
                                     'Pod' = $unauthenticatedAccessPodListName
                                 }
-                                $OutObj += [pscustomobject]$inobj
+                                $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                             }
                         }
                     }

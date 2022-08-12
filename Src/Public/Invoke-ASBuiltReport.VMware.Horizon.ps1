@@ -66,7 +66,7 @@
             $Composers = $vCenterServers.viewcomposerdata
 
             # vCenter Health, ESX Hosts, and DataStores
-            $vCenterHealth = $hzServices.VirtualCenterHealth.VirtualCenterHealth_List()
+            $vCenterHealth = try {$hzServices.VirtualCenterHealth.VirtualCenterHealth_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
 
             # ESXHosts
             $esxhosts = $vCenterHealth
@@ -112,6 +112,39 @@
 
             # Virtual Centers
             $vCenterServers = $hzServices.VirtualCenter.VirtualCenter_List()
+
+            try {
+                $EntitledUserOrGroupLocalMachineQueryDefn = New-Object VMware.Hv.QueryDefinition
+                $EntitledUserOrGroupLocalMachineQueryDefn.queryentitytype='EntitledUserOrGroupLocalSummaryView'
+                $EntitledUserOrGroupLocalMachinequeryResults = $Queryservice.QueryService_Create($hzServices, $EntitledUserOrGroupLocalMachineQueryDefn)
+                $EntitledUserOrGroupLocalMachines = foreach ($EntitledUserOrGroupLocalMachineresult in $EntitledUserOrGroupLocalMachinequeryResults.results){$hzServices.EntitledUserOrGroup.EntitledUserOrGroup_GetLocalSummaryView($EntitledUserOrGroupLocalMachineresult.id)}
+                $queryservice.QueryService_DeleteAll($hzServices)
+            }
+            catch {
+                Write-PscriboMessage -IsWarning $_.Exception.Message
+            }
+
+            try {
+                # Home Site Info
+                $HomesiteQueryDefn = New-Object VMware.Hv.QueryDefinition
+                $HomesiteQueryDefn.queryentitytype='UserHomeSiteInfo'
+                $HomesitequeryResults = $Queryservice.QueryService_Create($hzServices, $HomesiteQueryDefn)
+                $Homesites = foreach ($Homesiteresult in $HomesitequeryResults.results) {
+                    $hzServices.UserHomeSite.UserHomeSite_GetInfos($Homesiteresult.id)
+                }
+                $queryservice.QueryService_DeleteAll($hzServices)
+            }
+            catch {
+                Write-PscriboMessage -IsWarning $_.Exception.Message
+            }
+
+            try {
+                # Unauthenticated Access
+                $unauthenticatedAccessList = $hzServices.UnauthenticatedAccessUser.UnauthenticatedAccessUser_List()
+            }
+            catch {
+                Write-PscriboMessage -IsWarning $_.Exception.Message
+            }
 
             # Pool Info
             $PoolQueryDefn = New-Object VMware.Hv.QueryDefinition
@@ -199,13 +232,15 @@
 
             # Persistent Disks
             try {
-                $PersistentDisksQueryDefn = New-Object VMware.Hv.QueryDefinition
-                $PersistentDisksQueryDefn.queryentitytype='PersistentDiskInfo'
-                $PersistentDisksqueryResults = $Queryservice.QueryService_Create($hzServices, $PersistentDisksQueryDefn)
-                $PersistentDisks = foreach ($PersistentDisksresult in $PersistentDisksqueryResults.results) {
-                    $hzServices.PersistentDisk.PersistentDisk_Get($PersistentDisksresult.id)
+                if ($connectionservers.General.Version -lt 8) {
+                    $PersistentDisksQueryDefn = New-Object VMware.Hv.QueryDefinition
+                    $PersistentDisksQueryDefn.queryentitytype='PersistentDiskInfo'
+                    $PersistentDisksqueryResults = $Queryservice.QueryService_Create($hzServices, $PersistentDisksQueryDefn)
+                    $PersistentDisks = foreach ($PersistentDisksresult in $PersistentDisksqueryResults.results) {
+                        $hzServices.PersistentDisk.PersistentDisk_Get($PersistentDisksresult.id)
+                    }
+                    $queryservice.QueryService_DeleteAll($hzServices)
                 }
-                $queryservice.QueryService_DeleteAll($hzServices)
             }
             catch {
                 Write-PscriboMessage -IsWarning $_.Exception.Message
@@ -224,7 +259,7 @@
 
             # Base Images
             try {
-                $BaseImageVMList = $hzServices.BaseImageVM.BaseImageVM_List($vCenterServers.id)
+                $BaseImageVMList = $vCenterServers | ForEach-Object  {$hzServices.BaseImageVM.BaseImageVM_List($_.id, $null)}
                 $CompatibleBaseImageVMs = $BaseImageVMList | Where-Object {
                     ($_.IncompatibleReasons.InUseByDesktop -eq $false) -and
                     ($_.IncompatibleReasons.InUseByLinkedCloneDesktop -eq $false) -and
@@ -238,15 +273,29 @@
                 Write-PscriboMessage -IsWarning $_.Exception.Message
             }
 
-            # Unauthenticated Access
-            $unauthenticatedAccessList = $hzServices.UnauthenticatedAccessUser.UnauthenticatedAccessUser_List()
-
             section -Style Heading1 "$($HVEnvironment)" {
                 if ($EntitledUserOrGroupLocalMachines -or $HomeSites -or $unauthenticatedAccessList) {
                     if ($InfoLevel.UsersAndGroups.Entitlements -ge 1) {
                         Section -Style Heading2 'Users and Groups' {
                             Get-AbrHRZLocalEntitlement
                             Get-AbrHRZHomeSite
+                            Get-AbrHRZUnauthenticatedACL
+                        }
+                    }
+                }
+                if ($vCenterServers -or $vCenterHealth -or $Composers -or $Domains -or $SecurityServers -or $GatewayServers -or $ConnectionServers -or $InstantCloneDomainAdmins -or $ProductLicenseingInfo -or $GlobalSettings -or $RDSServers -or $Administrators -or $Roles -or $Permissions -or $AccessGroups -or $CloudPodFederation -or $CloudPodSites -or $EventDataBases -or $GlobalPolicies) {
+                    section -Style Heading2 'Settings' {
+                        #---------------------------------------------------------------------------------------------#
+                        #                                      Servers                                                #
+                        #---------------------------------------------------------------------------------------------#
+
+                        if ($vCenterServers -or $vCenterHealth -or $Composers -or $Domains -or $SecurityServers -or $GatewayServers -or $ConnectionServers) {
+                            section -Style Heading3 'Servers' {
+                                #---------------------------------------------------------------------------------------------#
+                                #                              vCenter Servers                                                #
+                                #---------------------------------------------------------------------------------------------#
+                                Get-AbrHRZVcenterInfo
+                            }
                         }
                     }
                 }

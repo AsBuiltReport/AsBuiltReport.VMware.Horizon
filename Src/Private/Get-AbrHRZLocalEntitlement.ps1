@@ -29,16 +29,6 @@ function Get-AbrHRZLocalEntitlement {
 
     process {
         try {
-            try {
-                $EntitledUserOrGroupLocalMachineQueryDefn = New-Object VMware.Hv.QueryDefinition
-                $EntitledUserOrGroupLocalMachineQueryDefn.queryentitytype='EntitledUserOrGroupLocalSummaryView'
-                $EntitledUserOrGroupLocalMachinequeryResults = $Queryservice.QueryService_Create($hzServices, $EntitledUserOrGroupLocalMachineQueryDefn)
-                $EntitledUserOrGroupLocalMachines = foreach ($EntitledUserOrGroupLocalMachineresult in $EntitledUserOrGroupLocalMachinequeryResults.results){$hzServices.EntitledUserOrGroup.EntitledUserOrGroup_GetLocalSummaryView($EntitledUserOrGroupLocalMachineresult.id)}
-                $queryservice.QueryService_DeleteAll($hzServices)
-            }
-            catch {
-                Write-PscriboMessage -IsWarning $_.Exception.Message
-            }
             Section -Style Heading3 'Local Entitlements' {
                 $OutObj = @()
                 if ($EntitledUserOrGroupLocalMachines) {
@@ -57,7 +47,7 @@ function Get-AbrHRZLocalEntitlement {
                                 'User Principal Name' = $UserPrincipalName
                                 'Group or User' = $EntitledUserOrGroupLocalMachinegroup
                             }
-                            $OutObj += [pscustomobject]$inobj
+                            $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                         }
                         catch {
                             Write-PscriboMessage -IsWarning $_.Exception.Message
@@ -77,7 +67,7 @@ function Get-AbrHRZLocalEntitlement {
                 $OutObj | Sort-Object -Property 'User Principal Name' | Table @TableParams
 
                 if ($InfoLevel.UsersAndGroups.Entitlements -ge 2) {
-                    Section -Style Heading4 "Per Object Local Entitlements Details" {
+                    Section -Style Heading4 "Local Entitlements Details" {
                         try {
                             $PoolIDNameResults = ''
                             $AppIDNameResults = ''
@@ -170,7 +160,7 @@ function Get-AbrHRZLocalEntitlement {
                                                 'Local Desktops' = $PoolIDName
                                                 'User Applications' = $AppIDName
                                             }
-                                            $OutObj += [pscustomobject]$inobj
+                                            $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
 
                                             $TableParams = @{
                                                 Name = "Local Entitlements Details - $($EntitledUserOrGroupLocalMachine.base.Name)"

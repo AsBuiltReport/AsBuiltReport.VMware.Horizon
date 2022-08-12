@@ -15,25 +15,23 @@ function ConvertTo-TextYN {
     #>
     [CmdletBinding()]
     [OutputType([String])]
-    Param
-        (
+    Param (
         [Parameter (
             Position = 0,
             Mandatory)]
             [AllowEmptyString()]
-            [string]
-            $TEXT
-        )
+            [string] $TEXT
+    )
 
-    switch ($TEXT)
-        {
-            "" {"-"}
-            $Null {"-"}
-            "True" {"Yes"; break}
-            "False" {"No"; break}
-            default {$TEXT}
-        }
-    } # end
+    switch ($TEXT) {
+        "" {"--"; break}
+        " " {"--"; break}
+        $Null {"--"; break}
+        "True" {"Yes"; break}
+        "False" {"No"; break}
+        default {$TEXT}
+    }
+} # end
 function Get-UnixDate ($UnixDate) {
         <#
     .SYNOPSIS
@@ -68,15 +66,14 @@ function ConvertTo-EmptyToFiller {
     #>
     [CmdletBinding()]
     [OutputType([String])]
-    Param
-        (
+    Param (
         [Parameter (
             Position = 0,
             Mandatory)]
             [AllowEmptyString()]
             [string]
             $TEXT
-        )
+    )
 
     switch ($TEXT) {
             "" {"-"; break}
@@ -104,14 +101,13 @@ function ConvertTo-VIobject {
     #>
     [CmdletBinding()]
     [OutputType([String])]
-    Param
-        (
+    Param (
         [Parameter (
             Position = 0,
             Mandatory)]
             [AllowEmptyString()]
             $OBJECT
-        )
+    )
 
     if (get-view $OBJECT -ErrorAction SilentlyContinue| Select-Object -ExpandProperty Name -Unique) {
         return get-view $OBJECT -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Name -Unique
@@ -119,4 +115,36 @@ function ConvertTo-VIobject {
     else {
         return $OBJECT
     }
+} # end
+
+function ConvertTo-HashToYN {
+    <#
+    .SYNOPSIS
+        Used by As Built Report to convert array content true or false automatically to Yes or No.
+    .DESCRIPTION
+
+    .NOTES
+        Version:        0.1.0
+        Author:         Jonathan Colon
+
+    .EXAMPLE
+
+    .LINK
+
+    #>
+    [CmdletBinding()]
+    [OutputType([Hashtable])]
+    Param (
+        [Parameter (Position = 0, Mandatory)]
+        [AllowEmptyString()]
+        [Hashtable] $TEXT
+    )
+
+    $result = [ordered] @{}
+    foreach($i in $inObj.GetEnumerator()) {
+        $result.add($i.Key, (ConvertTo-TextYN $i.Value))
+    }
+    if ($result) {
+        return $result
+    } else {return $TEXT}
 } # end
