@@ -89,8 +89,11 @@
             # Instant Clone Domain Admins
             $InstantCloneDomainAdmins = $hzServices.InstantCloneEngineDomainAdministrator.InstantCloneEngineDomainAdministrator_List()
 
-            # Product Licensing and Usage Info
+            # Product Licensing Info
             $ProductLicenseingInfo = $hzServices.License.License_Get()
+
+            # Product Usage Info
+            $UsageStatisticsInfo = $hzServices.UsageStatistics.UsageStatistics_GetLicensingCounters()
 
             # Global Settings
             $GlobalSettings = $hzServices.GlobalSettings.GlobalSettings_Get()
@@ -297,7 +300,12 @@
                                 Get-AbrHRZVcenterInfo
                                 Get-AbrHRZESXiInfo
                                 Get-AbrHRZDatastoreInfo
-                                Get-AbrHRZADDomainiInfo
+                                Get-AbrHRZADDomainInfo
+                                Get-AbrHRZUAGInfo
+                                Get-AbrHRZConnectionServerInfo
+                                Get-AbrHRZInstantClone
+                                Get-AbrHRZLicenseInfo
+                                Get-AbrHRZGlobalSetting
                             }
                         }
                     }

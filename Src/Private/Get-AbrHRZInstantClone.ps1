@@ -1,4 +1,4 @@
-function Get-AbrHRZADDomainiInfo {
+function Get-AbrHRZInstantClone {
     <#
     .SYNOPSIS
         PowerShell script which documents the configuration of VMware Horizon in Word/HTML/XML/Text formats
@@ -23,25 +23,22 @@ function Get-AbrHRZADDomainiInfo {
     )
 
     begin {
-        Write-PScriboMessage "ADDomains InfoLevel set at $($InfoLevel.Settings.Servers.vCenterServers.ADDomains)."
-        Write-PscriboMessage "Collecting Active Directory Domain information."
+        Write-PScriboMessage "InstantCloneDomainAccounts InfoLevel set at $($InfoLevel.Settings.InstantClone.InstantCloneDomainAccounts)."
+        Write-PscriboMessage "Collecting Instant Clone Domain Accounts information."
     }
 
     process {
         try {
-            if ($Domains) {
-                if ($InfoLevel.Settings.Servers.vCenterServers.ADDomains -ge 1) {
-                    section -Style Heading4 "Active Directory Domains Summary" {
+            if ($InstantCloneDomainAdmins) {
+                if ($InfoLevel.Settings.InstantClone.InstantCloneDomainAccounts -ge 1) {
+                    section -Style Heading4 "Instant Clone Domain Accounts" {
                         $OutObj = @()
-                        foreach ($Domain in $Domains) {
+                        foreach ($InstantCloneDomainAdmin in $InstantCloneDomainAdmins) {
                             try {
-                                Write-PscriboMessage "Discovered Domain Information $($Domain.DNSName)."
+                                Write-PscriboMessage "Discovered Instant Clone Domain Accounts Information."
                                 $inObj = [ordered] @{
-                                    'Domain DNS Name' = $Domain.DNSName
-                                    'Status' = $Domain.ConnectionServerState[0].Status
-                                    'Trust Relationship' = $Domain.ConnectionServerState[0].TrustRelationship
-                                    'Connection Status' = $Domain.ConnectionServerState[0].Contactable
-
+                                    'User Name' = $InstantCloneDomainAdmin.Base.UserName
+                                    'Domain Name' = $InstantCloneDomainAdmin.NamesData.DnsName
                                 }
 
                                 $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
@@ -51,20 +48,16 @@ function Get-AbrHRZADDomainiInfo {
                             }
                         }
 
-                        if ($HealthCheck.DataStores.Status) {
-                            $OutObj | Where-Object { $_.'Status' -eq 'ERROR'} | Set-Style -Style Warning
-                        }
-
                         $TableParams = @{
-                            Name = "Active Directory Domains - $($HVEnvironment)"
+                            Name = "Instant Clone Domain Accounts - $($HVEnvironment)"
                             List = $false
-                            ColumnWidths = 25, 25, 25, 25
+                            ColumnWidths = 50, 50
                         }
 
                         if ($Report.ShowTableCaptions) {
                             $TableParams['Caption'] = "- $($TableParams.Name)"
                         }
-                        $OutObj | Sort-Object -Property 'Name' | Table @TableParams
+                        $OutObj | Sort-Object -Property 'User Name' | Table @TableParams
                     }
                 }
             }

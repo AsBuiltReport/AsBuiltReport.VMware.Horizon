@@ -38,11 +38,8 @@
                     "Composers": 1,
                     "ADDomains": 1
                 },
-                "SecurityServers":{
-                    "SecurityServers": 1
-                },
-                "GatewayServers":{
-                    "GatewayServers": 1
+                "UAG":{
+                    "UAGServers": 1
                 },
                 "ConnectionServers":{
                     "ConnectionServers": 1
@@ -91,6 +88,9 @@
             "Status": true
         },
         "vCenter": {
+            "Status": true
+        },
+        "ConnectionServers":{
             "Status": true
         }
 
