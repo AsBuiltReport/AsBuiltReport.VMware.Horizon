@@ -31,121 +31,127 @@ function Get-AbrHRZVcenterInfo {
         try {
             if ($vCenterServers) {
                 if ($InfoLevel.Settings.Servers.vCenterServers.vCenter -ge 1) {
-                    section -Style Heading4 'vCenter Servers' {
-                        section -Style Heading5 "General Information" {
-                            $OutObj = @()
-                            foreach ($vCenterServer in $vCenterServers) {
-                                try {
-                                    Write-PscriboMessage "Discovered Virtual Centers Information $($vCenterServer.serverspec.ServerName)."
-                                    $inObj = [ordered] @{
-                                        'Name' = $vCenterServer.serverspec.ServerName
-                                        'Provisioning Enabled' = ConvertTo-TextYN $vCenterServer.Enabled
-                                    }
-
-                                    $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
-                                }
-                                catch {
-                                    Write-PscriboMessage -IsWarning $_.Exception.Message
-                                }
-                            }
-
-                            $TableParams = @{
-                                Name = "vCenter General Information - $($HVEnvironment)"
-                                List = $false
-                                ColumnWidths = 50, 50
-                            }
-
-                            if ($Report.ShowTableCaptions) {
-                                $TableParams['Caption'] = "- $($TableParams.Name)"
-                            }
-                            $OutObj | Sort-Object -Property 'Name' | Table @TableParams
+                    section -Style Heading4 "vCenter Servers" {
+                        $vCenterHealthData = $vCenterHealth.data
+                        $OutObj = @()
+                        foreach ($vCenterServer in $vCenterServers) {
                             try {
-                                if ($InfoLevel.Settings.Servers.vCenterServers.vCenter -ge 2) {
-                                    foreach ($vCenterServer in $vCenterServers) {
-                                        try {
-                                            section -Style Heading5 "$($vCenterServer.serverspec.ServerName) Details" {
-                                                $OutObj = @()
-                                                Write-PscriboMessage "Discovered Virtual Centers Information $($vCenterServer.serverspec.ServerName)."
-                                                $inObj = [ordered] @{
-                                                    'Name' = $vCenterServer.serverspec.ServerName
-                                                    'Description' = $vCenterServer.Description
-                                                    #'vCenter Server Display Name' = $vCenterServer.DisplayName
-                                                    'vCenter Server Certificate Override' = $vCenterServer.CertificateOverride
-                                                    'vCenter Server Provisioning Enabled' = $vCenterServer.Enabled
-                                                    'vCenter Server Reclaim Disk Space' = $vCenterServer.SeSparseReclamationEnabled
-                                                    'vCenter Server Port' = $vCenterServer.serverspec.Port
-                                                    'vCenter Server User SSL' = $vCenterServer.serverspec.UseSSL
-                                                    'vCenter Server User Name' = $vCenterServer.serverspec.UserName
-                                                    'vCenter Server Type' = $vCenterServer.serverspec.ServerType
-                                                    'vCenter Server Port Num' = $vCenterServer.serverspec.Port
-                                                    'Max Concurrent vCenter Provisioning Operations' = $vCenterServer.Limits.VcProvisioningLimit
-                                                    'Max Concurrent Power Operations' = $vCenterServer.Limits.VcPowerOperationsLimit
-                                                    'Max Concurrent View Composer Maintenance Operations' = $vCenterServer.Limits.ViewComposerProvisioningLimit
-                                                    'Max Concurrent View Composer Provisioning Operations' = $vCenterServer.Limits.ViewComposerMaintenanceLimit
-                                                    'Max Concurrent Instant Clone Engine Provisioning Operations' = $vCenterServer.Limits.InstantCloneEngineProvisioningLimit
-                                                    'Storage Acceleration Enabled' = $vCenterServer.StorageAcceleratorData.Enabled
-                                                    'Storage Accelerator Default Cache Size in MB' = $vCenterServer.StorageAcceleratorData.DefaultCacheSizeMB
-                                                }
+                                Write-PscriboMessage "Discovered Virtual Centers Information $($vCenterServer.serverspec.ServerName)."
+                                $inObj = [ordered] @{
+                                    'Name' = $vCenterServer.serverspec.ServerName
+                                    'Version' = ($vCenterHealthData | Where-Object {$_.InstanceUuid -eq $vCenterServer.InstanceUuid}).Version
+                                    'Build Number' = ($vCenterHealthData | Where-Object {$_.InstanceUuid -eq $vCenterServer.InstanceUuid}).Build
+                                    'API Version' = ($vCenterHealthData | Where-Object {$_.InstanceUuid -eq $vCenterServer.InstanceUuid}).ApiVersion
+                                    'Provisioning Enabled' = ConvertTo-TextYN $vCenterServer.Enabled
+                                }
 
-                                                $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
+                                $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
+                            }
+                            catch {
+                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                            }
+                        }
 
-                                                $TableParams = @{
-                                                    Name = "vCenter Server Details - $($vCenterServer.serverspec.ServerName)"
-                                                    List = $true
-                                                    ColumnWidths = 50, 50
-                                                }
+                        $TableParams = @{
+                            Name = "vCenter Summary - $($HVEnvironment)"
+                            List = $false
+                            ColumnWidths = 40, 15, 15, 15, 15
+                        }
 
-                                                if ($Report.ShowTableCaptions) {
-                                                    $TableParams['Caption'] = "- $($TableParams.Name)"
-                                                }
-                                                $OutObj | Table @TableParams
-                                                try {
-                                                    $HorizonVirtualCenterStorageAcceleratorHostOverrides = $vCenterServer.StorageAcceleratorData.HostOverrides
-                                                    if ($HorizonVirtualCenterStorageAcceleratorHostOverrides) {
+                        if ($Report.ShowTableCaptions) {
+                            $TableParams['Caption'] = "- $($TableParams.Name)"
+                        }
+                        $OutObj | Sort-Object -Property 'Name' | Table @TableParams
+                        try {
+                            if ($InfoLevel.Settings.Servers.vCenterServers.vCenter -ge 2) {
+                                foreach ($vCenterServer in $vCenterServers) {
+                                    try {
+                                        section -Style Heading5 "$($vCenterServer.serverspec.ServerName) Details" {
+                                            $OutObj = @()
+                                            Write-PscriboMessage "Discovered Virtual Centers Information $($vCenterServer.serverspec.ServerName)."
+                                            $inObj = [ordered] @{
+                                                'Name' = $vCenterServer.serverspec.ServerName
+                                                'Description' = $vCenterServer.Description
+                                                'Certificate Override' = $vCenterServer.CertificateOverride
+                                                'Provisioning Enabled' = $vCenterServer.Enabled
+                                                'Reclaim Disk Space' = $vCenterServer.SeSparseReclamationEnabled
+                                                'Port' = $vCenterServer.serverspec.Port
+                                                'User SSL' = $vCenterServer.serverspec.UseSSL
+                                                'User Name' = $vCenterServer.serverspec.UserName
+                                                'Type' = $vCenterServer.serverspec.ServerType
+                                                'Port Num' = $vCenterServer.serverspec.Port
+                                                'Max Concurrent Provisioning Operations' = $vCenterServer.Limits.VcProvisioningLimit
+                                                'Max Concurrent Power Operations' = $vCenterServer.Limits.VcPowerOperationsLimit
+                                                'Max Concurrent View Composer Maintenance Operations' = $vCenterServer.Limits.ViewComposerProvisioningLimit
+                                                'Max Concurrent View Composer Provisioning Operations' = $vCenterServer.Limits.ViewComposerMaintenanceLimit
+                                                'Max Concurrent Instant Clone Engine Provisioning Operations' = $vCenterServer.Limits.InstantCloneEngineProvisioningLimit
+                                                'Storage Acceleration Enabled' = $vCenterServer.StorageAcceleratorData.Enabled
+                                                'Storage Accelerator Default Cache Size' = "$($vCenterServer.StorageAcceleratorData.DefaultCacheSizeMB)MB"
+                                            }
+
+                                            $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
+
+                                            $TableParams = @{
+                                                Name = "vCenter Server Details - $($vCenterServer.serverspec.ServerName)"
+                                                List = $true
+                                                ColumnWidths = 50, 50
+                                            }
+
+                                            if ($Report.ShowTableCaptions) {
+                                                $TableParams['Caption'] = "- $($TableParams.Name)"
+                                            }
+                                            $OutObj | Table @TableParams
+                                            try {
+                                                $HorizonVirtualCenterStorageAcceleratorHostOverrides = $vCenterServer.StorageAcceleratorData.HostOverrides
+                                                if ($HorizonVirtualCenterStorageAcceleratorHostOverrides) {
+                                                    section -Style Heading6 "Storage Accelerator Overrides" {
+                                                        $OutObj = @()
                                                         foreach ($HorizonVirtualCenterStorageAcceleratorHostOverride in $HorizonVirtualCenterStorageAcceleratorHostOverrides) {
                                                             try {
-                                                                section -Style Heading6 "Storage Accelerator Overrides" {
-                                                                    $OutObj = @()
-                                                                    Write-PscriboMessage "Discovered Storage Accelerator Overrides Information $($vCenterServer.serverspec.ServerName)."
-                                                                    $inObj = [ordered] @{
-                                                                        'Host Override' = $HorizonVirtualCenterStorageAcceleratorHostOverride.Path
-                                                                        'Cache Size in MB' = $HorizonVirtualCenterStorageAcceleratorHostOverride.CacheSizeMB
-                                                                    }
-
-                                                                    $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
-
-                                                                    $TableParams = @{
-                                                                        Name = "Storage Accelerator Overrides - $($vCenterServer.serverspec.ServerName)"
-                                                                        List = $false
-                                                                        ColumnWidths = 50, 50
-                                                                    }
-
-                                                                    if ($Report.ShowTableCaptions) {
-                                                                        $TableParams['Caption'] = "- $($TableParams.Name)"
-                                                                    }
-                                                                    $OutObj | Table @TableParams
+                                                                Write-PscriboMessage "Discovered Storage Accelerator Overrides Information $($vCenterServer.serverspec.ServerName)."
+                                                                $DATACENTER = $HorizonVirtualCenterStorageAcceleratorHostOverride.Path.Split('/')[1]
+                                                                $Cluster = $HorizonVirtualCenterStorageAcceleratorHostOverride.Path.Split('/')[3]
+                                                                $VMHost = $HorizonVirtualCenterStorageAcceleratorHostOverride.Path.Split('/')[4]
+                                                                $inObj = [ordered] @{
+                                                                    'Datacenter' = $DATACENTER
+                                                                    'Cluster' = $Cluster
+                                                                    'Host' = $VMHost
+                                                                    'Cache Size' = "$($HorizonVirtualCenterStorageAcceleratorHostOverride.CacheSizeMB)MB"
                                                                 }
+
+                                                                $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                                                             }
                                                             catch {
                                                                 Write-PscriboMessage -IsWarning $_.Exception.Message
                                                             }
                                                         }
+
+                                                        $TableParams = @{
+                                                            Name = "Storage Accelerator Overrides - $($vCenterServer.serverspec.ServerName)"
+                                                            List = $false
+                                                            ColumnWidths = 25, 25, 25, 25
+                                                        }
+
+                                                        if ($Report.ShowTableCaptions) {
+                                                            $TableParams['Caption'] = "- $($TableParams.Name)"
+                                                        }
+                                                        $OutObj | Table @TableParams
                                                     }
                                                 }
-                                                catch {
-                                                    Write-PscriboMessage -IsWarning $_.Exception.Message
-                                                }
+                                            }
+                                            catch {
+                                                Write-PscriboMessage -IsWarning $_.Exception.Message
                                             }
                                         }
-                                        catch {
-                                            Write-PscriboMessage -IsWarning $_.Exception.Message
-                                        }
+                                    }
+                                    catch {
+                                        Write-PscriboMessage -IsWarning $_.Exception.Message
                                     }
                                 }
                             }
-                            catch {
-                                Write-PscriboMessage -IsWarning $_.Exception.Message
-                            }
+                        }
+                        catch {
+                            Write-PscriboMessage -IsWarning $_.Exception.Message
                         }
                     }
                 }

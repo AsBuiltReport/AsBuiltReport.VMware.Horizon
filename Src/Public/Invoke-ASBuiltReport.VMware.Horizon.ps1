@@ -295,6 +295,9 @@
                                 #                              vCenter Servers                                                #
                                 #---------------------------------------------------------------------------------------------#
                                 Get-AbrHRZVcenterInfo
+                                Get-AbrHRZESXiInfo
+                                Get-AbrHRZDatastoreInfo
+                                Get-AbrHRZADDomainiInfo
                             }
                         }
                     }
