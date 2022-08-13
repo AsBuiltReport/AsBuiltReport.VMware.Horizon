@@ -306,6 +306,7 @@
                                 Get-AbrHRZInstantClone
                                 Get-AbrHRZLicenseInfo
                                 Get-AbrHRZGlobalSetting
+                                Get-AbrHRZRegisteredMachine
                             }
                         }
                     }

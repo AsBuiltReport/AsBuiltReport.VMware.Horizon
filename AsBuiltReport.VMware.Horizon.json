@@ -55,7 +55,7 @@
                 "GlobalSettings": 1
             },
             "RegisteredMachines": {
-                "RegisteredMachines": 1
+                "RDSHosts": 1
             },
             "Administrators": {
                 "AdministratorsandGroups": 1,
@@ -91,6 +91,9 @@
             "Status": true
         },
         "ConnectionServers":{
+            "Status": true
+        },
+        "RegisteredMachines": {
             "Status": true
         }
 
