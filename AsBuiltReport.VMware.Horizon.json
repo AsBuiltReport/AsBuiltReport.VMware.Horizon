@@ -82,6 +82,17 @@
                 "JMPConfiguration": 1
             }
         }
+    },
+    "HealthCheck": {
+        "ESXiHosts": {
+            "Status": true
+        },
+        "DataStores": {
+            "Status": true
+        },
+        "vCenter": {
+            "Status": true
+        }
 
     }
 }
