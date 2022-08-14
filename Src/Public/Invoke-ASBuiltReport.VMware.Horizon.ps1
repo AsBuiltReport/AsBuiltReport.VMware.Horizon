@@ -113,6 +113,9 @@
             # Event Database Info
             $EventDataBases = $hzServices.EventDatabase.EventDatabase_Get()
 
+            # Syslog Info
+            $Syslog = $hzServices.Syslog.Syslog_Get()
+
             # Virtual Centers
             $vCenterServers = $hzServices.VirtualCenter.VirtualCenter_List()
 
@@ -307,6 +310,11 @@
                                 Get-AbrHRZLicenseInfo
                                 Get-AbrHRZGlobalSetting
                                 Get-AbrHRZRegisteredMachine
+                                Get-AbrHRZAdminGroupInfo
+                                Get-AbrHRZRolePrivilege
+                                Get-AbrHRZRolePermission
+                                Get-AbrHRZAccessGroup
+                                Get-AbrHRZEventConfInfo
                             }
                         }
                     }

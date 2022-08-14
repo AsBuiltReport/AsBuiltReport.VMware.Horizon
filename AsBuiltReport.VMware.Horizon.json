@@ -63,20 +63,13 @@
                 "RolePermissions": 1,
                 "AccessGroup": 1
             },
-            "CloudPodArchitecture": {
-                "CloudPodArchitecture": 1
-            },
-            "Sites": {
-                "Sites": 1
-            },
             "EventConfiguration": {
-                "EventConfiguration": 1
+                "EventDatabase": 1,
+                "Syslog": 1,
+                "EventstoFileSystem": 1
             },
             "GlobalPolicies": {
                 "GlobalPolicies": 0
-            },
-            "JMPConfiguration": {
-                "JMPConfiguration": 1
             }
         }
     },
