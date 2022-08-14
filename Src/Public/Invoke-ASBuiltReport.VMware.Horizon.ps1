@@ -170,8 +170,6 @@
             }
             $queryservice.QueryService_DeleteAll($hzServices)
 
-            # Thin Apps
-
             # Global Entitlements
             $GlobalEntitlementGroupsQueryDefn = New-Object VMware.Hv.QueryDefinition
             $GlobalEntitlementGroupsQueryDefn.queryentitytype='GlobalEntitlementSummaryView'
@@ -236,22 +234,6 @@
             }
             $queryservice.QueryService_DeleteAll($hzServices)
 
-            # Persistent Disks
-            try {
-                if ($connectionservers.General.Version -lt 8) {
-                    $PersistentDisksQueryDefn = New-Object VMware.Hv.QueryDefinition
-                    $PersistentDisksQueryDefn.queryentitytype='PersistentDiskInfo'
-                    $PersistentDisksqueryResults = $Queryservice.QueryService_Create($hzServices, $PersistentDisksQueryDefn)
-                    $PersistentDisks = foreach ($PersistentDisksresult in $PersistentDisksqueryResults.results) {
-                        $hzServices.PersistentDisk.PersistentDisk_Get($PersistentDisksresult.id)
-                    }
-                    $queryservice.QueryService_DeleteAll($hzServices)
-                }
-            }
-            catch {
-                Write-PscriboMessage -IsWarning $_.Exception.Message
-            }
-
             # Global Policies
 
             # Sessions
@@ -280,8 +262,9 @@
             }
 
             section -Style Heading1 "$($HVEnvironment)" {
+
                 if ($EntitledUserOrGroupLocalMachines -or $HomeSites -or $unauthenticatedAccessList) {
-                    if ($InfoLevel.UsersAndGroups.Entitlements -ge 1) {
+                    if ($InfoLevel.UsersAndGroups.PSObject.Properties.Value -ne 0) {
                         Section -Style Heading2 'Users and Groups' {
                             Get-AbrHRZLocalEntitlement
                             Get-AbrHRZHomeSite
@@ -289,34 +272,48 @@
                         }
                     }
                 }
+
+                if ($Pools -or $Apps -or $Farms -or $Machines -or $RDSServers -or $PersistentDisks -or $ThinApps -or $GlobalEntitlements -or $GlobalApplicationEntitlementGroups) {
+                    PageBreak
+                    section -Style Heading1 'Inventory' {
+                    }
+                }
+
                 if ($vCenterServers -or $vCenterHealth -or $Composers -or $Domains -or $SecurityServers -or $GatewayServers -or $ConnectionServers -or $InstantCloneDomainAdmins -or $ProductLicenseingInfo -or $GlobalSettings -or $RDSServers -or $Administrators -or $Roles -or $Permissions -or $AccessGroups -or $CloudPodFederation -or $CloudPodSites -or $EventDataBases -or $GlobalPolicies) {
+
                     section -Style Heading2 'Settings' {
-                        #---------------------------------------------------------------------------------------------#
-                        #                                      Servers                                                #
-                        #---------------------------------------------------------------------------------------------#
 
                         if ($vCenterServers -or $vCenterHealth -or $Composers -or $Domains -or $SecurityServers -or $GatewayServers -or $ConnectionServers) {
                             section -Style Heading3 'Servers' {
-                                #---------------------------------------------------------------------------------------------#
-                                #                              vCenter Servers                                                #
-                                #---------------------------------------------------------------------------------------------#
+
                                 Get-AbrHRZVcenterInfo
                                 Get-AbrHRZESXiInfo
                                 Get-AbrHRZDatastoreInfo
                                 Get-AbrHRZADDomainInfo
                                 Get-AbrHRZUAGInfo
                                 Get-AbrHRZConnectionServerInfo
-                                Get-AbrHRZInstantClone
-                                Get-AbrHRZLicenseInfo
-                                Get-AbrHRZGlobalSetting
-                                Get-AbrHRZRegisteredMachine
+
+                            }
+                        }
+
+                        Get-AbrHRZDomainInfo
+                        Get-AbrHRZLicenseInfo
+                        Get-AbrHRZGlobalSetting
+                        Get-AbrHRZRegisteredMachine
+
+                        if ($Administrators -or $Roles -or $Permissions -or $AccessGroups) {
+                            section -Style Heading2 'Administrators' {
+
                                 Get-AbrHRZAdminGroupInfo
                                 Get-AbrHRZRolePrivilege
                                 Get-AbrHRZRolePermission
                                 Get-AbrHRZAccessGroup
-                                Get-AbrHRZEventConfInfo
+
                             }
                         }
+
+                        Get-AbrHRZEventConfInfo
+
                     }
                 }
             }
