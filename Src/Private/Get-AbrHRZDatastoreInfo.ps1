@@ -77,8 +77,8 @@ function Get-AbrHRZDatastoreInfo {
                                                     $inObj = [ordered] @{
                                                         'Path' = $DataStore.Path
                                                         'Type' = $DataStore.DataStoreType
-                                                        'Capacity' = "$([math]::round($DataStore.CapacityMB / 1MB))GB"
-                                                        'Free Space' = "$([math]::round($DataStore.FreeSpaceMB / 1MB))GB"
+                                                        'Capacity' = "$([math]::round($DataStore.CapacityMB / 1KB))GB"
+                                                        'Free Space' = "$([math]::round($DataStore.FreeSpaceMB / 1KB))GB"
                                                         'Accessible' = $DataStore.Accessible
                                                     }
 
