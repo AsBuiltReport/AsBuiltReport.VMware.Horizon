@@ -60,10 +60,7 @@
             #$QueryDef = New-Object VMware.Hv.QueryDefinition
 
             # Virtual Centers
-            $vCenterServers = $hzServices.VirtualCenter.VirtualCenter_List()
-
-            # Composer Servers
-            $Composers = $vCenterServers.viewcomposerdata
+            $vCenterServers = try {$hzServices.VirtualCenter.VirtualCenter_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
 
             # vCenter Health, ESX Hosts, and DataStores
             $vCenterHealth = try {$hzServices.VirtualCenterHealth.VirtualCenterHealth_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
@@ -75,49 +72,44 @@
             $datastores = $vCenterHealth
 
             # Domains
-            $domains = $hzServices.ADDomainHealth.ADDomainHealth_List()
+            $domains = try {$hzServices.ADDomainHealth.ADDomainHealth_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
 
             # Connection Server Info
-            $connectionservers = $hzServices.ConnectionServer.ConnectionServer_List()
-
-            # Security Server Info
-            #$SecurityServers = $hzServices.SecurityServer.SecurityServer_List()
+            $connectionservers = try {$hzServices.ConnectionServer.ConnectionServer_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
 
             # GateWay Server Info
-            $GatewayServers = $hzServices.Gateway.Gateway_List()
+            $GatewayServers = try {$hzServices.Gateway.Gateway_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
 
             # Instant Clone Domain Admins
-            $InstantCloneDomainAdmins = $hzServices.InstantCloneEngineDomainAdministrator.InstantCloneEngineDomainAdministrator_List()
+            $InstantCloneDomainAdmins = try {$hzServices.InstantCloneEngineDomainAdministrator.InstantCloneEngineDomainAdministrator_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
 
             # Product Licensing Info
-            $ProductLicenseingInfo = $hzServices.License.License_Get()
+            $ProductLicenseingInfo = try {$hzServices.License.License_Get()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
 
             # Product Usage Info
-            $UsageStatisticsInfo = $hzServices.UsageStatistics.UsageStatistics_GetLicensingCounters()
+            $UsageStatisticsInfo = try {$hzServices.UsageStatistics.UsageStatistics_GetLicensingCounters()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
 
             # Global Settings
-            $GlobalSettings = $hzServices.GlobalSettings.GlobalSettings_Get()
+            $GlobalSettings = try {$hzServices.GlobalSettings.GlobalSettings_Get()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
 
             # Administrators
-            $Administrators = $hzServices.AdminUserOrGroup.AdminUserOrGroup_List()
-
-            # ThinApp Configuration
+            $Administrators = try {$hzServices.AdminUserOrGroup.AdminUserOrGroup_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
 
             # Cloud Pod Architecture
-            $CloudPodFederation = $hzServices.PodFederation.PodFederation_Get()
+            $CloudPodFederation = try {$hzServices.PodFederation.PodFederation_Get()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
 
             # Sites
-            $CloudPodSites = $hzServices.Site.Site_List()
-            $CloudPodLists = $hzServices.Pod.Pod_List()
+            $CloudPodSites = try {$hzServices.Site.Site_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
+            $CloudPodLists = try {$hzServices.Pod.Pod_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
 
             # Event Database Info
-            $EventDataBases = $hzServices.EventDatabase.EventDatabase_Get()
+            $EventDataBases = try {$hzServices.EventDatabase.EventDatabase_Get()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
 
             # Syslog Info
-            $Syslog = $hzServices.Syslog.Syslog_Get()
+            $Syslog = try {$hzServices.Syslog.Syslog_Get()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
 
             # Virtual Centers
-            $vCenterServers = $hzServices.VirtualCenter.VirtualCenter_List()
+            $vCenterServers = try {$hzServices.VirtualCenter.VirtualCenter_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
 
             try {
                 $EntitledUserOrGroupLocalMachineQueryDefn = New-Object VMware.Hv.QueryDefinition
@@ -152,98 +144,128 @@
                 Write-PscriboMessage -IsWarning $_.Exception.Message
             }
 
-            # Pool Info
-            $PoolQueryDefn = New-Object VMware.Hv.QueryDefinition
-            $PoolQueryDefn.queryentitytype='DesktopSummaryView'
-            $poolqueryResults = $Queryservice.QueryService_Create($hzServices, $PoolQueryDefn)
-            $pools = foreach ($poolresult in $poolqueryResults.results) {
-                $hzServices.desktop.desktop_get($poolresult.id)
+            try {
+                # Pool Info
+                $PoolQueryDefn = New-Object VMware.Hv.QueryDefinition
+                $PoolQueryDefn.queryentitytype='DesktopSummaryView'
+                $poolqueryResults = $Queryservice.QueryService_Create($hzServices, $PoolQueryDefn)
+                $pools = foreach ($poolresult in $poolqueryResults.results) {
+                    $hzServices.desktop.desktop_get($poolresult.id)
+                }
+                $queryservice.QueryService_DeleteAll($hzServices)
             }
-            $queryservice.QueryService_DeleteAll($hzServices)
+            catch {
+                Write-PscriboMessage -IsWarning $_.Exception.Message
+            }
 
-            # Application Pools
-            $AppQueryDefn = New-Object VMware.Hv.QueryDefinition
-            $AppQueryDefn.queryentitytype='ApplicationInfo'
-            $AppqueryResults = $Queryservice.QueryService_Create($hzServices, $AppQueryDefn)
-            $Apps = foreach ($Appresult in $AppqueryResults.results) {
-                $hzServices.Application.Application_Get($Appresult.id)
+            try {
+                # Application Pools
+                $AppQueryDefn = New-Object VMware.Hv.QueryDefinition
+                $AppQueryDefn.queryentitytype='ApplicationInfo'
+                $AppqueryResults = $Queryservice.QueryService_Create($hzServices, $AppQueryDefn)
+                $Apps = foreach ($Appresult in $AppqueryResults.results) {
+                    $hzServices.Application.Application_Get($Appresult.id)
+                }
+                $queryservice.QueryService_DeleteAll($hzServices)
             }
-            $queryservice.QueryService_DeleteAll($hzServices)
+            catch {
+                Write-PscriboMessage -IsWarning $_.Exception.Message
+            }
 
-            # Global Entitlements
-            $GlobalEntitlementGroupsQueryDefn = New-Object VMware.Hv.QueryDefinition
-            $GlobalEntitlementGroupsQueryDefn.queryentitytype='GlobalEntitlementSummaryView'
-            $GlobalEntitlementGroupsqueryResults = $Queryservice.QueryService_Create($hzServices, $GlobalEntitlementGroupsQueryDefn)
-            $GlobalEntitlements = foreach ($GlobalEntitlementGroupsResult in $GlobalEntitlementGroupsqueryResults.results) {
-                $hzServices.GlobalEntitlement.GlobalEntitlement_Get($GlobalEntitlementGroupsResult.id)
+            try {
+                # Global Entitlements
+                $GlobalEntitlementGroupsQueryDefn = New-Object VMware.Hv.QueryDefinition
+                $GlobalEntitlementGroupsQueryDefn.queryentitytype='GlobalEntitlementSummaryView'
+                $GlobalEntitlementGroupsqueryResults = $Queryservice.QueryService_Create($hzServices, $GlobalEntitlementGroupsQueryDefn)
+                $GlobalEntitlements = foreach ($GlobalEntitlementGroupsResult in $GlobalEntitlementGroupsqueryResults.results) {
+                    $hzServices.GlobalEntitlement.GlobalEntitlement_Get($GlobalEntitlementGroupsResult.id)
+                }
+                $queryservice.QueryService_DeleteAll($hzServices)
             }
-            $queryservice.QueryService_DeleteAll($hzServices)
+            catch {
+                Write-PscriboMessage -IsWarning $_.Exception.Message
+            }
 
-            # Entitled User Or Group Global
-            $GlobalApplicationEntitlementGroupsQueryDefn = New-Object VMware.Hv.QueryDefinition
-            $GlobalApplicationEntitlementGroupsQueryDefn.queryentitytype='GlobalApplicationEntitlementInfo'
-            $GlobalApplicationEntitlementGroupsqueryResults = $Queryservice.QueryService_Create($hzServices, $GlobalApplicationEntitlementGroupsQueryDefn)
-            $GlobalApplicationEntitlementGroups = foreach ($GlobalApplicationEntitlementGroupsResult in $GlobalApplicationEntitlementGroupsqueryResults.results) {
-                $hzServices.GlobalApplicationEntitlement.GlobalApplicationEntitlement_Get($GlobalApplicationEntitlementGroupsResult.id)
+            try {
+                # Entitled User Or Group Global
+                $GlobalApplicationEntitlementGroupsQueryDefn = New-Object VMware.Hv.QueryDefinition
+                $GlobalApplicationEntitlementGroupsQueryDefn.queryentitytype='GlobalApplicationEntitlementInfo'
+                $GlobalApplicationEntitlementGroupsqueryResults = $Queryservice.QueryService_Create($hzServices, $GlobalApplicationEntitlementGroupsQueryDefn)
+                $GlobalApplicationEntitlementGroups = foreach ($GlobalApplicationEntitlementGroupsResult in $GlobalApplicationEntitlementGroupsqueryResults.results) {
+                    $hzServices.GlobalApplicationEntitlement.GlobalApplicationEntitlement_Get($GlobalApplicationEntitlementGroupsResult.id)
+                }
+                $queryservice.QueryService_DeleteAll($hzServices)
             }
-            $queryservice.QueryService_DeleteAll($hzServices)
+            catch {
+                Write-PscriboMessage -IsWarning $_.Exception.Message
+            }
 
-            # EntitledUserOrGroupGlobalMachine Info
-            $EntitledUserOrGroupGlobalMachineQueryDefn = New-Object VMware.Hv.QueryDefinition
-            $EntitledUserOrGroupGlobalMachineQueryDefn.queryentitytype='EntitledUserOrGroupGlobalSummaryView'
-            $EntitledUserOrGroupGlobalMachinequeryResults = $Queryservice.QueryService_Create($hzServices, $EntitledUserOrGroupGlobalMachineQueryDefn)
-            $EntitledUserOrGroupGlobalMachines = foreach ($EntitledUserOrGroupGlobalMachineresult in $EntitledUserOrGroupGlobalMachinequeryResults.results) {
-                $hzServices.EntitledUserOrGroup.EntitledUserOrGroup_GetGlobalSummaryView($EntitledUserOrGroupGlobalMachineresult.id)
+            try {
+                # EntitledUserOrGroupGlobalMachine Info
+                $EntitledUserOrGroupGlobalMachineQueryDefn = New-Object VMware.Hv.QueryDefinition
+                $EntitledUserOrGroupGlobalMachineQueryDefn.queryentitytype='EntitledUserOrGroupGlobalSummaryView'
+                $EntitledUserOrGroupGlobalMachinequeryResults = $Queryservice.QueryService_Create($hzServices, $EntitledUserOrGroupGlobalMachineQueryDefn)
+                $EntitledUserOrGroupGlobalMachines = foreach ($EntitledUserOrGroupGlobalMachineresult in $EntitledUserOrGroupGlobalMachinequeryResults.results) {
+                    $hzServices.EntitledUserOrGroup.EntitledUserOrGroup_GetGlobalSummaryView($EntitledUserOrGroupGlobalMachineresult.id)
+                }
+                $queryservice.QueryService_DeleteAll($hzServices)
             }
-            $queryservice.QueryService_DeleteAll($hzServices)
+            catch {
+                Write-PscriboMessage -IsWarning $_.Exception.Message
+            }
 
 
             # Permissions
-            $Permissions = $hzServices.Permission.Permission_List()
+            $Permissions = try {$hzServices.Permission.Permission_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
 
             # Roles
-            $Roles = $hzServices.Role.Role_List()
+            $Roles = try {$hzServices.Role.Role_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
 
             # Access Groups
             $AccessGroups = $hzServices.AccessGroup.AccessGroup_List()
 
-            # Farm Info
-            $FarmdQueryDefn = New-Object VMware.Hv.QueryDefinition
-            $FarmdQueryDefn.queryentitytype='FarmSummaryView'
-            $FarmqueryResults = $Queryservice.QueryService_Create($hzServices, $FarmdQueryDefn)
-            $Farms = foreach ($farmresult in $farmqueryResults.results) {
-                $hzServices.farm.farm_get($farmresult.id)
+            try {
+                # Farm Info
+                $FarmdQueryDefn = New-Object VMware.Hv.QueryDefinition
+                $FarmdQueryDefn.queryentitytype='FarmSummaryView'
+                $FarmqueryResults = $Queryservice.QueryService_Create($hzServices, $FarmdQueryDefn)
+                $Farms = foreach ($farmresult in $farmqueryResults.results) {
+                    $hzServices.farm.farm_get($farmresult.id)
+                }
+                $queryservice.QueryService_DeleteAll($hzServices)
             }
-            $queryservice.QueryService_DeleteAll($hzServices)
-
-            # Machines
-            $MachinesQueryDefn = New-Object VMware.Hv.QueryDefinition
-            $MachinesQueryDefn.queryentitytype='MachineSummaryView'
-            $MachinesqueryResults = $Queryservice.QueryService_Create($hzServices, $MachinesQueryDefn)
-            $Machines = foreach ($Machinesresult in $MachinesqueryResults.results) {
-                $hzServices.machine.machine_get($Machinesresult.id)
+            catch {
+                Write-PscriboMessage -IsWarning $_.Exception.Message
             }
-            $queryservice.QueryService_DeleteAll($hzServices)
 
-            # RDS Servers
-            $RDSServerQueryDefn = New-Object VMware.Hv.QueryDefinition
-            $RDSServerQueryDefn.queryentitytype='RDSServerSummaryView'
-            $RDSServerqueryResults = $Queryservice.QueryService_Create($hzServices, $RDSServerQueryDefn)
-            $RDSServers = foreach ($RDSServerresult in $RDSServerqueryResults.results) {
-                $hzServices.RDSServer.RDSServer_GetSummaryView($RDSServerresult.id)
+            try {
+                # Machines
+                $MachinesQueryDefn = New-Object VMware.Hv.QueryDefinition
+                $MachinesQueryDefn.queryentitytype='MachineSummaryView'
+                $MachinesqueryResults = $Queryservice.QueryService_Create($hzServices, $MachinesQueryDefn)
+                $Machines = foreach ($Machinesresult in $MachinesqueryResults.results) {
+                    $hzServices.machine.machine_get($Machinesresult.id)
+                }
+                $queryservice.QueryService_DeleteAll($hzServices)
             }
-            $queryservice.QueryService_DeleteAll($hzServices)
-
-            # Global Policies
-
-            # Sessions
-            $SessionsQueryDefn = New-Object VMware.Hv.QueryDefinition
-            $SessionsQueryDefn.queryentitytype='SessionLocalSummaryView'
-            $SessionsqueryResults = $Queryservice.QueryService_Create($hzServices, $SessionsQueryDefn)
-            $Sessions = foreach ($Sessionsresult in $SessionsqueryResults.results) {
-                $hzServices.Session.Session_GetLocalSummaryView($Sessionsresult.id)
+            catch {
+                Write-PscriboMessage -IsWarning $_.Exception.Message
             }
-            $queryservice.QueryService_DeleteAll($hzServices)
+
+
+            try {
+                # RDS Servers
+                $RDSServerQueryDefn = New-Object VMware.Hv.QueryDefinition
+                $RDSServerQueryDefn.queryentitytype='RDSServerSummaryView'
+                $RDSServerqueryResults = $Queryservice.QueryService_Create($hzServices, $RDSServerQueryDefn)
+                $RDSServers = foreach ($RDSServerresult in $RDSServerqueryResults.results) {
+                    $hzServices.RDSServer.RDSServer_GetSummaryView($RDSServerresult.id)
+                }
+                $queryservice.QueryService_DeleteAll($hzServices)
+            }
+            catch {
+                Write-PscriboMessage -IsWarning $_.Exception.Message
+            }
 
             # Base Images
             try {
