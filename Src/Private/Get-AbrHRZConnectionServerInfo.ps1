@@ -186,7 +186,7 @@ function Get-AbrHRZConnectionServerInfo {
                                                         $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
 
                                                         if ($HealthCheck.ConnectionServers.Status) {
-                                                            $OutObj | Where-Object { $_.'Last Backup Status' -ne 'OK'} | Set-Style -Style Warning
+                                                            $OutObj | Where-Object { $_.'Last Backup Status' -ne 'OK'} | Set-Style -Style Warning -Property 'Last Backup Status'
                                                             $OutObj | Where-Object { $_.'Automatic Backup Frequency' -eq 'Disabled'} | Set-Style -Style Critical -Property 'Automatic Backup Frequency'
                                                         }
 

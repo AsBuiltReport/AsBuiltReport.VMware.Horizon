@@ -79,7 +79,7 @@ function Get-AbrHRZVcenterInfo {
                                                 'User SSL' = $vCenterServer.serverspec.UseSSL
                                                 'User Name' = $vCenterServer.serverspec.UserName
                                                 'Type' = $vCenterServer.serverspec.ServerType
-                                                'Port Num' = $vCenterServer.serverspec.Port
+                                                'TCP Port Number' = $vCenterServer.serverspec.Port
                                                 'Max Concurrent Provisioning Operations' = $vCenterServer.Limits.VcProvisioningLimit
                                                 'Max Concurrent Power Operations' = $vCenterServer.Limits.VcPowerOperationsLimit
                                                 'Max Concurrent View Composer Maintenance Operations' = $vCenterServer.Limits.ViewComposerProvisioningLimit

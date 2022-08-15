@@ -61,43 +61,45 @@ function Get-AbrHRZRegisteredMachine {
                             $OutObj | Table @TableParams
                             try {
                                 if ($InfoLevel.Settings.RegisteredMachines.RDSHosts -ge 2) {
-                                    foreach ($RDSServer in $RDSServers) {
-                                        Write-PscriboMessage "Discovered RDS Host $($RDSServer.base.name) Information."
-                                        $OutObj = @()
-                                        section -ExcludeFromTOC -Style Heading5 $RDSServer.Base.Name {
-                                            $inObj = [ordered] @{
-                                                'Name' = $RDSServer.base.name
-                                                'Description' = $RDSServer.base.Description
-                                                'Farm Name' = $RDSServer.SummaryData.FarmName
-                                                'Desktop Pool Name' = $RDSServer.SummaryData.DesktopName
-                                                'Farm Type' = $RDSServer.SummaryData.FarmType
-                                                'Access Group' = $RDSServerAccessgroup
-                                                'Message Security Mode' = $RDSServer.MessageSecurityData.MessageSecurityMode
-                                                'Message Security Enhanced Mode Supported' = $RDSServer.MessageSecurityData.MessageSecurityEnhancedModeSupported
-                                                'Operating System' = $RDSServer.agentdata.OperatingSystem
-                                                'Agent Version' = $RDSServer.agentdata.AgentVersion
-                                                'Agent Build Number' = $RDSServer.agentdata.AgentBuildNumber
-                                                'Remote Experience Agent Version' = $RDSServer.agentdata.RemoteExperienceAgentVersion
-                                                'Remote Experience Agent Build Number' = $RDSServer.agentdata.RemoteExperienceAgentBuildNumber
-                                                'Max Sessions Type' = $RDSServer.settings.SessionSettings.MaxSessionsType
-                                                'Max Sessions Set By Admin' = $RDSServer.settings.SessionSettings.MaxSessionsSetByAdmin
-                                                'Agent Max Sessions Type' = $RDSServer.settings.AgentMaxSessionsData.MaxSessionsType
-                                                'Agent Max Sessions Set By Admin' = $RDSServer.settings.AgentMaxSessionsData.MaxSessionsSeenByAgent
-                                                'Enabled' = $RDSServer.settings.enabled
-                                                'Status' = $RDSServer.runtimedata.Status
-                                            }
-                                            $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
+                                    section -Style Heading5 'RDS Hosts Details' {
+                                        foreach ($RDSServer in $RDSServers) {
+                                            Write-PscriboMessage "Discovered RDS Host $($RDSServer.base.name) Information."
+                                            $OutObj = @()
+                                            section -ExcludeFromTOC -Style Heading6 $RDSServer.Base.Name {
+                                                $inObj = [ordered] @{
+                                                    'Name' = $RDSServer.base.name
+                                                    'Description' = $RDSServer.base.Description
+                                                    'Farm Name' = $RDSServer.SummaryData.FarmName
+                                                    'Desktop Pool Name' = $RDSServer.SummaryData.DesktopName
+                                                    'Farm Type' = $RDSServer.SummaryData.FarmType
+                                                    'Access Group' = $RDSServerAccessgroup
+                                                    'Message Security Mode' = $RDSServer.MessageSecurityData.MessageSecurityMode
+                                                    'Message Security Enhanced Mode Supported' = $RDSServer.MessageSecurityData.MessageSecurityEnhancedModeSupported
+                                                    'Operating System' = $RDSServer.agentdata.OperatingSystem
+                                                    'Agent Version' = $RDSServer.agentdata.AgentVersion
+                                                    'Agent Build Number' = $RDSServer.agentdata.AgentBuildNumber
+                                                    'Remote Experience Agent Version' = $RDSServer.agentdata.RemoteExperienceAgentVersion
+                                                    'Remote Experience Agent Build Number' = $RDSServer.agentdata.RemoteExperienceAgentBuildNumber
+                                                    'Max Sessions Type' = $RDSServer.settings.SessionSettings.MaxSessionsType
+                                                    'Max Sessions Set By Admin' = $RDSServer.settings.SessionSettings.MaxSessionsSetByAdmin
+                                                    'Agent Max Sessions Type' = $RDSServer.settings.AgentMaxSessionsData.MaxSessionsType
+                                                    'Agent Max Sessions Set By Admin' = $RDSServer.settings.AgentMaxSessionsData.MaxSessionsSeenByAgent
+                                                    'Enabled' = $RDSServer.settings.enabled
+                                                    'Status' = $RDSServer.runtimedata.Status
+                                                }
+                                                $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
 
-                                            $TableParams = @{
-                                                Name = "RDS Host - $($RDSServer.base.name)"
-                                                List = $true
-                                                ColumnWidths = 50, 50
-                                            }
+                                                $TableParams = @{
+                                                    Name = "RDS Host - $($RDSServer.base.name)"
+                                                    List = $true
+                                                    ColumnWidths = 50, 50
+                                                }
 
-                                            if ($Report.ShowTableCaptions) {
-                                                $TableParams['Caption'] = "- $($TableParams.Name)"
+                                                if ($Report.ShowTableCaptions) {
+                                                    $TableParams['Caption'] = "- $($TableParams.Name)"
+                                                }
+                                                $OutObj | Table @TableParams
                                             }
-                                            $OutObj | Table @TableParams
                                         }
                                     }
                                 }

@@ -56,8 +56,6 @@ function Get-AbrHRZGlobalSetting {
                             'Message Security Mode' = $GlobalSettings.SecurityData.MessageSecurityMode
                             'Message Security Status' = $GlobalSettings.SecurityData.MessageSecurityStatus
                             'Enable IP Sec for Security Server Pairing' = $GlobalSettings.SecurityData.EnableIPSecForSecurityServerPairing
-                            'Mirage Configuration Enabled' = $GlobalSettings.MirageConfiguration.Enabled
-                            'Mirage Configuration URL' = $GlobalSettings.MirageConfiguration.Url
                         }
 
                         $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
@@ -81,8 +79,8 @@ function Get-AbrHRZGlobalSetting {
                                         $inObj = [ordered] @{
                                             'Type' = $CLientData.Type
                                             'Version' = $CLientData.Version
-                                            'WarnSpecificVersions' = $CLientData.WarnSpecificVersions
-                                            'BlockSpecificVersions' = $CLientData.BlockSpecificVersions
+                                            'Warn Specific Versions' = $CLientData.WarnSpecificVersions
+                                            'Block Specific Versions' = $CLientData.BlockSpecificVersions
                                         }
                                         $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                                     }

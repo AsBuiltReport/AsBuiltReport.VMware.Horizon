@@ -31,7 +31,7 @@ function Get-AbrHRZLicenseInfo {
         try {
             if ($ProductLicenseingInfo) {
                 if ($InfoLevel.Settings.ProductLicensing.ProductLicensingandUsage -ge 1) {
-                    section -Style Heading3 "Product Licensing" {
+                    section -Style Heading3 "Product License" {
                         $OutObj = @()
                         foreach ($ProductLic in $ProductLicenseingInfo) {
                             try {
@@ -58,7 +58,7 @@ function Get-AbrHRZLicenseInfo {
                         }
 
                         $TableParams = @{
-                            Name = "Product Licensing - $($HVEnvironment)"
+                            Name = "Product License - $($HVEnvironment)"
                             List = $true
                             ColumnWidths = 50, 50
                         }
@@ -70,24 +70,18 @@ function Get-AbrHRZLicenseInfo {
                         try {
                             if ($UsageStatisticsInfo) {
                                 if ($InfoLevel.Settings.ProductLicensing.ProductLicensingandUsage -ge 2) {
-                                    section -Style Heading4 "Product Licensing Usage" {
+                                    section -Style Heading4 "Product License Usage" {
                                         $OutObj = @()
-                                        foreach ($ProductUsage in $UsageStatisticsInfo.HighestUsage) {
+                                        foreach ($ProductUsage in $UsageStatisticsInfo.HighestUsage.PSObject.Properties.Name) {
                                             try {
                                                 Write-PscriboMessage "Discovered Product Licensing Usage Information."
                                                 $inObj = [ordered] @{
-                                                    'Total Concurrent Connections' = $ProductUsage.TotalConcurrentConnections
-                                                    'Total Named Users' = $ProductUsage.TotalNamedUsers
-                                                    'Total Concurrent Sessions' = $ProductUsage.TotalConcurrentSessions
-                                                    'Concurrent Full Vm Sessions' = $ProductUsage.ConcurrentFullVmSessions
-                                                    'Concurrent Linked Clone Sessions' = $ProductUsage.ConcurrentLinkedCloneSessions
-                                                    'Concurrent Unmanaged Vm Sessions' = $ProductUsage.ConcurrentUnmanagedVmSessions
-                                                    'Concurrent Application Sessions' = $ProductUsage.ConcurrentApplicationSessions
-                                                    'Concurrent Collaborative Sessions' = $ProductUsage.ConcurrentCollaborativeSessions
-                                                    'Total Collaborators' = $ProductUsage.TotalCollaborators
+                                                    'Name' = ($ProductUsage -creplace '([A-Z\W_]|\d+)(?<![a-z])',' $&').trim()
+                                                    'Current Usage' = ($UsageStatisticsInfo.CurrentUsage.PSObject.Properties | Where-Object {$_.Name -eq $ProductUsage}).Value
+                                                    'Highest Usage' = ($UsageStatisticsInfo.HighestUsage.PSObject.Properties | Where-Object {$_.Name -eq $ProductUsage}).Value
                                                 }
 
-                                                $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
+                                                $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                                             }
                                             catch {
                                                 Write-PscriboMessage -IsWarning $_.Exception.Message
@@ -95,9 +89,9 @@ function Get-AbrHRZLicenseInfo {
                                         }
 
                                         $TableParams = @{
-                                            Name = "Product Licensing Usage - $($HVEnvironment)"
-                                            List = $true
-                                            ColumnWidths = 50, 50
+                                            Name = "Product License Usage - $($HVEnvironment)"
+                                            List = $false
+                                            ColumnWidths = 60, 20, 20
                                         }
 
                                         if ($Report.ShowTableCaptions) {

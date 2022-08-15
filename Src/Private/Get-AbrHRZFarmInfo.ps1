@@ -44,6 +44,10 @@ function Get-AbrHRZFarmInfo {
                             $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                         }
 
+                        if ($HealthCheck.Farms.Status) {
+                            $OutObj | Where-Object { $_.'Enabled' -eq 'No'} | Set-Style -Style Warning -Property 'Enabled'
+                        }
+
                         $TableParams = @{
                             Name = "Farms - $($HVEnvironment)"
                             List = $false
@@ -95,6 +99,10 @@ function Get-AbrHRZFarmInfo {
 
                                                     $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
 
+                                                    if ($HealthCheck.Farms.Status) {
+                                                        $OutObj | Where-Object { $_.'Enabled' -eq 'No'} | Set-Style -Style Warning -Property 'Enabled'
+                                                    }
+
                                                     $TableParams = @{
                                                         Name = "Farm General Information - $($Farm.Data.name)"
                                                         List = $true
@@ -125,6 +133,10 @@ function Get-AbrHRZFarmInfo {
                                                     }
 
                                                     $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
+
+                                                    if ($HealthCheck.Farms.Status) {
+                                                        $OutObj | Where-Object { $_.'Provisioning Enabled' -eq 'No'} | Set-Style -Style Warning -Property 'Provisioning Enabled'
+                                                    }
 
                                                     $TableParams = @{
                                                         Name = "Farm Settings - $($Farm.Data.name)"
