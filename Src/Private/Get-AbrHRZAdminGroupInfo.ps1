@@ -108,7 +108,7 @@ function Get-AbrHRZAdminGroupInfo {
                                             'True' {$Administratorbasegroup = 'Group' }
                                             'False' {$Administratorbasegroup = 'User' }
                                         }
-                                        section -Style Heading6 $Administrator.Base.Name {
+                                        section -ExcludeFromTOC -Style Heading6 $Administrator.Base.Name {
                                             $OutObj = @()
                                             $inObj = [ordered] @{
                                                 'Name' = $Administrator.base.Name

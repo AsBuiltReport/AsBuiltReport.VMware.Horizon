@@ -35,17 +35,19 @@ function Get-AbrHRZDatastoreInfo {
                         $OutObj = @()
                         $Datastores = $vCenterHealth.datastoredata
                         foreach ($DataStore in $Datastores) {
-                            try {
-                                Write-PscriboMessage "Discovered Datastore Information from $($DataStore.name)."
-                                $inObj = [ordered] @{
-                                    'Name' = $DataStore.name
-                                    'Accessible' = $DataStore.Accessible
-                                }
+                            if ($DataStore.Name) {
+                                try {
+                                    Write-PscriboMessage "Discovered Datastore Information from $($DataStore.name)."
+                                    $inObj = [ordered] @{
+                                        'Name' = $DataStore.name
+                                        'Accessible' = $DataStore.Accessible
+                                    }
 
-                                $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
-                            }
-                            catch {
-                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                                    $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
+                                }
+                                catch {
+                                    Write-PscriboMessage -IsWarning $_.Exception.Message
+                                }
                             }
                         }
 
@@ -65,11 +67,11 @@ function Get-AbrHRZDatastoreInfo {
                         $OutObj | Sort-Object -Property 'Name' | Table @TableParams
                         try {
                             if ($InfoLevel.Settings.Servers.vCenterServers.DataStores -ge 2) {
-                                section -Style Heading5 "Datastore Detailed Information" {
+                                section -Style Heading5 "Datastore Detailed" {
                                     foreach ($DataStore in $Datastores) {
                                         if ($DataStore) {
                                             try {
-                                                section -Style Heading6 "$($DataStore.Name)" {
+                                                section -ExcludeFromTOC -Style Heading6 "$($DataStore.Name)" {
                                                     $OutObj = @()
                                                     Write-PscriboMessage "Discovered Datastore Information from $($DataStore.Name)."
                                                     $inObj = [ordered] @{

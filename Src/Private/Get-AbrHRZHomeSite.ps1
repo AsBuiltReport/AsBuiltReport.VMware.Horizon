@@ -31,7 +31,7 @@ function Get-AbrHRZHomeSite {
         if ($InfoLevel.UsersAndGroups.HomeSiteAssignments -ge 1) {
             try {
                 if ($Homesites) {
-                    Section -Style Heading3 'Home Site General Information' {
+                    Section -Style Heading3 'Home Site General' {
                         $OutObj = @()
                         foreach ($HomeSite in $HomeSites) {
                             try {

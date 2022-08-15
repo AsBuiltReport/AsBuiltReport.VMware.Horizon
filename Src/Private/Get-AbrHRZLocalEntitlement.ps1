@@ -134,7 +134,7 @@ function Get-AbrHRZLocalEntitlement {
                                         'True' {$EntitledUserOrGroupLocalMachinegroup = 'Group' }
                                         'False' {$EntitledUserOrGroupLocalMachinegroup = 'User' }
                                     }
-                                    Section -Style Heading5 "$($EntitledUserOrGroupLocalMachine.base.Name)" {
+                                    Section -ExcludeFromTOC -Style Heading5 "$($EntitledUserOrGroupLocalMachine.base.Name)" {
                                         $OutObj = @()
                                         try {
                                             Write-PscriboMessage "Local Entitlements Details for $($EntitledUserOrGroupLocalMachine.base.Name)."

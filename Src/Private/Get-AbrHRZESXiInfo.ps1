@@ -69,33 +69,35 @@ function Get-AbrHRZESXiInfo {
                                 try {
                                     if ($InfoLevel.Settings.Servers.vCenterServers.ESXiHosts -ge 2) {
                                         foreach ($ESXHost in ($ESXHosts | Where-Object {$_.ClusterName -eq $ESXCLUSTER})) {
-                                            try {
-                                                section -Style Heading5 "$($ESXHost.Name) Details" {
-                                                    Write-PscriboMessage "Discovered ESXI Server Information from $($ESXHost.Name)."
-                                                    $inObj = [ordered] @{
-                                                        'Cpu Cores' = $ESXHost.NumCpuCores
-                                                        'Cpu in Mhz' = $ESXHost.CpuMhz
-                                                        'Memory Size' = "$([math]::round($ESXHost.MemorySizeBytes / 1GB))GB"
-                                                        'VGPU Types' = $ESXHost.VGPUTypes
-                                                        'VDI Machines' = $ESXHost.NumMachines
-                                                    }
+                                            if ($ESXHost.Name) {
+                                                try {
+                                                    section -Style Heading5 "$($ESXHost.Name) Details" {
+                                                        Write-PscriboMessage "Discovered ESXI Server Information from $($ESXHost.Name)."
+                                                        $inObj = [ordered] @{
+                                                            'Cpu Cores' = $ESXHost.NumCpuCores
+                                                            'Cpu in Mhz' = $ESXHost.CpuMhz
+                                                            'Memory Size' = "$([math]::round($ESXHost.MemorySizeBytes / 1GB))GB"
+                                                            'VGPU Types' = $ESXHost.VGPUTypes
+                                                            'VDI Machines' = $ESXHost.NumMachines
+                                                        }
 
-                                                    $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
+                                                        $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
 
-                                                    $TableParams = @{
-                                                        Name = "ESXI Hosts - $($ESXHost.Name)"
-                                                        List = $true
-                                                        ColumnWidths = 50, 50
-                                                    }
+                                                        $TableParams = @{
+                                                            Name = "ESXI Hosts - $($ESXHost.Name)"
+                                                            List = $true
+                                                            ColumnWidths = 50, 50
+                                                        }
 
-                                                    if ($Report.ShowTableCaptions) {
-                                                        $TableParams['Caption'] = "- $($TableParams.Name)"
+                                                        if ($Report.ShowTableCaptions) {
+                                                            $TableParams['Caption'] = "- $($TableParams.Name)"
+                                                        }
+                                                        $OutObj | Table @TableParams
                                                     }
-                                                    $OutObj | Sort-Object -Property 'Name' | Table @TableParams
                                                 }
-                                            }
-                                            catch {
-                                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                                                catch {
+                                                    Write-PscriboMessage -IsWarning $_.Exception.Message
+                                                }
                                             }
                                         }
                                     }

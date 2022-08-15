@@ -30,23 +30,34 @@ function Get-AbrHRZUnauthenticatedACL {
     process {
         if ($InfoLevel.UsersAndGroups.HomeSiteAssignments -ge 1) {
             try {
-                $OutObj = @()
                 if ($unauthenticatedAccessList) {
-                    if ($InfoLevel.UsersAndGroups.UsersAndGroups.UnauthenticatedAccess -ge 1) {
-                        section -Style Heading2 "Unauthenticated Access General Information" {
-                            foreach ($unauthenticatedAccess in $unauthenticatedAccessList) {
+                    section -Style Heading2 "Unauthenticated Access General" {
+                        $OutObj = @()
+                        foreach ($unauthenticatedAccess in $unauthenticatedAccessList) {
+                            try {
                                 # User Info
-                                $unauthenticatedAccessUserIDName = ''
-                                if($unauthenticatedAccess.userdata.UserId){
-                                    $unauthenticatedAccessUserID = $hzServices.ADUserOrGroup.ADUserOrGroup_Get($unauthenticatedAccess.userdata.UserId)
-                                    $unauthenticatedAccessUserIDName = $unauthenticatedAccessUserID.Base.DisplayName
+                                try {
+                                    $unauthenticatedAccessUserIDName = ''
+                                    if ($unauthenticatedAccess.userdata.UserId) {
+                                        $unauthenticatedAccessUserID = $hzServices.ADUserOrGroup.ADUserOrGroup_Get($unauthenticatedAccess.userdata.UserId)
+                                        $unauthenticatedAccessUserIDName = $unauthenticatedAccessUserID.Base.DisplayName
+                                    }
+                                }
+                                catch {
+                                    Write-PscriboMessage -IsWarning $_.Exception.Message
                                 }
                                 # Pod Info
-                                $unauthenticatedAccessPodListName = ''
-                                if($unauthenticatedAccess.sourcepods){
-                                    $unauthenticatedAccessPodList = $hzServices.Pod.Pod_Get($unauthenticatedAccessList.sourcepods)
-                                    $unauthenticatedAccessPodListName = $unauthenticatedAccessPodList.DisplayName
+                                try {
+                                    $unauthenticatedAccessPodListName = ''
+                                    if ($unauthenticatedAccess.SourcePods) {
+                                        $unauthenticatedAccessPodList = $CloudPodLists | Where-Object {$_.id.id -eq $unauthenticatedAccess.SourcePods.Id}
+                                        $unauthenticatedAccessPodListName = $unauthenticatedAccessPodList.DisplayName
+                                    }
                                 }
+                                catch {
+                                    Write-PscriboMessage -IsWarning $_.Exception.Message
+                                }
+
                                 $inObj = [ordered] @{
                                     'Login Name' = $unauthenticatedAccess.userdata.LoginName
                                     'User ID' = $unauthenticatedAccessUserIDName
@@ -56,19 +67,22 @@ function Get-AbrHRZUnauthenticatedACL {
                                 }
                                 $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                             }
+                            catch {
+                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                            }
                         }
-                    }
 
-                    $TableParams = @{
-                        Name = "Home Site General - $($HVEnvironment)"
-                        List = $false
-                        ColumnWidths = 20, 20, 20, 20, 20
-                    }
+                        $TableParams = @{
+                            Name = "Home Site General - $($HVEnvironment)"
+                            List = $false
+                            ColumnWidths = 20, 20, 20, 20, 20
+                        }
 
-                    if ($Report.ShowTableCaptions) {
-                        $TableParams['Caption'] = "- $($TableParams.Name)"
+                        if ($Report.ShowTableCaptions) {
+                            $TableParams['Caption'] = "- $($TableParams.Name)"
+                        }
+                        $OutObj | Table @TableParams
                     }
-                    $OutObj | Table @TableParams
                 }
             }
             catch {

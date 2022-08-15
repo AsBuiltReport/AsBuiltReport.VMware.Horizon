@@ -31,7 +31,7 @@ function Get-AbrHRZVcenterInfo {
         try {
             if ($vCenterServers) {
                 if ($InfoLevel.Settings.Servers.vCenterServers.vCenter -ge 1) {
-                    section -Style Heading4 "vCenter Servers" {
+                    section -Style Heading4 "vCenter Servers Summary" {
                         $vCenterHealthData = $vCenterHealth.data
                         $OutObj = @()
                         foreach ($vCenterServer in $vCenterServers) {
@@ -66,7 +66,7 @@ function Get-AbrHRZVcenterInfo {
                             if ($InfoLevel.Settings.Servers.vCenterServers.vCenter -ge 2) {
                                 foreach ($vCenterServer in $vCenterServers) {
                                     try {
-                                        section -Style Heading5 "$($vCenterServer.serverspec.ServerName) Details" {
+                                        section -Style Heading5 "$($vCenterServer.serverspec.ServerName)" {
                                             $OutObj = @()
                                             Write-PscriboMessage "Discovered Virtual Centers Information $($vCenterServer.serverspec.ServerName)."
                                             $inObj = [ordered] @{

@@ -32,7 +32,7 @@ function Get-AbrHRZEventConfInfo {
             if ($EventDataBases -or $Syslog) {
                 if ($InfoLevel.Settings.EventConfiguration.PSObject.Properties.Value -ne 0) {
                     section -Style Heading4 "Event Configuration" {
-                        if ($InfoLevel.Settings.EventConfiguration.EventDatabase -ge 1 -and $EventDataBases.EventDatabaseSet) {
+                        if ($InfoLevel.Settings.EventConfiguration.EventDatabase -ge 1) {
                             try {
                                 section -Style Heading5 "Event Database" {
                                     $OutObj = @()
@@ -48,9 +48,14 @@ function Get-AbrHRZEventConfInfo {
                                             'Show Events for' = $EventDataBase.Settings.ShowEventsForTime
                                             'Classify Events as New for' = "$($EventDataBase.Settings.ClassifyEventsAsNewForDays) Days"
                                             'Timing Profiler Events' = "$($EventDataBase.Settings.TimingProfilerDataLongevity) Days"
+                                            'Enabled' = $EventDataBases.EventDatabaseSet
                                         }
 
                                         $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
+                                    }
+
+                                    if ($HealthCheck.EventConfiguration.EventDatabase) {
+                                        $OutObj | Where-Object { $_.'Enabled' -eq 'No'} | Set-Style -Style Warning -Property 'Enabled'
                                     }
 
                                     $TableParams = @{
@@ -71,20 +76,20 @@ function Get-AbrHRZEventConfInfo {
                         }
                         if ($InfoLevel.Settings.EventConfiguration.Syslog -ge 1 -and $Syslog.UdpData.Enabled) {
                             try {
-                                section -Style Heading5 "Syslog" {
+                                section -Style Heading5 "Syslog Configuration" {
                                     $OutObj = @()
-                                    foreach ($Logging in $Syslog) {
+                                    foreach ($Logging in $Syslog.UdpData.NetworkAddresses) {
                                         Write-PscriboMessage "Discovered Syslog Information."
                                         $inObj = [ordered] @{
-                                            'Server' = $Logging.UdpData.NetworkAddresses.split(':')[0]
-                                            'Port' = $Logging.UdpData.NetworkAddresses.split(':')[1]
+                                            'Server' = $Logging.split(':')[0]
+                                            'Port' = $Logging.split(':')[1]
                                         }
 
                                         $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                                     }
 
                                     $TableParams = @{
-                                        Name = "Syslog - $($HVEnvironment)"
+                                        Name = "Syslog Configuration - $($HVEnvironment)"
                                         List = $false
                                         ColumnWidths = 50, 50
                                     }

@@ -88,6 +88,9 @@
         },
         "RegisteredMachines": {
             "Status": true
+        },
+        "EventConfiguration": {
+            "EventDatabase": true
         }
 
     }

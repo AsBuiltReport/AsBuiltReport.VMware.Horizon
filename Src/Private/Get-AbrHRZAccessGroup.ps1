@@ -31,9 +31,12 @@ function Get-AbrHRZAccessGroup {
         try {
             if ($AccessGroups) {
                 if ($InfoLevel.Settings.Administrators.AccessGroup -ge 1) {
-                    section -Style Heading4 "Access Groups" {
+                    section -Style Heading4 "Access Groups Summary" {
                         $OutObj = @()
-                        foreach ($AccessGroup in $AccessGroups.Children) {
+                        $AccessGroupJoined = @()
+                        $AccessGroupJoined += $AccessGroups
+                        $AccessGroupJoined += $AccessGroups.Children
+                        foreach ($AccessGroup in $AccessGroupJoined) {
                             Write-PscriboMessage "Discovered $($AccessGroup.base.Name) Access Groups Information."
                             $inObj = [ordered] @{
                                 'Name' = $AccessGroup.base.Name
@@ -42,13 +45,6 @@ function Get-AbrHRZAccessGroup {
 
                             $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                         }
-
-                        $RootObj = [ordered] @{
-                            'Name' = '/Root'
-                            'Description' = 'ROOT FOLDER'
-                        }
-
-                        $OutObj += [pscustomobject]$RootObj
 
                         $TableParams = @{
                             Name = "Access Groups - $($HVEnvironment)"
@@ -87,7 +83,7 @@ function Get-AbrHRZAccessGroup {
                                         }
                                     }
                                     if ($AdministratorIDName) {
-                                        section -Style Heading5 $AccessGroup.base.Name {
+                                        section -ExcludeFromTOC -Style Heading5 $AccessGroup.base.Name {
                                             $OutObj = @()
                                             foreach ($Principal in ($AdministratorIDName.split(', ') | Select-Object -Unique)){
                                                 $PrincipalPermissionsName = ''
