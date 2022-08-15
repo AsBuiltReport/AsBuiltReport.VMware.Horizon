@@ -211,7 +211,7 @@
             $FarmdQueryDefn = New-Object VMware.Hv.QueryDefinition
             $FarmdQueryDefn.queryentitytype='FarmSummaryView'
             $FarmqueryResults = $Queryservice.QueryService_Create($hzServices, $FarmdQueryDefn)
-            $farms = foreach ($farmresult in $farmqueryResults.results) {
+            $Farms = foreach ($farmresult in $farmqueryResults.results) {
                 $hzServices.farm.farm_get($farmresult.id)
             }
             $queryservice.QueryService_DeleteAll($hzServices)
@@ -273,9 +273,10 @@
                     }
                 }
 
-                if ($Pools -or $Apps -or $Farms -or $Machines -or $RDSServers -or $PersistentDisks -or $ThinApps -or $GlobalEntitlements -or $GlobalApplicationEntitlementGroups) {
-                    PageBreak
-                    section -Style Heading1 'Inventory' {
+                if ($Pools -or $Apps -or $Farms -or $Machines -or $RDSServers -or $GlobalEntitlements -or $GlobalApplicationEntitlementGroups) {
+                    section -Style Heading2 'Inventory' {
+                        Get-AbrHRZApplicationInfo
+                        Get-AbrHRZFarmInfo
                     }
                 }
 
@@ -296,7 +297,7 @@
                             }
                         }
 
-                        Get-AbrHRZDomainInfo
+                        Get-AbrHRZInstantClone
                         Get-AbrHRZLicenseInfo
                         Get-AbrHRZGlobalSetting
                         Get-AbrHRZRegisteredMachine
