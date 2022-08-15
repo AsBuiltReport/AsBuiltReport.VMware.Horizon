@@ -273,10 +273,11 @@
                     }
                 }
 
-                if ($Pools -or $Apps -or $Farms -or $Machines -or $RDSServers -or $GlobalEntitlements -or $GlobalApplicationEntitlementGroups) {
+                if ($Pools -or $Apps -or $Farms -or $GlobalEntitlements) {
                     section -Style Heading2 'Inventory' {
                         Get-AbrHRZApplicationInfo
                         Get-AbrHRZFarmInfo
+                        Get-AbrHRZGlobalEntitlement
                     }
                 }
 
