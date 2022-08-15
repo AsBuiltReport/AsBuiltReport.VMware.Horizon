@@ -32,14 +32,23 @@ function Get-AbrHRZGlobalEntitlement {
             if ($GlobalEntitlements) {
                 if ($InfoLevel.Inventory.GlobalEntitlements -ge 1) {
                     section -Style Heading4 "Global Entitlements" {
+                        $GlobalEntitlementJoined = @()
+                        $GlobalEntitlementJoined += $GlobalEntitlements
+                        $GlobalEntitlementJoined += $GlobalApplicationEntitlementGroups
                         $OutObj = @()
-                        foreach ($GlobalEntitlement in $GlobalEntitlements) {
+                        foreach ($GlobalEntitlement in $GlobalEntitlementJoined) {
                             Write-PscriboMessage "Discovered Global Entitlements Information."
                             $GlobalEntitlementPodCount = ($GlobalEntitlement.data.memberpods.id).count
+                            if ($GlobalEntitlement.Data.LocalApplicationCount) {
+                                $Type = 'Application'
+                            }
+                            elseif ($GlobalEntitlement.Data.LocalDesktopCount) {
+                                $Type = 'Desktop'
+                            }
                             $inObj = [ordered] @{
-                                'Entitlement Name' = $GlobalEntitlement.base.DisplayName
-                                'Entitlement Type' = 'Desktop'
-                                'Entitlement Number of Pods' = $GlobalEntitlementPodCount
+                                'Name' = $GlobalEntitlement.base.DisplayName
+                                'Type' = $Type
+                                'Number of Pods' = $GlobalEntitlementPodCount
                             }
 
                             $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
@@ -48,7 +57,7 @@ function Get-AbrHRZGlobalEntitlement {
                         $TableParams = @{
                             Name = "Global Entitlements - $($HVEnvironment)"
                             List = $false
-                            ColumnWidths = 50, 50
+                            ColumnWidths = 34, 33, 33
                         }
 
                         if ($Report.ShowTableCaptions) {
