@@ -31,11 +31,11 @@ function Get-AbrHRZInstantClone {
         try {
             if ($InstantCloneDomainAdmins) {
                 if ($InfoLevel.Settings.InstantClone.InstantCloneDomainAccounts -ge 1) {
-                    section -Style Heading4 "Instant Clone Domain Accounts" {
+                    section -Style Heading4 "Instant Clone Accounts" {
                         $OutObj = @()
                         foreach ($InstantCloneDomainAdmin in $InstantCloneDomainAdmins) {
                             try {
-                                Write-PscriboMessage "Discovered Instant Clone Domain Accounts Information."
+                                Write-PscriboMessage "Discovered Instant Clone Accounts Information."
                                 $inObj = [ordered] @{
                                     'User Name' = $InstantCloneDomainAdmin.Base.UserName
                                     'Domain Name' = $InstantCloneDomainAdmin.NamesData.DnsName
