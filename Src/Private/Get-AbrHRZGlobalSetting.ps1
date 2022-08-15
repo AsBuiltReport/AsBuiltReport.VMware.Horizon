@@ -31,7 +31,7 @@ function Get-AbrHRZGlobalSetting {
         try {
             if ($GlobalSettings) {
                 if ($InfoLevel.Settings.GlobalSettings.GlobalSettings -ge 1) {
-                    section -Style Heading4 "Global Settings" {
+                    section -Style Heading3 "Global Settings" {
                         $OutObj = @()
                         Write-PscriboMessage "Discovered Global Settings Information."
                         $inObj = [ordered] @{

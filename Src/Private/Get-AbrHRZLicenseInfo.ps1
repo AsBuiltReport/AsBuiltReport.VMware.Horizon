@@ -31,7 +31,7 @@ function Get-AbrHRZLicenseInfo {
         try {
             if ($ProductLicenseingInfo) {
                 if ($InfoLevel.Settings.ProductLicensing.ProductLicensingandUsage -ge 1) {
-                    section -Style Heading4 "Product Licensing" {
+                    section -Style Heading3 "Product Licensing" {
                         $OutObj = @()
                         foreach ($ProductLic in $ProductLicenseingInfo) {
                             try {

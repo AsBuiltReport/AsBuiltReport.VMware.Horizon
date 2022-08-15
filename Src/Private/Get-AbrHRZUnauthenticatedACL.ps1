@@ -23,15 +23,15 @@ function Get-AbrHRZUnauthenticatedACL {
     )
 
     begin {
-        Write-PScriboMessage "Home Site Assignments InfoLevel set at $($InfoLevel.UsersAndGroups.HomeSiteAssignments)."
-        Write-PscriboMessage "Collecting Home Site General Information."
+        Write-PScriboMessage "UnauthenticatedAccess InfoLevel set at $($InfoLevel.UsersAndGroups.UnauthenticatedAccess)."
+        Write-PscriboMessage "Collecting Unauthenticated Access Information."
     }
 
     process {
-        if ($InfoLevel.UsersAndGroups.HomeSiteAssignments -ge 1) {
+        if ($InfoLevel.UsersAndGroups.UnauthenticatedAccess -ge 1) {
             try {
                 if ($unauthenticatedAccessList) {
-                    section -Style Heading2 "Unauthenticated Access General" {
+                    section -Style Heading3 "Unauthenticated Access" {
                         $OutObj = @()
                         foreach ($unauthenticatedAccess in $unauthenticatedAccessList) {
                             try {
@@ -62,8 +62,8 @@ function Get-AbrHRZUnauthenticatedACL {
                                     'Login Name' = $unauthenticatedAccess.userdata.LoginName
                                     'User ID' = $unauthenticatedAccessUserIDName
                                     'Description' = $unauthenticatedAccess.userdata.Description
-                                    'Hybrid Logon Config' = $unauthenticatedAccess.userdata.HybridLogonConfig
-                                    'Pod' = $unauthenticatedAccessPodListName
+                                    'Hybrid Logon' = $unauthenticatedAccess.userdata.HybridLogonConfig
+                                    'Pod Name' = $unauthenticatedAccessPodListName
                                 }
                                 $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                             }
@@ -73,7 +73,7 @@ function Get-AbrHRZUnauthenticatedACL {
                         }
 
                         $TableParams = @{
-                            Name = "Home Site General - $($HVEnvironment)"
+                            Name = "Unauthenticated Access - $($HVEnvironment)"
                             List = $false
                             ColumnWidths = 20, 20, 20, 20, 20
                         }
@@ -81,7 +81,7 @@ function Get-AbrHRZUnauthenticatedACL {
                         if ($Report.ShowTableCaptions) {
                             $TableParams['Caption'] = "- $($TableParams.Name)"
                         }
-                        $OutObj | Table @TableParams
+                        $OutObj | Sort-Object -Property 'Login Name' | Table @TableParams
                     }
                 }
             }

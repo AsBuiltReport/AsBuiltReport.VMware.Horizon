@@ -67,156 +67,158 @@ function Get-AbrHRZConnectionServerInfo {
                             $TableParams['Caption'] = "- $($TableParams.Name)"
                         }
                         $OutObj | Sort-Object -Property 'Name' | Table @TableParams
-                        try {
-                            $OutObj = @()
-                            foreach ($ConnectionServer in $ConnectionServers) {
-                                section -Style Heading5 "$($ConnectionServer.General.Name)" {
-                                    try {
-                                        $ConnectionServerTags = $ConnectionServer.General | ForEach-Object { $_.Tags}
-                                        $ConnectionServerTagsresult = $ConnectionServerTags -join ', '
-                                        Write-PscriboMessage "Discovered Connection Servers Information $($ConnectionServer.General.Name)."
-                                        $inObj = [ordered] @{
-                                            'Name' = $ConnectionServer.General.Name
-                                            'FQDN' = $ConnectionServer.General.Fqhn
-                                            'Server Address' = $ConnectionServer.General.ServerAddress
-                                            'Version' = $ConnectionServer.General.Version
-                                            'Enabled' = $ConnectionServer.General.Enabled
-                                            'Tags' = $ConnectionServerTagsresult
-                                            'External URL' = $ConnectionServer.General.ExternalURL
-                                            'External PCoIP URL' = $ConnectionServer.General.ExternalPCoIPURL
-                                            'Auxillary External PCoIP IPv4 Address' = $ConnectionServer.General.AuxillaryExternalPCoIPIPv4Address
-                                            'External App Blast URL' = $ConnectionServer.General.ExternalAppblastURL
-                                            'Local Connection Server' = $ConnectionServer.General.LocalConnectionServer
-                                            'Bypass Tunnel' = $ConnectionServer.General.BypassTunnel
-                                            'Bypass PCoIP Gateway' = $ConnectionServer.General.BypassPCoIPGateway
-                                            'Bypass App Blast Gateway' = $ConnectionServer.General.BypassAppBlastGateway
-                                            'IP Mode' = $ConnectionServer.General.IpMode
-                                            'FIPs Mode Enabled' = $ConnectionServer.General.FipsModeEnabled
-                                        }
-
-                                        $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
-
-                                        if ($HealthCheck.ConnectionServers.Status) {
-                                            $OutObj | Where-Object { $_.'Enabled' -eq 'No'} | Set-Style -Style Warning -Property 'Enabled'
-                                        }
-
-                                        $TableParams = @{
-                                            Name = "Connection Servers - $($ConnectionServer.General.Name)"
-                                            List = $true
-                                            ColumnWidths = 50, 50
-                                        }
-
-                                        if ($Report.ShowTableCaptions) {
-                                            $TableParams['Caption'] = "- $($TableParams.Name)"
-                                        }
-                                        $OutObj | Table @TableParams
+                        if ($InfoLevel.Settings.Servers.ConnectionServers.ConnectionServers -ge 2) {
+                            try {
+                                $OutObj = @()
+                                foreach ($ConnectionServer in $ConnectionServers) {
+                                    section -Style Heading5 "$($ConnectionServer.General.Name) Details" {
                                         try {
-                                            $OutObj = @()
-                                            section -Style Heading6 "Authentication" {
-                                                try {
-                                                    if($connectionserver.authentication.samlconfig.SamlAuthenticator) {
-                                                        $SAMLAuth = $hzServices.SAMLAuthenticator.SAMLAuthenticator_Get($connectionserver.authentication.samlconfig.SamlAuthenticator)
-                                                        $SAMLAuthList = $hzServices.SAMLAuthenticator.SAMLAuthenticator_list($ConnectionServer.Authentication.SamlConfig.SamlAuthenticators)
-                                                    }
-                                                    Write-PscriboMessage "Discovered Connection Servers Authentication Information $($ConnectionServer.General.Name)."
-                                                    $inObj = [ordered] @{
-                                                        'Smart Card Support' = $ConnectionServer.Authentication.SmartCardSupport
-                                                        'Log off When Smart Card Removed' = $ConnectionServer.Authentication.LogoffWhenRemoveSmartCard
-                                                        'RSA Secure ID Enabled' = $ConnectionServer.Authentication.RsaSecureIdConfig.SecureIdEnabled
-                                                        'RSA Secure ID Name Mapping' = $ConnectionServer.Authentication.RsaSecureIdConfig.NameMapping
-                                                        'RSA Secure ID Clear Node Secret' = $ConnectionServer.Authentication.RsaSecureIdConfig.ClearNodeSecret
-                                                        'RSA Secure ID Security File Data' = $ConnectionServer.Authentication.RsaSecureIdConfig.SecurityFileData
-                                                        'RSA Secure ID Security File Uploaded' = $ConnectionServer.Authentication.RsaSecureIdConfig.SecurityFileUploaded
-                                                        'Radius Enabled' = $ConnectionServer.Authentication.RadiusConfig.RadiusEnabled
-                                                        'Radius Authenticator' = $ConnectionServer.Authentication.RadiusConfig.RadiusAuthenticator
-                                                        'Radius Name Mapping' = $ConnectionServer.Authentication.RadiusConfig.RadiusNameMapping
-                                                        'Radius SSO' = $ConnectionServer.Authentication.RadiusConfig.RadiusSSO
-                                                        'SAML Support' = $ConnectionServer.Authentication.SamlConfig.SamlSupport
-                                                        'SAML Authenticator' = $SAMLAuth.base.Label
-                                                        'SAML Authenticators' = $SAMLAuthList.base.label
-                                                        'Unauthenticated Access Config Enabled' = $ConnectionServer.Authentication.UnauthenticatedAccessConfig.Enabled
-                                                        'Unauthenticated Access Default User' = $ConnectionServer.Authentication.UnauthenticatedAccessConfig.DefaultUser
-                                                        'Unauthenticated Access User Idle Timeout' = $ConnectionServer.Authentication.UnauthenticatedAccessConfig.UserIdleTimeout
-                                                    }
-
-                                                    $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
-
-                                                    $TableParams = @{
-                                                        Name = "Connection Servers - $($ConnectionServer.General.Name)"
-                                                        List = $true
-                                                        ColumnWidths = 50, 50
-                                                    }
-
-                                                    if ($Report.ShowTableCaptions) {
-                                                        $TableParams['Caption'] = "- $($TableParams.Name)"
-                                                    }
-                                                    $OutObj | Table @TableParams
-                                                }
-                                                catch {
-                                                    Write-PscriboMessage -IsWarning $_.Exception.Message
-                                                }
+                                            $ConnectionServerTags = $ConnectionServer.General | ForEach-Object { $_.Tags}
+                                            $ConnectionServerTagsresult = $ConnectionServerTags -join ', '
+                                            Write-PscriboMessage "Discovered Connection Servers Information $($ConnectionServer.General.Name)."
+                                            $inObj = [ordered] @{
+                                                'Name' = $ConnectionServer.General.Name
+                                                'FQDN' = $ConnectionServer.General.Fqhn
+                                                'Server Address' = $ConnectionServer.General.ServerAddress
+                                                'Version' = $ConnectionServer.General.Version
+                                                'Enabled' = $ConnectionServer.General.Enabled
+                                                'Tags' = $ConnectionServerTagsresult
+                                                'External URL' = $ConnectionServer.General.ExternalURL
+                                                'External PCoIP URL' = $ConnectionServer.General.ExternalPCoIPURL
+                                                'Auxillary External PCoIP IPv4 Address' = $ConnectionServer.General.AuxillaryExternalPCoIPIPv4Address
+                                                'External App Blast URL' = $ConnectionServer.General.ExternalAppblastURL
+                                                'Local Connection Server' = $ConnectionServer.General.LocalConnectionServer
+                                                'Bypass Tunnel' = $ConnectionServer.General.BypassTunnel
+                                                'Bypass PCoIP Gateway' = $ConnectionServer.General.BypassPCoIPGateway
+                                                'Bypass App Blast Gateway' = $ConnectionServer.General.BypassAppBlastGateway
+                                                'IP Mode' = $ConnectionServer.General.IpMode
+                                                'FIPs Mode Enabled' = $ConnectionServer.General.FipsModeEnabled
                                             }
-                                        }
-                                        catch {
-                                            Write-PscriboMessage -IsWarning $_.Exception.Message
-                                        }
-                                        try {
-                                            $OutObj = @()
-                                            section -Style Heading6 "Backup" {
-                                                try {
-                                                    Write-PscriboMessage "Discovered Connection Servers Authentication Information $($ConnectionServer.General.Name)."
-                                                    $inObj = [ordered] @{
-                                                        'Automatic Backup Frequency' = Switch ($ConnectionServer.Backup.LdapBackupFrequencyTime) {
-                                                            'DAY_1' {'Every day'}
-                                                            'DAY_2' {'Every 2 day'}
-                                                            'HOUR_1' {'Every hour'}
-                                                            'HOUR_12' {'Every 12 hours'}
-                                                            'WEEK_1' {'Every week'}
-                                                            'WEEK_2' {'Every 2 week'}
-                                                            'HOUR_0' {'Disabled'}
 
+                                            $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
+
+                                            if ($HealthCheck.ConnectionServers.Status) {
+                                                $OutObj | Where-Object { $_.'Enabled' -eq 'No'} | Set-Style -Style Warning -Property 'Enabled'
+                                            }
+
+                                            $TableParams = @{
+                                                Name = "Connection Servers - $($ConnectionServer.General.Name)"
+                                                List = $true
+                                                ColumnWidths = 50, 50
+                                            }
+
+                                            if ($Report.ShowTableCaptions) {
+                                                $TableParams['Caption'] = "- $($TableParams.Name)"
+                                            }
+                                            $OutObj | Table @TableParams
+                                            try {
+                                                $OutObj = @()
+                                                section -Style Heading6 "Authentication" {
+                                                    try {
+                                                        if($connectionserver.authentication.samlconfig.SamlAuthenticator) {
+                                                            $SAMLAuth = $hzServices.SAMLAuthenticator.SAMLAuthenticator_Get($connectionserver.authentication.samlconfig.SamlAuthenticator)
+                                                            $SAMLAuthList = $hzServices.SAMLAuthenticator.SAMLAuthenticator_list($ConnectionServer.Authentication.SamlConfig.SamlAuthenticators)
                                                         }
-                                                        'Max Number of Backups' = $ConnectionServer.Backup.LdapBackupMaxNumber
-                                                        'Last Backup Time' = $ConnectionServer.Backup.LastLdapBackupTime
-                                                        'Last Backup Status' = $ConnectionServer.Backup.LastLdapBackupStatus
-                                                        'Folder Location' = $ConnectionServer.Backup.LdapBackupFolder
-                                                    }
+                                                        Write-PscriboMessage "Discovered Connection Servers Authentication Information $($ConnectionServer.General.Name)."
+                                                        $inObj = [ordered] @{
+                                                            'Smart Card Support' = $ConnectionServer.Authentication.SmartCardSupport
+                                                            'Log off When Smart Card Removed' = $ConnectionServer.Authentication.LogoffWhenRemoveSmartCard
+                                                            'RSA Secure ID Enabled' = $ConnectionServer.Authentication.RsaSecureIdConfig.SecureIdEnabled
+                                                            'RSA Secure ID Name Mapping' = $ConnectionServer.Authentication.RsaSecureIdConfig.NameMapping
+                                                            'RSA Secure ID Clear Node Secret' = $ConnectionServer.Authentication.RsaSecureIdConfig.ClearNodeSecret
+                                                            'RSA Secure ID Security File Data' = $ConnectionServer.Authentication.RsaSecureIdConfig.SecurityFileData
+                                                            'RSA Secure ID Security File Uploaded' = $ConnectionServer.Authentication.RsaSecureIdConfig.SecurityFileUploaded
+                                                            'Radius Enabled' = $ConnectionServer.Authentication.RadiusConfig.RadiusEnabled
+                                                            'Radius Authenticator' = $ConnectionServer.Authentication.RadiusConfig.RadiusAuthenticator
+                                                            'Radius Name Mapping' = $ConnectionServer.Authentication.RadiusConfig.RadiusNameMapping
+                                                            'Radius SSO' = $ConnectionServer.Authentication.RadiusConfig.RadiusSSO
+                                                            'SAML Support' = $ConnectionServer.Authentication.SamlConfig.SamlSupport
+                                                            'SAML Authenticator' = $SAMLAuth.base.Label
+                                                            'SAML Authenticators' = $SAMLAuthList.base.label
+                                                            'Unauthenticated Access Config Enabled' = $ConnectionServer.Authentication.UnauthenticatedAccessConfig.Enabled
+                                                            'Unauthenticated Access Default User' = $ConnectionServer.Authentication.UnauthenticatedAccessConfig.DefaultUser
+                                                            'Unauthenticated Access User Idle Timeout' = $ConnectionServer.Authentication.UnauthenticatedAccessConfig.UserIdleTimeout
+                                                        }
 
-                                                    $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
+                                                        $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
 
-                                                    if ($HealthCheck.ConnectionServers.Status) {
-                                                        $OutObj | Where-Object { $_.'Last Backup Status' -ne 'OK'} | Set-Style -Style Warning
-                                                        $OutObj | Where-Object { $_.'Automatic Backup Frequency' -eq 'Disabled'} | Set-Style -Style Critical -Property 'Automatic Backup Frequency'
-                                                    }
+                                                        $TableParams = @{
+                                                            Name = "Connection Servers - $($ConnectionServer.General.Name)"
+                                                            List = $true
+                                                            ColumnWidths = 50, 50
+                                                        }
 
-                                                    $TableParams = @{
-                                                        Name = "Connection Servers - $($ConnectionServer.General.Name)"
-                                                        List = $true
-                                                        ColumnWidths = 50, 50
+                                                        if ($Report.ShowTableCaptions) {
+                                                            $TableParams['Caption'] = "- $($TableParams.Name)"
+                                                        }
+                                                        $OutObj | Table @TableParams
                                                     }
-
-                                                    if ($Report.ShowTableCaptions) {
-                                                        $TableParams['Caption'] = "- $($TableParams.Name)"
+                                                    catch {
+                                                        Write-PscriboMessage -IsWarning $_.Exception.Message
                                                     }
-                                                    $OutObj | Table @TableParams
                                                 }
-                                                catch {
-                                                    Write-PscriboMessage -IsWarning $_.Exception.Message
+                                            }
+                                            catch {
+                                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                                            }
+                                            try {
+                                                $OutObj = @()
+                                                section -Style Heading6 "Backup" {
+                                                    try {
+                                                        Write-PscriboMessage "Discovered Connection Servers Authentication Information $($ConnectionServer.General.Name)."
+                                                        $inObj = [ordered] @{
+                                                            'Automatic Backup Frequency' = Switch ($ConnectionServer.Backup.LdapBackupFrequencyTime) {
+                                                                'DAY_1' {'Every day'}
+                                                                'DAY_2' {'Every 2 day'}
+                                                                'HOUR_1' {'Every hour'}
+                                                                'HOUR_12' {'Every 12 hours'}
+                                                                'WEEK_1' {'Every week'}
+                                                                'WEEK_2' {'Every 2 week'}
+                                                                'HOUR_0' {'Disabled'}
+
+                                                            }
+                                                            'Max Number of Backups' = $ConnectionServer.Backup.LdapBackupMaxNumber
+                                                            'Last Backup Time' = $ConnectionServer.Backup.LastLdapBackupTime
+                                                            'Last Backup Status' = $ConnectionServer.Backup.LastLdapBackupStatus
+                                                            'Folder Location' = $ConnectionServer.Backup.LdapBackupFolder
+                                                        }
+
+                                                        $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
+
+                                                        if ($HealthCheck.ConnectionServers.Status) {
+                                                            $OutObj | Where-Object { $_.'Last Backup Status' -ne 'OK'} | Set-Style -Style Warning
+                                                            $OutObj | Where-Object { $_.'Automatic Backup Frequency' -eq 'Disabled'} | Set-Style -Style Critical -Property 'Automatic Backup Frequency'
+                                                        }
+
+                                                        $TableParams = @{
+                                                            Name = "Connection Servers - $($ConnectionServer.General.Name)"
+                                                            List = $true
+                                                            ColumnWidths = 50, 50
+                                                        }
+
+                                                        if ($Report.ShowTableCaptions) {
+                                                            $TableParams['Caption'] = "- $($TableParams.Name)"
+                                                        }
+                                                        $OutObj | Table @TableParams
+                                                    }
+                                                    catch {
+                                                        Write-PscriboMessage -IsWarning $_.Exception.Message
+                                                    }
                                                 }
+                                            }
+                                            catch {
+                                                Write-PscriboMessage -IsWarning $_.Exception.Message
                                             }
                                         }
                                         catch {
                                             Write-PscriboMessage -IsWarning $_.Exception.Message
                                         }
-                                    }
-                                    catch {
-                                        Write-PscriboMessage -IsWarning $_.Exception.Message
                                     }
                                 }
                             }
-                        }
-                        catch {
-                            Write-PscriboMessage -IsWarning $_.Exception.Message
+                            catch {
+                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                            }
                         }
                     }
                 }

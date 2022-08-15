@@ -326,7 +326,7 @@
                         Get-AbrHRZRegisteredMachine
 
                         if ($Administrators -or $Roles -or $Permissions -or $AccessGroups) {
-                            section -Style Heading2 'Administrators' {
+                            section -Style Heading3 'Administrators' {
 
                                 Get-AbrHRZAdminGroupInfo
                                 Get-AbrHRZRolePrivilege

@@ -31,7 +31,7 @@ function Get-AbrHRZGlobalEntitlement {
         try {
             if ($GlobalEntitlements) {
                 if ($InfoLevel.Inventory.GlobalEntitlements -ge 1) {
-                    section -Style Heading4 "Global Entitlements" {
+                    section -Style Heading4 "Global Entitlements Summary" {
                         $GlobalEntitlementJoined = @()
                         $GlobalEntitlementJoined += $GlobalEntitlements
                         $GlobalEntitlementJoined += $GlobalApplicationEntitlementGroups

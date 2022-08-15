@@ -31,7 +31,7 @@ function Get-AbrHRZInstantClone {
         try {
             if ($InstantCloneDomainAdmins) {
                 if ($InfoLevel.Settings.InstantClone.InstantCloneDomainAccounts -ge 1) {
-                    section -Style Heading4 "Instant Clone Accounts" {
+                    section -Style Heading3 "Instant Clone Accounts" {
                         $OutObj = @()
                         foreach ($InstantCloneDomainAdmin in $InstantCloneDomainAdmins) {
                             try {
