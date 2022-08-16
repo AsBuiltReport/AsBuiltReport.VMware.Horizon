@@ -29,6 +29,46 @@ function Get-AbrHRZApplicationInfo {
 
     process {
         try {
+            $AccessGroups = $hzServices.AccessGroup.AccessGroup_List()
+            try {
+                # Entitled User Or Group Global
+                $GlobalApplicationEntitlementGroupsQueryDefn = New-Object VMware.Hv.QueryDefinition
+                $GlobalApplicationEntitlementGroupsQueryDefn.queryentitytype='GlobalApplicationEntitlementInfo'
+                $GlobalApplicationEntitlementGroupsqueryResults = $Queryservice.QueryService_Create($hzServices, $GlobalApplicationEntitlementGroupsQueryDefn)
+                $GlobalApplicationEntitlementGroups = foreach ($GlobalApplicationEntitlementGroupsResult in $GlobalApplicationEntitlementGroupsqueryResults.results) {
+                    $hzServices.GlobalApplicationEntitlement.GlobalApplicationEntitlement_Get($GlobalApplicationEntitlementGroupsResult.id)
+                }
+                $queryservice.QueryService_DeleteAll($hzServices)
+            }
+            catch {
+                Write-PscriboMessage -IsWarning $_.Exception.Message
+            }
+            try {
+                # Farm Info
+                $FarmdQueryDefn = New-Object VMware.Hv.QueryDefinition
+                $FarmdQueryDefn.queryentitytype='FarmSummaryView'
+                $FarmqueryResults = $Queryservice.QueryService_Create($hzServices, $FarmdQueryDefn)
+                $Farms = foreach ($farmresult in $farmqueryResults.results) {
+                    $hzServices.farm.farm_get($farmresult.id)
+                }
+                $queryservice.QueryService_DeleteAll($hzServices)
+            }
+            catch {
+                Write-PscriboMessage -IsWarning $_.Exception.Message
+            }
+            try {
+                # Application Pools
+                $AppQueryDefn = New-Object VMware.Hv.QueryDefinition
+                $AppQueryDefn.queryentitytype='ApplicationInfo'
+                $AppqueryResults = $Queryservice.QueryService_Create($hzServices, $AppQueryDefn)
+                $Apps = foreach ($Appresult in $AppqueryResults.results) {
+                    $hzServices.Application.Application_Get($Appresult.id)
+                }
+                $queryservice.QueryService_DeleteAll($hzServices)
+            }
+            catch {
+                Write-PscriboMessage -IsWarning $_.Exception.Message
+            }
             if ($Apps) {
                 if ($InfoLevel.Inventory.Applications -ge 1) {
                     section -Style Heading3 "Applications Summary" {
@@ -72,7 +112,6 @@ function Get-AbrHRZApplicationInfo {
 
                                         # Find out Access Group for Applications
                                         $AccessgroupMatch = $false
-                                        $Accessgroups = $hzServices.AccessGroup.AccessGroup_List()
                                         foreach ($Accessgroup in $Accessgroups) {
                                             if ($Accessgroup.Id.id -eq $app.accessgroup.id) {
                                                 $AccessGroupName = $Accessgroup.base.name

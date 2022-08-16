@@ -29,6 +29,7 @@ function Get-AbrHRZRolePrivilege {
 
     process {
         try {
+            $Roles = try {$hzServices.Role.Role_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
             if ($Roles) {
                 if ($InfoLevel.Settings.Administrators.RolePrivileges -ge 1) {
                     section -Style Heading4 "Role Privileges" {

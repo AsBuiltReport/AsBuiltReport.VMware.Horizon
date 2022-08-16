@@ -29,6 +29,7 @@ function Get-AbrHRZConnectionServerInfo {
 
     process {
         try {
+            $Connectionservers = try {$hzServices.ConnectionServer.ConnectionServer_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
             if ($ConnectionServers) {
                 if ($InfoLevel.Settings.Servers.ConnectionServers.ConnectionServers -ge 1) {
                     section -Style Heading4 "Connection Servers Summary" {

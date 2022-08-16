@@ -29,6 +29,7 @@ function Get-AbrHRZDatastoreInfo {
 
     process {
         try {
+            $vCenterHealth = try {$hzServices.VirtualCenterHealth.VirtualCenterHealth_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
             if ($vCenterHealth) {
                 if ($InfoLevel.Settings.Servers.vCenterServers.DataStores -ge 1) {
                     section -Style Heading4 "Datastore Summary" {

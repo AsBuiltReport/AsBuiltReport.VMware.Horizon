@@ -29,6 +29,20 @@ function Get-AbrHRZFarmInfo {
 
     process {
         try {
+            try {
+                # Farm Info
+                $FarmdQueryDefn = New-Object VMware.Hv.QueryDefinition
+                $FarmdQueryDefn.queryentitytype='FarmSummaryView'
+                $FarmqueryResults = $Queryservice.QueryService_Create($hzServices, $FarmdQueryDefn)
+                $Farms = foreach ($farmresult in $farmqueryResults.results) {
+                    $hzServices.farm.farm_get($farmresult.id)
+                }
+                $queryservice.QueryService_DeleteAll($hzServices)
+            }
+            catch {
+                Write-PscriboMessage -IsWarning $_.Exception.Message
+            }
+            $AccessGroups = $hzServices.AccessGroup.AccessGroup_List()
             if ($Farms) {
                 if ($InfoLevel.Inventory.Farms -ge 1) {
                     section -Style Heading3 "Farms Summary" {
@@ -65,7 +79,6 @@ function Get-AbrHRZFarmInfo {
                                         section -Style Heading5 $($Farm.Data.name) {
                                             # Find out Access Group for Applications
                                             $AccessgroupMatch = $false
-                                            $Accessgroups = $hzServices.AccessGroup.AccessGroup_List()
                                             $AccessgroupJoined = @()
                                             $AccessgroupJoined += $Accessgroups
                                             $AccessgroupJoined += $Accessgroups.Children

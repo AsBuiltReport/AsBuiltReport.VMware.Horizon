@@ -29,6 +29,7 @@ function Get-AbrHRZInstantClone {
 
     process {
         try {
+            $InstantCloneDomainAdmins = try {$hzServices.InstantCloneEngineDomainAdministrator.InstantCloneEngineDomainAdministrator_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
             if ($InstantCloneDomainAdmins) {
                 if ($InfoLevel.Settings.InstantClone.InstantCloneDomainAccounts -ge 1) {
                     section -Style Heading3 "Instant Clone Accounts" {

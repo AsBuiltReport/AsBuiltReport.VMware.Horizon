@@ -29,6 +29,7 @@ function Get-AbrHRZGlobalSetting {
 
     process {
         try {
+            $GlobalSettings = try {$hzServices.GlobalSettings.GlobalSettings_Get()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
             if ($GlobalSettings) {
                 if ($InfoLevel.Settings.GlobalSettings.GlobalSettings -ge 1) {
                     section -Style Heading3 "Global Settings" {

@@ -29,6 +29,9 @@ function Get-AbrHRZAdminGroupInfo {
 
     process {
         try {
+            $Roles = try {$hzServices.Role.Role_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
+            $Permissions = try {$hzServices.Permission.Permission_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
+            $Administrators = try {$hzServices.AdminUserOrGroup.AdminUserOrGroup_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
             if ($Administrators) {
                 if ($InfoLevel.Settings.Administrators.AdministratorsandGroups -ge 1) {
                     section -Style Heading4 "Administrators and Groups" {

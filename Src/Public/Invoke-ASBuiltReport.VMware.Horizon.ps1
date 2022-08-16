@@ -23,13 +23,14 @@
         [PSCredential] $Credential
     )
 
+    # Check if the required version of VMware PowerCLI is installed
+    Get-RequiredModule -Name 'VMware.PowerCLI' -Version '12.7'
+
     # Import Report Configuration
     $Report = $ReportConfig.Report
     $InfoLevel = $ReportConfig.InfoLevel
     $Options = $ReportConfig.Options
 
-
-    $ErrorActionPreference = “SilentlyContinue”
 
     foreach ($HVEnvironment in $Target) {
 
@@ -37,14 +38,8 @@
             $HvServer = Connect-HVServer -Server $HVEnvironment -Credential $Credential -ErrorAction Stop
         }
         Catch {
-            Write-Error $_
-        } #Close Out Try Catch
-
-
-        #region Script Body
-        #---------------------------------------------------------------------------------------------#
-        #                                       SCRIPT BODY                                           #
-        #---------------------------------------------------------------------------------------------#
+            Write-PscriboMessage -IsWarning $_.Exception.Message
+        }
 
 
         # Generate report if connection to Horizon Environment Server Connection is successful
@@ -57,186 +52,6 @@
 
             # Define HV Query Services
             $Queryservice = new-object vmware.hv.queryserviceservice
-            #$QueryDef = New-Object VMware.Hv.QueryDefinition
-
-            # Virtual Centers
-            $vCenterServers = try {$hzServices.VirtualCenter.VirtualCenter_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
-
-            # vCenter Health, ESX Hosts, and DataStores
-            $vCenterHealth = try {$hzServices.VirtualCenterHealth.VirtualCenterHealth_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
-
-            # ESXHosts
-            $esxhosts = $vCenterHealth
-
-            # DataStores
-            $datastores = $vCenterHealth
-
-            # Domains
-            $domains = try {$hzServices.ADDomainHealth.ADDomainHealth_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
-
-            # Connection Server Info
-            $connectionservers = try {$hzServices.ConnectionServer.ConnectionServer_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
-
-            # GateWay Server Info
-            $GatewayServers = try {$hzServices.Gateway.Gateway_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
-
-            # Instant Clone Domain Admins
-            $InstantCloneDomainAdmins = try {$hzServices.InstantCloneEngineDomainAdministrator.InstantCloneEngineDomainAdministrator_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
-
-            # Product Licensing Info
-            $ProductLicenseingInfo = try {$hzServices.License.License_Get()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
-
-            # Product Usage Info
-            $UsageStatisticsInfo = try {$hzServices.UsageStatistics.UsageStatistics_GetLicensingCounters()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
-
-            # Global Settings
-            $GlobalSettings = try {$hzServices.GlobalSettings.GlobalSettings_Get()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
-
-            # Administrators
-            $Administrators = try {$hzServices.AdminUserOrGroup.AdminUserOrGroup_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
-
-            # Cloud Pod Architecture
-            $CloudPodFederation = try {$hzServices.PodFederation.PodFederation_Get()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
-
-            # Sites
-            $CloudPodSites = try {$hzServices.Site.Site_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
-            $CloudPodLists = try {$hzServices.Pod.Pod_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
-
-            # Event Database Info
-            $EventDataBases = try {$hzServices.EventDatabase.EventDatabase_Get()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
-
-            # Syslog Info
-            $Syslog = try {$hzServices.Syslog.Syslog_Get()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
-
-            # Virtual Centers
-            $vCenterServers = try {$hzServices.VirtualCenter.VirtualCenter_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
-
-            try {
-                $EntitledUserOrGroupLocalMachineQueryDefn = New-Object VMware.Hv.QueryDefinition
-                $EntitledUserOrGroupLocalMachineQueryDefn.queryentitytype='EntitledUserOrGroupLocalSummaryView'
-                $EntitledUserOrGroupLocalMachinequeryResults = $Queryservice.QueryService_Create($hzServices, $EntitledUserOrGroupLocalMachineQueryDefn)
-                $EntitledUserOrGroupLocalMachines = foreach ($EntitledUserOrGroupLocalMachineresult in $EntitledUserOrGroupLocalMachinequeryResults.results){$hzServices.EntitledUserOrGroup.EntitledUserOrGroup_GetLocalSummaryView($EntitledUserOrGroupLocalMachineresult.id)}
-                $queryservice.QueryService_DeleteAll($hzServices)
-            }
-            catch {
-                Write-PscriboMessage -IsWarning $_.Exception.Message
-            }
-
-            try {
-                # Home Site Info
-                $HomesiteQueryDefn = New-Object VMware.Hv.QueryDefinition
-                $HomesiteQueryDefn.queryentitytype='UserHomeSiteInfo'
-                $HomesitequeryResults = $Queryservice.QueryService_Create($hzServices, $HomesiteQueryDefn)
-                $Homesites = foreach ($Homesiteresult in $HomesitequeryResults.results) {
-                    $hzServices.UserHomeSite.UserHomeSite_GetInfos($Homesiteresult.id)
-                }
-                $queryservice.QueryService_DeleteAll($hzServices)
-            }
-            catch {
-                Write-PscriboMessage -IsWarning $_.Exception.Message
-            }
-
-            try {
-                # Unauthenticated Access
-                $unauthenticatedAccessList = $hzServices.UnauthenticatedAccessUser.UnauthenticatedAccessUser_List()
-            }
-            catch {
-                Write-PscriboMessage -IsWarning $_.Exception.Message
-            }
-
-            try {
-                # Pool Info
-                $PoolQueryDefn = New-Object VMware.Hv.QueryDefinition
-                $PoolQueryDefn.queryentitytype='DesktopSummaryView'
-                $poolqueryResults = $Queryservice.QueryService_Create($hzServices, $PoolQueryDefn)
-                $pools = foreach ($poolresult in $poolqueryResults.results) {
-                    $hzServices.desktop.desktop_get($poolresult.id)
-                }
-                $queryservice.QueryService_DeleteAll($hzServices)
-            }
-            catch {
-                Write-PscriboMessage -IsWarning $_.Exception.Message
-            }
-
-            try {
-                # Application Pools
-                $AppQueryDefn = New-Object VMware.Hv.QueryDefinition
-                $AppQueryDefn.queryentitytype='ApplicationInfo'
-                $AppqueryResults = $Queryservice.QueryService_Create($hzServices, $AppQueryDefn)
-                $Apps = foreach ($Appresult in $AppqueryResults.results) {
-                    $hzServices.Application.Application_Get($Appresult.id)
-                }
-                $queryservice.QueryService_DeleteAll($hzServices)
-            }
-            catch {
-                Write-PscriboMessage -IsWarning $_.Exception.Message
-            }
-
-            try {
-                # Global Entitlements
-                $GlobalEntitlementGroupsQueryDefn = New-Object VMware.Hv.QueryDefinition
-                $GlobalEntitlementGroupsQueryDefn.queryentitytype='GlobalEntitlementSummaryView'
-                $GlobalEntitlementGroupsqueryResults = $Queryservice.QueryService_Create($hzServices, $GlobalEntitlementGroupsQueryDefn)
-                $GlobalEntitlements = foreach ($GlobalEntitlementGroupsResult in $GlobalEntitlementGroupsqueryResults.results) {
-                    $hzServices.GlobalEntitlement.GlobalEntitlement_Get($GlobalEntitlementGroupsResult.id)
-                }
-                $queryservice.QueryService_DeleteAll($hzServices)
-            }
-            catch {
-                Write-PscriboMessage -IsWarning $_.Exception.Message
-            }
-
-            try {
-                # Entitled User Or Group Global
-                $GlobalApplicationEntitlementGroupsQueryDefn = New-Object VMware.Hv.QueryDefinition
-                $GlobalApplicationEntitlementGroupsQueryDefn.queryentitytype='GlobalApplicationEntitlementInfo'
-                $GlobalApplicationEntitlementGroupsqueryResults = $Queryservice.QueryService_Create($hzServices, $GlobalApplicationEntitlementGroupsQueryDefn)
-                $GlobalApplicationEntitlementGroups = foreach ($GlobalApplicationEntitlementGroupsResult in $GlobalApplicationEntitlementGroupsqueryResults.results) {
-                    $hzServices.GlobalApplicationEntitlement.GlobalApplicationEntitlement_Get($GlobalApplicationEntitlementGroupsResult.id)
-                }
-                $queryservice.QueryService_DeleteAll($hzServices)
-            }
-            catch {
-                Write-PscriboMessage -IsWarning $_.Exception.Message
-            }
-
-            try {
-                # EntitledUserOrGroupGlobalMachine Info
-                $EntitledUserOrGroupGlobalMachineQueryDefn = New-Object VMware.Hv.QueryDefinition
-                $EntitledUserOrGroupGlobalMachineQueryDefn.queryentitytype='EntitledUserOrGroupGlobalSummaryView'
-                $EntitledUserOrGroupGlobalMachinequeryResults = $Queryservice.QueryService_Create($hzServices, $EntitledUserOrGroupGlobalMachineQueryDefn)
-                $EntitledUserOrGroupGlobalMachines = foreach ($EntitledUserOrGroupGlobalMachineresult in $EntitledUserOrGroupGlobalMachinequeryResults.results) {
-                    $hzServices.EntitledUserOrGroup.EntitledUserOrGroup_GetGlobalSummaryView($EntitledUserOrGroupGlobalMachineresult.id)
-                }
-                $queryservice.QueryService_DeleteAll($hzServices)
-            }
-            catch {
-                Write-PscriboMessage -IsWarning $_.Exception.Message
-            }
-
-
-            # Permissions
-            $Permissions = try {$hzServices.Permission.Permission_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
-
-            # Roles
-            $Roles = try {$hzServices.Role.Role_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
-
-            # Access Groups
-            $AccessGroups = $hzServices.AccessGroup.AccessGroup_List()
-
-            try {
-                # Farm Info
-                $FarmdQueryDefn = New-Object VMware.Hv.QueryDefinition
-                $FarmdQueryDefn.queryentitytype='FarmSummaryView'
-                $FarmqueryResults = $Queryservice.QueryService_Create($hzServices, $FarmdQueryDefn)
-                $Farms = foreach ($farmresult in $farmqueryResults.results) {
-                    $hzServices.farm.farm_get($farmresult.id)
-                }
-                $queryservice.QueryService_DeleteAll($hzServices)
-            }
-            catch {
-                Write-PscriboMessage -IsWarning $_.Exception.Message
-            }
 
             try {
                 # Machines
@@ -267,78 +82,54 @@
                 Write-PscriboMessage -IsWarning $_.Exception.Message
             }
 
-            # Base Images
-            try {
-                $BaseImageVMList = $vCenterServers | ForEach-Object  {$hzServices.BaseImageVM.BaseImageVM_List($_.id, $null)}
-                $CompatibleBaseImageVMs = $BaseImageVMList | Where-Object {
-                    ($_.IncompatibleReasons.InUseByDesktop -eq $false) -and
-                    ($_.IncompatibleReasons.InUseByLinkedCloneDesktop -eq $false) -and
-                    ($_.IncompatibleReasons.ViewComposerReplica -eq $false) -and
-                    ($_.IncompatibleReasons.UnsupportedOS -eq $false) -and
-                    ($_.IncompatibleReasons.NoSnapshots -eq $false) -and
-                    (($null -eq $_.IncompatibleReasons.InstantInternal) -or ($_.IncompatibleReasons.InstantInternal -eq $false))
-                }
-            }
-            catch {
-                Write-PscriboMessage -IsWarning $_.Exception.Message
-            }
-
             section -Style Heading1 "$($HVEnvironment)" {
-
-                if ($EntitledUserOrGroupLocalMachines -or $HomeSites -or $unauthenticatedAccessList) {
-                    if ($InfoLevel.UsersAndGroups.PSObject.Properties.Value -ne 0) {
-                        Section -Style Heading2 'Users and Groups' {
-                            Get-AbrHRZLocalEntitlement
-                            Get-AbrHRZHomeSite
-                            Get-AbrHRZUnauthenticatedACL
-                        }
+                if ($InfoLevel.UsersAndGroups.PSObject.Properties.Value -ne 0) {
+                    Section -Style Heading2 'Users and Groups' {
+                        Get-AbrHRZLocalEntitlement
+                        Get-AbrHRZHomeSite
+                        Get-AbrHRZUnauthenticatedACL
                     }
                 }
 
-                if ($Pools -or $Apps -or $Farms -or $GlobalEntitlements) {
+                if ($InfoLevel.Inventory.PSObject.Properties.Value -ne 0) {
                     section -Style Heading2 'Inventory' {
+                        Get-AbrHRZPoolsInfo
                         Get-AbrHRZApplicationInfo
                         Get-AbrHRZFarmInfo
                         Get-AbrHRZGlobalEntitlement
                     }
                 }
 
-                if ($vCenterServers -or $vCenterHealth -or $Composers -or $Domains -or $SecurityServers -or $GatewayServers -or $ConnectionServers -or $InstantCloneDomainAdmins -or $ProductLicenseingInfo -or $GlobalSettings -or $RDSServers -or $Administrators -or $Roles -or $Permissions -or $AccessGroups -or $CloudPodFederation -or $CloudPodSites -or $EventDataBases -or $GlobalPolicies) {
+                section -Style Heading2 'Settings' {
+                    if ($InfoLevel.Settings.Servers.PSObject.Properties.Value -ne 0) {
+                        section -Style Heading3 'Servers' {
 
-                    section -Style Heading2 'Settings' {
+                            Get-AbrHRZVcenterInfo
+                            Get-AbrHRZESXiInfo
+                            Get-AbrHRZDatastoreInfo
+                            Get-AbrHRZADDomainInfo
+                            Get-AbrHRZUAGInfo
+                            Get-AbrHRZConnectionServerInfo
 
-                        if ($vCenterServers -or $vCenterHealth -or $Composers -or $Domains -or $SecurityServers -or $GatewayServers -or $ConnectionServers) {
-                            section -Style Heading3 'Servers' {
-
-                                Get-AbrHRZVcenterInfo
-                                Get-AbrHRZESXiInfo
-                                Get-AbrHRZDatastoreInfo
-                                Get-AbrHRZADDomainInfo
-                                Get-AbrHRZUAGInfo
-                                Get-AbrHRZConnectionServerInfo
-
-                            }
                         }
-
-                        Get-AbrHRZInstantClone
-                        Get-AbrHRZLicenseInfo
-                        Get-AbrHRZGlobalSetting
-                        Get-AbrHRZRegisteredMachine
-
-                        if ($Administrators -or $Roles -or $Permissions -or $AccessGroups) {
-                            section -Style Heading3 'Administrators' {
-
-                                Get-AbrHRZAdminGroupInfo
-                                Get-AbrHRZRolePrivilege
-                                Get-AbrHRZRolePermission
-                                Get-AbrHRZAccessGroup
-
-                            }
-                        }
-
-                        Get-AbrHRZEventConfInfo
-
                     }
+
+                    Get-AbrHRZInstantClone
+                    Get-AbrHRZLicenseInfo
+                    Get-AbrHRZGlobalSetting
+                    Get-AbrHRZRegisteredMachine
+
+                    if ($InfoLevel.Settings.Administrators.PSObject.Properties.Value -ne 0) {
+                        section -Style Heading3 'Administrators' {
+                            Get-AbrHRZAdminGroupInfo
+                            Get-AbrHRZRolePrivilege
+                            Get-AbrHRZRolePermission
+                            Get-AbrHRZAccessGroup
+
+                        }
+                    }
+
+                    Get-AbrHRZEventConfInfo
                 }
             }
         }

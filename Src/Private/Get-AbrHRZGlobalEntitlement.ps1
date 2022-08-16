@@ -29,6 +29,32 @@ function Get-AbrHRZGlobalEntitlement {
 
     process {
         try {
+            try {
+                # Global Entitlements
+                $GlobalEntitlementGroupsQueryDefn = New-Object VMware.Hv.QueryDefinition
+                $GlobalEntitlementGroupsQueryDefn.queryentitytype='GlobalEntitlementSummaryView'
+                $GlobalEntitlementGroupsqueryResults = $Queryservice.QueryService_Create($hzServices, $GlobalEntitlementGroupsQueryDefn)
+                $GlobalEntitlements = foreach ($GlobalEntitlementGroupsResult in $GlobalEntitlementGroupsqueryResults.results) {
+                    $hzServices.GlobalEntitlement.GlobalEntitlement_Get($GlobalEntitlementGroupsResult.id)
+                }
+                $queryservice.QueryService_DeleteAll($hzServices)
+            }
+            catch {
+                Write-PscriboMessage -IsWarning $_.Exception.Message
+            }
+            try {
+                # Entitled User Or Group Global
+                $GlobalApplicationEntitlementGroupsQueryDefn = New-Object VMware.Hv.QueryDefinition
+                $GlobalApplicationEntitlementGroupsQueryDefn.queryentitytype='GlobalApplicationEntitlementInfo'
+                $GlobalApplicationEntitlementGroupsqueryResults = $Queryservice.QueryService_Create($hzServices, $GlobalApplicationEntitlementGroupsQueryDefn)
+                $GlobalApplicationEntitlementGroups = foreach ($GlobalApplicationEntitlementGroupsResult in $GlobalApplicationEntitlementGroupsqueryResults.results) {
+                    $hzServices.GlobalApplicationEntitlement.GlobalApplicationEntitlement_Get($GlobalApplicationEntitlementGroupsResult.id)
+                }
+                $queryservice.QueryService_DeleteAll($hzServices)
+            }
+            catch {
+                Write-PscriboMessage -IsWarning $_.Exception.Message
+            }
             if ($GlobalEntitlements) {
                 if ($InfoLevel.Inventory.GlobalEntitlements -ge 1) {
                     section -Style Heading4 "Global Entitlements Summary" {

@@ -29,6 +29,7 @@ function Get-AbrHRZLicenseInfo {
 
     process {
         try {
+            $ProductLicenseingInfo = try {$hzServices.License.License_Get()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
             if ($ProductLicenseingInfo) {
                 if ($InfoLevel.Settings.ProductLicensing.ProductLicensingandUsage -ge 1) {
                     section -Style Heading3 "Product License" {
@@ -68,6 +69,7 @@ function Get-AbrHRZLicenseInfo {
                         }
                         $OutObj | Table @TableParams
                         try {
+                            $UsageStatisticsInfo = try {$hzServices.UsageStatistics.UsageStatistics_GetLicensingCounters()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
                             if ($UsageStatisticsInfo) {
                                 if ($InfoLevel.Settings.ProductLicensing.ProductLicensingandUsage -ge 2) {
                                     section -Style Heading4 "Product License Usage" {
