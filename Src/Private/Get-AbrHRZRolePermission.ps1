@@ -29,9 +29,6 @@ function Get-AbrHRZRolePermission {
 
     process {
         try {
-            $AccessGroups = $hzServices.AccessGroup.AccessGroup_List()
-            $Roles = try {$hzServices.Role.Role_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
-            $Permissions = try {$hzServices.Permission.Permission_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
             if ($Permissions) {
                 if ($InfoLevel.Settings.Administrators.RolePermissions -ge 1) {
                     section -Style Heading4 "Role Permissions" {

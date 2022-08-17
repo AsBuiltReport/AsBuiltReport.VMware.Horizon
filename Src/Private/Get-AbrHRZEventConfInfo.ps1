@@ -29,8 +29,6 @@ function Get-AbrHRZEventConfInfo {
 
     process {
         try {
-            $EventDataBases = try {$hzServices.EventDatabase.EventDatabase_Get()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
-            $Syslog = try {$hzServices.Syslog.Syslog_Get()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
             if ($EventDataBases -or $Syslog) {
                 if ($InfoLevel.Settings.EventConfiguration.PSObject.Properties.Value -ne 0) {
                     section -Style Heading4 "Event Configuration" {

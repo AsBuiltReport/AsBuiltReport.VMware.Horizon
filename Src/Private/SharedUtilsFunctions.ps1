@@ -142,7 +142,12 @@ function ConvertTo-HashToYN {
 
     $result = [ordered] @{}
     foreach($i in $inObj.GetEnumerator()) {
-        $result.add($i.Key, (ConvertTo-TextYN $i.Value))
+        try {
+            $result.add($i.Key, (ConvertTo-TextYN $i.Value))
+        }
+        catch {
+            Write-PscriboMessage -IsWarning "Unable to process $($i.key) values"
+        }
     }
     if ($result) {
         return $result

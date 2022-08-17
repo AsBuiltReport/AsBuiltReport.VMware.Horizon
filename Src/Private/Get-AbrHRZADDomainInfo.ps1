@@ -29,7 +29,6 @@ function Get-AbrHRZADDomainInfo {
 
     process {
         try {
-            $Domains = try {$hzServices.ADDomainHealth.ADDomainHealth_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
             if ($Domains) {
                 if ($InfoLevel.Settings.Servers.vCenterServers.ADDomains -ge 1) {
                     section -Style Heading4 "Active Directory Domains Summary" {

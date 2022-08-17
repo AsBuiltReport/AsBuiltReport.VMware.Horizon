@@ -1,4 +1,4 @@
-function Get-AbrHRZApplicationInfo {
+function Get-AbrHRZApplicationPoolsInfo {
     <#
     .SYNOPSIS
         PowerShell script which documents the configuration of VMware Horizon in Word/HTML/XML/Text formats
@@ -29,49 +29,9 @@ function Get-AbrHRZApplicationInfo {
 
     process {
         try {
-            $AccessGroups = $hzServices.AccessGroup.AccessGroup_List()
-            try {
-                # Entitled User Or Group Global
-                $GlobalApplicationEntitlementGroupsQueryDefn = New-Object VMware.Hv.QueryDefinition
-                $GlobalApplicationEntitlementGroupsQueryDefn.queryentitytype='GlobalApplicationEntitlementInfo'
-                $GlobalApplicationEntitlementGroupsqueryResults = $Queryservice.QueryService_Create($hzServices, $GlobalApplicationEntitlementGroupsQueryDefn)
-                $GlobalApplicationEntitlementGroups = foreach ($GlobalApplicationEntitlementGroupsResult in $GlobalApplicationEntitlementGroupsqueryResults.results) {
-                    $hzServices.GlobalApplicationEntitlement.GlobalApplicationEntitlement_Get($GlobalApplicationEntitlementGroupsResult.id)
-                }
-                $queryservice.QueryService_DeleteAll($hzServices)
-            }
-            catch {
-                Write-PscriboMessage -IsWarning $_.Exception.Message
-            }
-            try {
-                # Farm Info
-                $FarmdQueryDefn = New-Object VMware.Hv.QueryDefinition
-                $FarmdQueryDefn.queryentitytype='FarmSummaryView'
-                $FarmqueryResults = $Queryservice.QueryService_Create($hzServices, $FarmdQueryDefn)
-                $Farms = foreach ($farmresult in $farmqueryResults.results) {
-                    $hzServices.farm.farm_get($farmresult.id)
-                }
-                $queryservice.QueryService_DeleteAll($hzServices)
-            }
-            catch {
-                Write-PscriboMessage -IsWarning $_.Exception.Message
-            }
-            try {
-                # Application Pools
-                $AppQueryDefn = New-Object VMware.Hv.QueryDefinition
-                $AppQueryDefn.queryentitytype='ApplicationInfo'
-                $AppqueryResults = $Queryservice.QueryService_Create($hzServices, $AppQueryDefn)
-                $Apps = foreach ($Appresult in $AppqueryResults.results) {
-                    $hzServices.Application.Application_Get($Appresult.id)
-                }
-                $queryservice.QueryService_DeleteAll($hzServices)
-            }
-            catch {
-                Write-PscriboMessage -IsWarning $_.Exception.Message
-            }
             if ($Apps) {
                 if ($InfoLevel.Inventory.Applications -ge 1) {
-                    section -Style Heading3 "Applications Summary" {
+                    section -Style Heading3 "Application Pool Summary" {
                         $OutObj = @()
                         foreach ($App in $Apps) {
                             Write-PscriboMessage "Discovered Applications Information."
@@ -96,7 +56,7 @@ function Get-AbrHRZApplicationInfo {
                         $OutObj | Sort-Object -Property 'Name' | Table @TableParams
                         try {
                             if ($InfoLevel.Inventory.Applications -ge 2) {
-                                section -Style Heading4 "Applications Details" {
+                                section -Style Heading4 "Application Pool Details" {
                                     foreach ($App in $Apps) {
                                         # Find out Farm Name for Applications
                                         $farmMatch = $false

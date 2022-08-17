@@ -29,7 +29,6 @@ function Get-AbrHRZESXiInfo {
 
     process {
         try {
-            $vCenterHealth = try {$hzServices.VirtualCenterHealth.VirtualCenterHealth_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
             if ($vCenterHealth) {
                 if ($InfoLevel.Settings.Servers.vCenterServers.ESXiHosts -ge 1) {
                     section -Style Heading4 "ESXi Hosts Information" {

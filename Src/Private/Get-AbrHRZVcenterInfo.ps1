@@ -29,9 +29,6 @@ function Get-AbrHRZVcenterInfo {
 
     process {
         try {
-            # Virtual Centers
-            $vCenterServers = try {$hzServices.VirtualCenter.VirtualCenter_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
-            $vCenterHealth = try {$hzServices.VirtualCenterHealth.VirtualCenterHealth_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
             if ($vCenterServers) {
                 if ($InfoLevel.Settings.Servers.vCenterServers.vCenter -ge 1) {
                     section -Style Heading4 "vCenter Servers Summary" {
@@ -138,7 +135,7 @@ function Get-AbrHRZVcenterInfo {
                                                         if ($Report.ShowTableCaptions) {
                                                             $TableParams['Caption'] = "- $($TableParams.Name)"
                                                         }
-                                                        $OutObj | Table @TableParams
+                                                        $OutObj | Sort-Object -Property 'Cluster' | Table @TableParams
                                                     }
                                                 }
                                             }

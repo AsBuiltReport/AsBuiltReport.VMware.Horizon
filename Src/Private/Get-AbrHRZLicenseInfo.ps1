@@ -29,7 +29,6 @@ function Get-AbrHRZLicenseInfo {
 
     process {
         try {
-            $ProductLicenseingInfo = try {$hzServices.License.License_Get()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
             if ($ProductLicenseingInfo) {
                 if ($InfoLevel.Settings.ProductLicensing.ProductLicensingandUsage -ge 1) {
                     section -Style Heading3 "Product License" {

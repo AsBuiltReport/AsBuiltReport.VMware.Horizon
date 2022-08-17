@@ -29,7 +29,6 @@ function Get-AbrHRZUAGInfo {
 
     process {
         try {
-            $GatewayServers = try {$hzServices.Gateway.Gateway_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
             if ($GatewayServers) {
                 if ($InfoLevel.Settings.Servers.UAG.UAGServers -ge 1) {
                     section -Style Heading4 "UAG Servers Summary" {

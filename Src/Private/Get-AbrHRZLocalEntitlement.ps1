@@ -30,16 +30,6 @@ function Get-AbrHRZLocalEntitlement {
     process {
         if ($InfoLevel.UsersAndGroups.Entitlements -ge 1) {
             try {
-                try {
-                    $EntitledUserOrGroupLocalMachineQueryDefn = New-Object VMware.Hv.QueryDefinition
-                    $EntitledUserOrGroupLocalMachineQueryDefn.queryentitytype='EntitledUserOrGroupLocalSummaryView'
-                    $EntitledUserOrGroupLocalMachinequeryResults = $Queryservice.QueryService_Create($hzServices, $EntitledUserOrGroupLocalMachineQueryDefn)
-                    $EntitledUserOrGroupLocalMachines = foreach ($EntitledUserOrGroupLocalMachineresult in $EntitledUserOrGroupLocalMachinequeryResults.results){$hzServices.EntitledUserOrGroup.EntitledUserOrGroup_GetLocalSummaryView($EntitledUserOrGroupLocalMachineresult.id)}
-                    $queryservice.QueryService_DeleteAll($hzServices)
-                }
-                catch {
-                    Write-PscriboMessage -IsWarning $_.Exception.Message
-                }
                 Section -Style Heading3 'Local Entitlements' {
                     $OutObj = @()
                     if ($EntitledUserOrGroupLocalMachines) {
@@ -57,6 +47,8 @@ function Get-AbrHRZLocalEntitlement {
                                 $inObj = [ordered] @{
                                     'User Principal Name' = $UserPrincipalName
                                     'Group or User' = $EntitledUserOrGroupLocalMachinegroup
+                                    'Desktop Entitlements' = ($EntitledUserOrGrouplocalMachine.localData.Desktops.id).count
+                                    'Application Entitlements' = ($EntitledUserOrGroupLocalMachine.LocalData.Applications.id).count
                                 }
                                 $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                             }
@@ -69,7 +61,7 @@ function Get-AbrHRZLocalEntitlement {
                     $TableParams = @{
                         Name = "Local Entitlements - $($HVEnvironment)"
                         List = $false
-                        ColumnWidths = 60, 40
+                        ColumnWidths = 55, 15, 15, 15
                     }
 
                     if ($Report.ShowTableCaptions) {

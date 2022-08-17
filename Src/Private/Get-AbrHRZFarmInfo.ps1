@@ -29,20 +29,6 @@ function Get-AbrHRZFarmInfo {
 
     process {
         try {
-            try {
-                # Farm Info
-                $FarmdQueryDefn = New-Object VMware.Hv.QueryDefinition
-                $FarmdQueryDefn.queryentitytype='FarmSummaryView'
-                $FarmqueryResults = $Queryservice.QueryService_Create($hzServices, $FarmdQueryDefn)
-                $Farms = foreach ($farmresult in $farmqueryResults.results) {
-                    $hzServices.farm.farm_get($farmresult.id)
-                }
-                $queryservice.QueryService_DeleteAll($hzServices)
-            }
-            catch {
-                Write-PscriboMessage -IsWarning $_.Exception.Message
-            }
-            $AccessGroups = $hzServices.AccessGroup.AccessGroup_List()
             if ($Farms) {
                 if ($InfoLevel.Inventory.Farms -ge 1) {
                     section -Style Heading3 "Farms Summary" {
@@ -208,8 +194,8 @@ function Get-AbrHRZFarmInfo {
                                                         'Resource Pool' = ($Farm.AutomatedFarmData.VirtualCenterNamesData.ResourcePoolPath.Split('/') | Select-Object -SkipIndex 0,2,4) -join "/"
                                                         'Golden Image' = ($Farm.AutomatedFarmData.VirtualCenterNamesData.ParentVmPath.Split('/') | Select-Object -SkipIndex 0,2) -join "/"
                                                         'Snapshot' = $Farm.AutomatedFarmData.VirtualCenterNamesData.SnapshotPath
-                                                        'DatastorePaths' = ($Farm.AutomatedFarmData.VirtualCenterNamesData.DatastorePaths | ForEach-Object {$_.Split('/')[4]}) -join ', '
-                                                        'NetworkLabelNames' = Switch ($Farm.AutomatedFarmData.VirtualCenterNamesData.NetworkLabelNames) {
+                                                        'Datastore Paths' = ($Farm.AutomatedFarmData.VirtualCenterNamesData.DatastorePaths | ForEach-Object {$_.Split('/')[4]}) -join ', '
+                                                        'Networks' = Switch ($Farm.AutomatedFarmData.VirtualCenterNamesData.NetworkLabelNames) {
                                                             $null {'Golden Image network selected'}
                                                             default {$Farm.AutomatedFarmData.VirtualCenterNamesData.NetworkLabelNames}
                                                         }

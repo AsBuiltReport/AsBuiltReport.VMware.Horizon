@@ -30,13 +30,6 @@ function Get-AbrHRZUnauthenticatedACL {
     process {
         if ($InfoLevel.UsersAndGroups.UnauthenticatedAccess -ge 1) {
             try {
-                try {
-                    # Unauthenticated Access
-                    $unauthenticatedAccessList = $hzServices.UnauthenticatedAccessUser.UnauthenticatedAccessUser_List()
-                }
-                catch {
-                    Write-PscriboMessage -IsWarning $_.Exception.Message
-                }
                 if ($unauthenticatedAccessList) {
                     section -Style Heading3 "Unauthenticated Access" {
                         $OutObj = @()
