@@ -1,103 +1,163 @@
-# AsBuiltReport.VMware.Horizon
-Repository for VMware Horizon AsBuilt Report
+<!-- ********** DO NOT EDIT THESE LINKS ********** -->
+<p align="center">
+    <a href="https://www.asbuiltreport.com/" alt="AsBuiltReport"></a>
+            <img src='https://raw.githubusercontent.com/AsBuiltReport/AsBuiltReport/master/AsBuiltReport.png' width="8%" height="8%" /></a>
+</p>
+<p align="center">
+    <a href="https://www.powershellgallery.com/packages/AsBuiltReport.VMware.Horizon/" alt="PowerShell Gallery Version">
+        <img src="https://img.shields.io/powershellgallery/v/AsBuiltReport.VMware.Horizon.svg" /></a>
+    <a href="https://www.powershellgallery.com/packages/AsBuiltReport.VMware.Horizon/" alt="PS Gallery Downloads">
+        <img src="https://img.shields.io/powershellgallery/dt/AsBuiltReport.VMware.Horizon.svg" /></a>
+    <a href="https://www.powershellgallery.com/packages/AsBuiltReport.VMware.Horizon/" alt="PS Platform">
+        <img src="https://img.shields.io/powershellgallery/p/AsBuiltReport.VMware.Horizon.svg" /></a>
+</p>
+<p align="center">
+    <a href="https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/graphs/commit-activity" alt="GitHub Last Commit">
+        <img src="https://img.shields.io/github/last-commit/AsBuiltReport/AsBuiltReport.VMware.Horizon/master.svg" /></a>
+    <a href="https://raw.githubusercontent.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/master/LICENSE" alt="GitHub License">
+        <img src="https://img.shields.io/github/license/AsBuiltReport/AsBuiltReport.VMware.Horizon.svg" /></a>
+    <a href="https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/graphs/contributors" alt="GitHub Contributors">
+        <img src="https://img.shields.io/github/contributors/AsBuiltReport/AsBuiltReport.VMware.Horizon.svg"/></a>
+</p>
+<p align="center">
+    <a href="https://twitter.com/AsBuiltReport" alt="Twitter">
+            <img src="https://img.shields.io/twitter/follow/AsBuiltReport.svg?style=social"/></a>
+</p>
+<!-- ********** DO NOT EDIT THESE LINKS ********** -->
 
+# VMware Horizon As Built Report
 
-# Sample Reports
+<!-- ********** REMOVE THIS MESSAGE WHEN THE MODULE IS FUNCTIONAL ********** -->
+## :exclamation: THIS ASBUILTREPORT MODULE IS CURRENTLY IN DEVELOPMENT AND MIGHT NOT YET BE FUNCTIONAL ❗
 
-<Coming Soon>
+VMware Horizon As Built Report is a PowerShell module which works in conjunction with [AsBuiltReport.Core](https://github.com/AsBuiltReport/AsBuiltReport.Core).
 
-# Getting Started
+[AsBuiltReport](https://github.com/AsBuiltReport/AsBuiltReport) is an open-sourced community project which utilises PowerShell to produce as-built documentation in multiple document formats for multiple vendors and technologies.
 
-Below are the instructions on how to install, configure and generate a VMware Horizon As Built Report
+Please refer to the AsBuiltReport [website](https://www.asbuiltreport.com) for more detailed information about this project.
 
-## Pre-requisites
-The following PowerShell modules are required for generating a VMware Horizon As Built report.
+# :beginner: Getting Started
+Below are the instructions on how to install, configure and generate a VMware Horizon As Built report.
 
-Each of these modules can be easily downloaded and installed via the PowerShell Gallery 
+## :floppy_disk: Supported Versions
+<!-- ********** Update supported Horizon versions ********** -->
+The VMware Horizon As Built Report supports the following Horizon versions;
 
-- [AsBuiltReport Module](https://www.powershellgallery.com/packages/AsBuiltReport/)
+- Horizon 8+
 
-### Module Installation
+### PowerShell
+This report is compatible with the following PowerShell versions;
 
-Open a Windows PowerShell terminal window and install each of the required modules as follows;
+<!-- ********** Update supported PowerShell versions ********** -->
+| Windows PowerShell 5.1 |     PowerShell 7    |
+|:----------------------:|:--------------------:|
+|   :white_check_mark:   | :white_check_mark: |
+## :wrench: System Requirements
+<!-- ********** Update system requirements ********** -->
+PowerShell 5.1 or PowerShell 7, and the following PowerShell modules are required for generating a VMware Horizon As Built Report.
+
+- [VMware PowerCLI Module](https://www.powershellgallery.com/packages/VMware.PowerCLI/)
+- [AsBuiltReport.VMware.Horizon Module](https://www.powershellgallery.com/packages/AsBuiltReport.VMware.Horizon/)
+
+### Linux & macOS
+* .NET Core is required for cover page image support on Linux and macOS operating systems.
+    * [Installing .NET Core for macOS](https://docs.microsoft.com/en-us/dotnet/core/install/macos)
+    * [Installing .NET Core for Linux](https://docs.microsoft.com/en-us/dotnet/core/install/linux)
+
+❗ If you are unable to install .NET Core, you must set `ShowCoverPageImage` to `False` in the report JSON configuration file.
+### :closed_lock_with_key: Required Privileges
+<!-- ********** Define required privileges ********** -->
+<!-- ********** Try to follow best practices to define least privileges ********** -->
+
+## :package: Module Installation
+
+Open a PowerShell terminal window and install each of the required modules.
+
+:warning: VMware PowerCLI 12.7 or higher is required. Please ensure older PowerCLI versions have been uninstalled.
+
+### PowerShell
+<!-- ********** Add installation for any additional PowerShell module(s) ********** -->
 ```powershell
-Install-Module AsBuiltReport
+install-module VMware.PowerCLI -MinimumVersion 12.7 -AllowClobber
+install-module AsBuiltReport.VMware.Horizon
 ```
 
-### Required Privileges
+### GitHub
+If you are unable to use the PowerShell Gallery, you can still install the module manually. Ensure you repeat the following steps for the [system requirements](https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon#wrench-system-requirements) also.
 
-To generate a VMware Horizon report, a user account with the Read Only role or higher on the UAG is required.
+1. Download the code package / [latest release](https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/releases/latest) zip from GitHub
+2. Extract the zip file
+3. Copy the folder `AsBuiltReport.VMware.Horizon` to a path that is set in `$env:PSModulePath`.
+4. Open a PowerShell terminal window and unblock the downloaded files with
+    ```powershell
+    $path = (Get-Module -Name AsBuiltReport.VMware.Horizon -ListAvailable).ModuleBase; Unblock-File -Path $path\*.psd1; Unblock-File -Path $path\Src\Public\*.ps1; Unblock-File -Path $path\Src\Private\*.ps1
+    ```
+5. Close and reopen the PowerShell terminal window.
 
-## Configuration
+_Note: You are not limited to installing the module to those example paths, you can add a new entry to the environment variable PSModulePath if you want to use another path._
+
+## :pencil2: Configuration
 
 The VMware Horizon As Built Report utilises a JSON file to allow configuration of report information, options, detail and healthchecks.
 
 A VMware Horizon report configuration file can be generated by executing the following command;
 ```powershell
-New-AsBuiltReportConfig -Report VMware.Horizon -Path <User specified folder> -Name <Optional>
+New-AsBuiltReportConfig -Report VMware.Horizon -FolderPath <User specified folder> -Filename <Optional>
 ```
 
-Executing this command will copy the default Horizon report JSON configuration to a user specified folder.
+Executing this command will copy the default VMware Horizon report JSON configuration to a user specified folder.
 
 All report settings can then be configured via the JSON file.
 
 The following provides information of how to configure each schema within the report's JSON file.
 
-### Info Level
-The InfoLevel sub-schema allows configuration of each section of the report at a granular level. The following sections can be set
+<!-- ********** DO NOT CHANGE THE REPORT SCHEMA SETTINGS ********** -->
+### Report
+The **Report** schema provides configuration of the VMware Horizon report information.
 
-Schema  Sub-Schema  Default Setting Max Setting
-InfoLevel	Entitlements	1   2
-InfoLevel	HomeSiteAssignments	1   1
-InfoLevel	UnauthenticatedAccess	1   1
-InfoLevel	Desktop	1   2
-InfoLevel	Applications    1   2
-InfoLevel	Farms	1   2
-InfoLevel	vCenterVM	1   2
-InfoLevel	RDSHosts	1   2
-InfoLevel	PersistentDisks 1   2
-InfoLevel	ThinApps    0   Not used
-InfoLevel	GlobalEntitlements  1   3
-InfoLevel	vCenter	1   2
-InfoLevel   ESXiHosts   1   2
-InfoLevel   DataStores  1   2
-InfoLevel   Composers   1   1
-InfoLevel   ADDomains   1   2
-InfoLevel   SecurityServers 1   2
-InfoLevel   GatewayServers  1   2
-InfoLevel   ConnectionServers   1   2
-InfoLevel   InstantCloneDomainAccounts  1   1
-InfoLevel   ProductLicensingandUsage    1   1
-InfoLevel   GlobalSettings  1   1
-InfoLevel   RegisteredMachines  1   2
-InfoLevel   AdministratorsandGroups 1   2
-InfoLevel   RolePrivileges  1   2
-InfoLevel   RolePermissions 1   1
-InfoLevel   AccessGroup 1   2
-InfoLevel   CloudPodArchitecture    1   2
-InfoLevel   Sites   1   2
-InfoLevel   EventConfiguration  1   1
-InfoLevel   GlobalPolicies  0   Not Used
-InfoLevel   JMPConfiguration    1   1
+| Sub-Schema          | Setting      | Default                        | Description                                                  |
+|---------------------|--------------|--------------------------------|--------------------------------------------------------------|
+| Name                | User defined | VMware Horizon As Built Report | The name of the As Built Report                              |
+| Version             | User defined | 1.0                            | The report version                                           |
+| Status              | User defined | Released                       | The report release status                                    |
+| ShowCoverPageImage  | true / false | true                           | Toggle to enable/disable the display of the cover page image |
+| ShowTableOfContents | true / false | true                           | Toggle to enable/disable table of contents                   |
+| ShowHeaderFooter    | true / false | true                           | Toggle to enable/disable document headers & footers          |
+| ShowTableCaptions   | true / false | true                           | Toggle to enable/disable table captions/numbering            |
 
+### Options
+The **Options** schema allows certain options within the report to be toggled on or off.
 
-There are 4 levels (0-3) of detail granularity for each section as follows;
+<!-- ********** Add/Remove the number of InfoLevels as required ********** -->
+### InfoLevel
+The **InfoLevel** schema allows configuration of each section of the report at a granular level. The following sections can be set.
 
-Setting	InfoLevel	Description
-0	Disabled	does not collect or display any information
-1	Summary**	provides summarised information for a collection of objects
-2	Informative	provides condensed, detailed information for a collection of objects
-3	Detailed	provides detailed information for individual objects
+There are 3 levels (0-3) of detail granularity for each section as follows;
 
-## Examples
-There is one example listed below on running the AsBuiltReport script against a VMware Horizon target. Refer to the `README.md` file in the main AsBuiltReport project repository for more examples.
+| Setting | InfoLevel         | Description                                                                                                                                |
+|:-------:|-------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+|    0    | Disabled          | Does not collect or display any information                                                                                                |
+|    1    | Enabled / Summary | Provides summarised information for a collection of objects                                                                                |
+|    2    | Adv Summary       | Provides condensed, detailed information for a collection of objects                                                                       |
 
-- The following creates a VMware Horizon As-Built report in HTML & Word formats in the folder C:\scripts\.
+### Healthcheck
+The **Healthcheck** schema is used to toggle health checks on or off.
+
+## :computer: Examples
+
 ```powershell
-PS C:\>New-AsBuiltReport -Report VMware.horizon -Target 192.168.1.100 -Credential (Get-Credential) -Format HTML,Word -OutputPath C:\scripts\
-```
+# Generate a Horizon As Built Report for Horizon Connection Server 'horizon-cs-01.corp.local' using specified credentials. Export report to HTML & DOCX formats. Use default report style. Append timestamp to report filename. Save reports to 'C:\Users\Jon\Documents'
+PS C:\> New-AsBuiltReport -Report VMware.Horizon -Target 'Horizon-cs-01.corp.local' -Username 'administrator@domain.local' -Password 'VMware1!' -Format Html,Word -OutputFolderPath 'C:\Users\Jon\Documents' -Timestamp
 
-## Known Issues
-ThinApp Configuration is not built out. I dont know of any APIs to pull the ThinApp Info.
+# Generate a Horizon As Built Report for Horizon Connection Server 'Horizon-cs-01.corp.local' using specified credentials and report configuration file. Export report to Text, HTML & DOCX formats. Use default report style. Save reports to 'C:\Users\Jon\Documents'. Display verbose messages to the console.
+PS C:\> New-AsBuiltReport -Report VMware.Horizon -Target 'Horizon-cs-01.corp.local' -Username 'administrator@domain.local' -Password 'VMware1!' -Format Text,Html,Word -OutputFolderPath 'C:\Users\Jon\Documents' -ReportConfigFilePath 'C:\Users\Jon\AsBuiltReport\AsBuiltReport.VMware.Horizon.json' -Verbose
 
-Global Policies are not built out in this release. Will be fixed in later update.
+# Generate a Horizon As Built Report for Horizon Connection Server 'Horizon-cs-01.corp.local' using stored credentials. Export report to HTML & Text formats. Use default report style. Highlight environment issues within the report. Save reports to 'C:\Users\JOn\Documents'.
+PS C:\> $Creds = Get-Credential
+PS C:\> New-AsBuiltReport -Report VMware.Horizon -Target 'Horizon-cs-01.corp.local' -Credential $Creds -Format Html,Text -OutputFolderPath 'C:\Users\Jon\Documents' -EnableHealthCheck
+
+# Generate a single Horizon As Built Report for Horizon Connection Servers 'Horizon-cs-01.corp.local' and 'Horizon-cs-02.corp.local' using specified credentials. Report exports to WORD format by default. Apply custom style to the report. Reports are saved to the user profile folder by default.
+PS C:\> New-AsBuiltReport -Report VMware.Horizon -Target 'Horizon-cs-01.corp.local','Horizon-cs-02.corp.local' -Username 'administrator@domain.local' -Password 'VMware1!' -StyleFilePath 'C:\Scripts\Styles\MyCustomStyle.ps1'
+
+# Generate a Horizon As Built Report for Horizon Connection Server 'Horizon-cs-01.corp.local' using specified credentials. Export report to HTML & DOCX formats. Use default report style. Reports are saved to the user profile folder by default. Attach and send reports via e-mail.
+PS C:\> New-AsBuiltReport -Report VMware.Horizon -Target 'Horizon-cs-01.corp.local' -Username 'administrator@domain.local' -Password 'VMware1!' -Format Html,Word -OutputFolderPath 'C:\Users\Jon\Documents' -SendEmail
