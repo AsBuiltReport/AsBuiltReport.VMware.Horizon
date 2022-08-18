@@ -189,10 +189,10 @@ function Get-AbrHRZFarmInfo {
                                                     $OutObj = @()
                                                     Write-PscriboMessage "Discovered $($Farm.Data.name) vCenter Server Settings Information."
                                                     $inObj = [ordered] @{
-                                                        'VM folder' = ($Farm.AutomatedFarmData.VirtualCenterNamesData.VmFolderPath.Split('/') | Select-Object -SkipIndex 0,2) -join "/"
-                                                        'Host Or Cluster Path' = ($Farm.AutomatedFarmData.VirtualCenterNamesData.HostOrClusterPath.Split('/') | Select-Object -SkipIndex 0,2) -join "/"
-                                                        'Resource Pool' = ($Farm.AutomatedFarmData.VirtualCenterNamesData.ResourcePoolPath.Split('/') | Select-Object -SkipIndex 0,2,4) -join "/"
-                                                        'Golden Image' = ($Farm.AutomatedFarmData.VirtualCenterNamesData.ParentVmPath.Split('/') | Select-Object -SkipIndex 0,2) -join "/"
+                                                        'VM folder' = $Farm.AutomatedFarmData.VirtualCenterNamesData.VmFolderPath
+                                                        'Host Or Cluster Path' = $Farm.AutomatedFarmData.VirtualCenterNamesData.HostOrClusterPath
+                                                        'Resource Pool' = $Farm.AutomatedFarmData.VirtualCenterNamesData.ResourcePoolPath
+                                                        'Golden Image' = $Farm.AutomatedFarmData.VirtualCenterNamesData.ParentVmPath
                                                         'Snapshot' = $Farm.AutomatedFarmData.VirtualCenterNamesData.SnapshotPath
                                                         'Datastore Paths' = ($Farm.AutomatedFarmData.VirtualCenterNamesData.DatastorePaths | ForEach-Object {$_.Split('/')[4]}) -join ', '
                                                         'Networks' = Switch ($Farm.AutomatedFarmData.VirtualCenterNamesData.NetworkLabelNames) {
