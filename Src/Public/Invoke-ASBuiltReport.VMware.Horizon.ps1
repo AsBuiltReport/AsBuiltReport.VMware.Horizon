@@ -147,7 +147,7 @@
                 $PoolQueryDefn = New-Object VMware.Hv.QueryDefinition
                 $PoolQueryDefn.queryentitytype='DesktopSummaryView'
                 $poolqueryResults = $Queryservice.QueryService_Create($hzServices, $PoolQueryDefn)
-                $pools = foreach ($poolresult in $poolqueryResults.results) {
+                $Pools = foreach ($poolresult in $poolqueryResults.results) {
                     $hzServices.desktop.desktop_get($poolresult.id)
                 }
                 $queryservice.QueryService_DeleteAll($hzServices)

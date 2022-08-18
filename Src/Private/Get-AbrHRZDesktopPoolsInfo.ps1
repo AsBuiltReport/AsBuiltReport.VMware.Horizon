@@ -34,7 +34,7 @@ function Get-AbrHRZDesktopPoolsInfo {
                     section -Style Heading3 "Desktop Pool Summary" {
                         $OutObj = @()
                         foreach ($Pool in $Pools) {
-                            Write-PscriboMessage "Discovered Role Provilege Information."
+                            Write-PscriboMessage "Discovered Desktop Pool Information."
                             Switch ($Pool.Automateddesktopdata.ProvisioningType)
                             {
                                 'INSTANT_CLONE_ENGINE' {$ProvisioningType = 'Instant Clone' }
@@ -459,6 +459,38 @@ function Get-AbrHRZDesktopPoolsInfo {
                                         catch {
                                             Write-PscriboMessage -IsWarning $_.Exception.Message
                                         }
+                                    }
+                                }
+                            }
+                        }
+                        catch {
+                            Write-PscriboMessage -IsWarning $_.Exception.Message
+                        }
+                        try {
+                            section -Style Heading3 "Desktop Pool Entitlements" {
+                                foreach ($Pool in $Pools) {
+                                    section -ExcludeFromToC -Style Heading4 $Pool.Base.Name {
+                                        $OutObj = @()
+                                        Write-PscriboMessage "Discovered Desktop Pool Entitlements Information."
+                                        foreach ($Principal in ($EntitledUserOrGrouplocalMachines | Where-Object {$_.localData.Desktops.id -eq $Pool.Id.id})) {
+                                            $inObj = [ordered] @{
+                                                'Name' = $Principal.Base.LoginName
+                                                'Domain' = $Principal.Base.Domain
+                                                'Is Group?' = $Principal.Base.Group
+                                            }
+                                            $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
+                                        }
+
+                                        $TableParams = @{
+                                            Name = "Desktop Pools Entitlements - $($Pool.Base.Name)"
+                                            List = $false
+                                            ColumnWidths = 34, 33, 33
+                                        }
+
+                                        if ($Report.ShowTableCaptions) {
+                                            $TableParams['Caption'] = "- $($TableParams.Name)"
+                                        }
+                                        $OutObj | Sort-Object -Property 'Name' | Table @TableParams
                                     }
                                 }
                             }
