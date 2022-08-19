@@ -32,6 +32,8 @@ function Get-AbrHRZDesktopPoolsInfo {
             if ($Pools) {
                 if ($InfoLevel.Inventory.Desktop -ge 1) {
                     section -Style Heading3 "Desktop Pool Summary" {
+                        Paragraph "The following section details the Desktop Pools configuration for $($HVEnvironment.split('.')[0]) server."
+                        BlankLine
                         $OutObj = @()
                         foreach ($Pool in $Pools) {
                             Write-PscriboMessage "Discovered Desktop Pool Information."
@@ -261,7 +263,7 @@ function Get-AbrHRZDesktopPoolsInfo {
                                                 }
                                                 $DatastorePathsresult = $DatastorePaths -join ', '
                                                 try {
-                                                    section -ExcludeFromTOC -Style Heading5 "General" {
+                                                    section -ExcludeFromTOC -Style NOTOCHeading5 "General" {
                                                         $OutObj = @()
                                                         Write-PscriboMessage "Discovered $($Pool.Base.name) General Information."
                                                         $inObj = [ordered] @{
@@ -307,7 +309,7 @@ function Get-AbrHRZDesktopPoolsInfo {
                                                     Write-PscriboMessage -IsWarning $_.Exception.Message
                                                 }
                                                 try {
-                                                    section -ExcludeFromTOC -Style Heading5 "Settings" {
+                                                    section -ExcludeFromTOC -Style NOTOCHeading5 "Settings" {
                                                         $OutObj = @()
                                                         Write-PscriboMessage "Discovered $($Pool.Base.name) Pool Settings Information."
                                                         $inObj = [ordered] @{
@@ -371,7 +373,7 @@ function Get-AbrHRZDesktopPoolsInfo {
                                                     Write-PscriboMessage -IsWarning $_.Exception.Message
                                                 }
                                                 try {
-                                                    section -ExcludeFromTOC -Style Heading5 "vCenter Server" {
+                                                    section -ExcludeFromTOC -Style NOTOCHeading5 "vCenter Server" {
                                                         $OutObj = @()
                                                         Write-PscriboMessage "Discovered $($Pool.Base.name) vCenter Server Information."
                                                         $inObj = [ordered] @{
@@ -469,7 +471,7 @@ function Get-AbrHRZDesktopPoolsInfo {
                         try {
                             section -Style Heading3 "Desktop Pool Entitlements" {
                                 foreach ($Pool in $Pools) {
-                                    section -ExcludeFromToC -Style Heading4 $Pool.Base.Name {
+                                    section -ExcludeFromToC -Style NOTOCHeading5 $Pool.Base.Name {
                                         $OutObj = @()
                                         Write-PscriboMessage "Discovered Desktop Pool Entitlements Information."
                                         foreach ($Principal in ($EntitledUserOrGrouplocalMachines | Where-Object {$_.localData.Desktops.id -eq $Pool.Id.id})) {

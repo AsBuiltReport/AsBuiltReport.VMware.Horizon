@@ -32,6 +32,8 @@ function Get-AbrHRZApplicationPoolsInfo {
             if ($Apps) {
                 if ($InfoLevel.Inventory.Applications -ge 1) {
                     section -Style Heading3 "Application Pool Summary" {
+                        Paragraph "The following section details the configuration of Application Pool for $($HVEnvironment.split('.')[0]) server."
+                        BlankLine
                         $OutObj = @()
                         foreach ($App in $Apps) {
                             Write-PscriboMessage "Discovered Applications Information."
@@ -100,7 +102,7 @@ function Get-AbrHRZApplicationPoolsInfo {
                                         $OtherApplicationFileTypes = $App.ExecutionData.OtherFileTypes | ForEach-Object { $_.FileType}
                                         $OtherApplicationFileTypesresult = $OtherApplicationFileTypes -join ', '
 
-                                        section -ExcludeFromTOC -Style Heading5 $App.Data.DisplayName {
+                                        section -ExcludeFromTOC -Style NOTOCHeading5 $App.Data.DisplayName {
                                             $OutObj = @()
                                             Write-PscriboMessage "Discovered $($App.Data.DisplayName) Applications Information."
                                             $inObj = [ordered] @{

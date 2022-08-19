@@ -32,7 +32,11 @@ function Get-AbrHRZRegisteredMachine {
             if ($RDSServers) {
                 if ($InfoLevel.Settings.RegisteredMachines.RDSHosts -ge 1) {
                     section -Style Heading3 "Registered Machines" {
-                        section -Style Heading4 'RDS Hosts Summry' {
+                        Paragraph "The following section provides information of Registered Machines for $($HVEnvironment.split('.')[0]) server."
+                        BlankLine
+                        section -Style Heading4 'RDS Hosts' {
+                            Paragraph "The following section details the RDS Hosts configuration for $($HVEnvironment.split('.')[0]) server."
+                            BlankLine
                             $OutObj = @()
                             foreach ($RDSServer in $RDSServers) {
                                 Write-PscriboMessage "Discovered RDS Hosts Information."
@@ -65,7 +69,7 @@ function Get-AbrHRZRegisteredMachine {
                                         foreach ($RDSServer in $RDSServers) {
                                             Write-PscriboMessage "Discovered RDS Host $($RDSServer.base.name) Information."
                                             $OutObj = @()
-                                            section -ExcludeFromTOC -Style Heading6 $RDSServer.Base.Name {
+                                            section -ExcludeFromTOC -Style NOTOCHeading6 $RDSServer.Base.Name {
                                                 $inObj = [ordered] @{
                                                     'Name' = $RDSServer.base.name
                                                     'Description' = $RDSServer.base.Description

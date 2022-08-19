@@ -31,7 +31,9 @@ function Get-AbrHRZVcenterInfo {
         try {
             if ($vCenterServers) {
                 if ($InfoLevel.Settings.Servers.vCenterServers.vCenter -ge 1) {
-                    section -Style Heading4 "vCenter Servers Summary" {
+                    section -Style Heading4 "vCenter Servers" {
+                        Paragraph "The following section details the vCenter Servers configuration for $($HVEnvironment.split('.')[0]) server."
+                        BlankLine
                         $vCenterHealthData = $vCenterHealth.data
                         $OutObj = @()
                         foreach ($vCenterServer in $vCenterServers) {

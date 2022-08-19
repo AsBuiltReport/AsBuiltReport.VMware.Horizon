@@ -32,6 +32,8 @@ function Get-AbrHRZInstantClone {
             if ($InstantCloneDomainAdmins) {
                 if ($InfoLevel.Settings.InstantClone.InstantCloneDomainAccounts -ge 1) {
                     section -Style Heading3 "Instant Clone Accounts" {
+                        Paragraph "The following section details the Instant Clone Accounts configuration for $($HVEnvironment.split('.')[0]) server."
+                        BlankLine
                         $OutObj = @()
                         foreach ($InstantCloneDomainAdmin in $InstantCloneDomainAdmins) {
                             try {

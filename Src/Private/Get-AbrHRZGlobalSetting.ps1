@@ -32,6 +32,8 @@ function Get-AbrHRZGlobalSetting {
             if ($GlobalSettings) {
                 if ($InfoLevel.Settings.GlobalSettings.GlobalSettings -ge 1) {
                     section -Style Heading3 "Global Settings" {
+                        Paragraph "The following section details the Global Settings configuration for $($HVEnvironment.split('.')[0]) server."
+                        BlankLine
                         $OutObj = @()
                         Write-PscriboMessage "Discovered Global Settings Information."
                         $inObj = [ordered] @{

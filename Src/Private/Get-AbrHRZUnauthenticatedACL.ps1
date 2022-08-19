@@ -32,6 +32,8 @@ function Get-AbrHRZUnauthenticatedACL {
             try {
                 if ($unauthenticatedAccessList) {
                     section -Style Heading3 "Unauthenticated Access" {
+                        Paragraph "The following section provide a summary of user and group unauthenticated access configuration."
+                        BlankLine
                         $OutObj = @()
                         foreach ($unauthenticatedAccess in $unauthenticatedAccessList) {
                             try {

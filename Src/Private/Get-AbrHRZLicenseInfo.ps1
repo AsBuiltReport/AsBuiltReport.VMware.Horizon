@@ -32,6 +32,8 @@ function Get-AbrHRZLicenseInfo {
             if ($ProductLicenseingInfo) {
                 if ($InfoLevel.Settings.ProductLicensing.ProductLicensingandUsage -ge 1) {
                     section -Style Heading3 "Product License" {
+                        Paragraph "The following section details the Product License information for $($HVEnvironment.split('.')[0]) server."
+                        BlankLine
                         $OutObj = @()
                         foreach ($ProductLic in $ProductLicenseingInfo) {
                             try {

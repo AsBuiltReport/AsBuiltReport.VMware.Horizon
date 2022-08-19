@@ -32,6 +32,8 @@ function Get-AbrHRZAccessGroup {
             if ($AccessGroups) {
                 if ($InfoLevel.Settings.Administrators.AccessGroup -ge 1) {
                     section -Style Heading4 "Access Groups Summary" {
+                        Paragraph "The following section summarizes the configuration of Access Groups for $($HVEnvironment.split('.')[0]) server."
+                        BlankLine
                         $OutObj = @()
                         $AccessGroupJoined = @()
                         $AccessGroupJoined += $AccessGroups
@@ -84,7 +86,7 @@ function Get-AbrHRZAccessGroup {
                                             }
                                         }
                                         if ($AdministratorIDName) {
-                                            section -ExcludeFromTOC -Style Heading5 $AccessGroup.base.Name {
+                                            section -ExcludeFromTOC -Style NOTOCHeading5 $AccessGroup.base.Name {
                                                 $OutObj = @()
                                                 foreach ($Principal in ($AdministratorIDName.split(', ') | Select-Object -Unique)){
                                                     $PrincipalPermissionsName = ''

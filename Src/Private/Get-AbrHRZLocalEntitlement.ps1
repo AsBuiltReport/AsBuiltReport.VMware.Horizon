@@ -31,6 +31,8 @@ function Get-AbrHRZLocalEntitlement {
         if ($InfoLevel.UsersAndGroups.Entitlements -ge 1) {
             try {
                 Section -Style Heading3 'Local Entitlements' {
+                    Paragraph "The following section provide a summary of local user & groups entitlements."
+                    BlankLine
                     $OutObj = @()
                     if ($EntitledUserOrGroupLocalMachines) {
                         foreach ($EntitledUserOrGroupLocalMachine in $EntitledUserOrGroupLocalMachines) {
@@ -71,6 +73,8 @@ function Get-AbrHRZLocalEntitlement {
 
                     if ($InfoLevel.UsersAndGroups.Entitlements -ge 2) {
                         Section -Style Heading4 "Local Entitlements Details" {
+                            Paragraph "The following section detail per user or group local entitlements."
+                            BlankLine
                             try {
                                 $PoolIDNameResults = ''
                                 $AppIDNameResults = ''
@@ -137,7 +141,7 @@ function Get-AbrHRZLocalEntitlement {
                                             'True' {$EntitledUserOrGroupLocalMachinegroup = 'Group' }
                                             'False' {$EntitledUserOrGroupLocalMachinegroup = 'User' }
                                         }
-                                        Section -ExcludeFromTOC -Style Heading5 "$($EntitledUserOrGroupLocalMachine.base.Name)" {
+                                        Section -ExcludeFromTOC -Style NOTOCHeading5 "$($EntitledUserOrGroupLocalMachine.base.Name)" {
                                             $OutObj = @()
                                             try {
                                                 Write-PscriboMessage "Local Entitlements Details for $($EntitledUserOrGroupLocalMachine.base.Name)."

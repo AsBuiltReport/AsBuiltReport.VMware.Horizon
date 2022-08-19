@@ -31,7 +31,9 @@ function Get-AbrHRZFarmInfo {
         try {
             if ($Farms) {
                 if ($InfoLevel.Inventory.Farms -ge 1) {
-                    section -Style Heading3 "Farms Summary" {
+                    section -Style Heading3 "Farms" {
+                        Paragraph "The following section details the Farms configuration for $($HVEnvironment.split('.')[0]) server."
+                        BlankLine
                         $OutObj = @()
                         foreach ($Farm in $Farms) {
                             Write-PscriboMessage "Discovered Farms Information."
@@ -78,7 +80,7 @@ function Get-AbrHRZFarmInfo {
                                                 }
                                             }
                                             try {
-                                                section -ExcludeFromTOC -Style Heading6 "General" {
+                                                section -ExcludeFromTOC -Style NOTOCHeading5 "General" {
                                                     $OutObj = @()
                                                     Write-PscriboMessage "Discovered $($Farm.Data.name) General Information."
                                                     $inObj = [ordered] @{
@@ -118,7 +120,7 @@ function Get-AbrHRZFarmInfo {
                                                 Write-PscriboMessage -IsWarning $_.Exception.Message
                                             }
                                             try {
-                                                section -ExcludeFromTOC -Style Heading6 "Settings" {
+                                                section -ExcludeFromTOC -Style NOTOCHeading5 "Settings" {
                                                     $OutObj = @()
                                                     Write-PscriboMessage "Discovered $($Farm.Data.name) Settings."
                                                     $inObj = [ordered] @{
@@ -153,7 +155,7 @@ function Get-AbrHRZFarmInfo {
                                                 Write-PscriboMessage -IsWarning $_.Exception.Message
                                             }
                                             try {
-                                                section -ExcludeFromTOC -Style Heading6 "Load Balancing Settings" {
+                                                section -ExcludeFromTOC -Style NOTOCHeading5 "Load Balancing Settings" {
                                                     $OutObj = @()
                                                     Write-PscriboMessage "Discovered $($Farm.Data.name) Load Balancing Settings."
                                                     $inObj = [ordered] @{
@@ -185,7 +187,7 @@ function Get-AbrHRZFarmInfo {
                                                 Write-PscriboMessage -IsWarning $_.Exception.Message
                                             }
                                             try {
-                                                section -ExcludeFromTOC -Style Heading6 "vCenter Server Settings" {
+                                                section -ExcludeFromTOC -Style NOTOCHeading6 "vCenter Server Settings" {
                                                     $OutObj = @()
                                                     Write-PscriboMessage "Discovered $($Farm.Data.name) vCenter Server Settings Information."
                                                     $inObj = [ordered] @{

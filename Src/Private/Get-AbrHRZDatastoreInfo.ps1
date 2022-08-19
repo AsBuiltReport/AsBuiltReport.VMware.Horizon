@@ -71,7 +71,7 @@ function Get-AbrHRZDatastoreInfo {
                                     foreach ($DataStore in $Datastores) {
                                         if ($DataStore) {
                                             try {
-                                                section -ExcludeFromTOC -Style Heading6 "$($DataStore.Name)" {
+                                                section -ExcludeFromTOC -Style NOTOCHeading6 "$($DataStore.Name)" {
                                                     $OutObj = @()
                                                     Write-PscriboMessage "Discovered Datastore Information from $($DataStore.Name)."
                                                     $inObj = [ordered] @{
@@ -85,7 +85,7 @@ function Get-AbrHRZDatastoreInfo {
                                                     $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
 
                                                     if ($HealthCheck.DataStores.Status) {
-                                                        $OutObj | Where-Object { $_.'Accessible' -eq 'No'} | Set-Style -Style Warning
+                                                        $OutObj | Where-Object { $_.'Accessible' -eq 'No'} | Set-Style -Style Warning -Property 'Accessible'
                                                     }
 
                                                     $TableParams = @{

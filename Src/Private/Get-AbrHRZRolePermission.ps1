@@ -32,6 +32,8 @@ function Get-AbrHRZRolePermission {
             if ($Permissions) {
                 if ($InfoLevel.Settings.Administrators.RolePermissions -ge 1) {
                     section -Style Heading4 "Role Permissions" {
+                        Paragraph "The following section details the Role Permissions information for $($HVEnvironment.split('.')[0]) server."
+                        BlankLine
                         $OutObj = @()
                         foreach ($Permission in $Permissions) {
                             Write-PscriboMessage "Discovered Role Permissions Information."

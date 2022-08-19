@@ -31,7 +31,9 @@ function Get-AbrHRZGlobalEntitlement {
         try {
             if ($GlobalEntitlements) {
                 if ($InfoLevel.Inventory.GlobalEntitlements -ge 1) {
-                    section -Style Heading4 "Global Entitlements Summary" {
+                    section -Style Heading4 "Global Entitlements" {
+                        Paragraph "The following section details the Global Entitlements configuration for $($HVEnvironment.split('.')[0]) server."
+                        BlankLine
                         $GlobalEntitlementJoined = @()
                         $GlobalEntitlementJoined += $GlobalEntitlements
                         $GlobalEntitlementJoined += $GlobalApplicationEntitlementGroups

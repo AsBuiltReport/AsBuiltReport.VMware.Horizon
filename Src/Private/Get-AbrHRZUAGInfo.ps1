@@ -31,7 +31,9 @@ function Get-AbrHRZUAGInfo {
         try {
             if ($GatewayServers) {
                 if ($InfoLevel.Settings.Servers.UAG.UAGServers -ge 1) {
-                    section -Style Heading4 "UAG Servers Summary" {
+                    section -Style Heading4 "UAG Servers" {
+                        Paragraph "The following section details the UAG Servers information for $($HVEnvironment.split('.')[0]) server."
+                        BlankLine
                         $OutObj = @()
                         foreach ($GatewayServer in $GatewayServers.GeneralData) {
                             try {

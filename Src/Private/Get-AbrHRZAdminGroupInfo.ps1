@@ -32,6 +32,8 @@ function Get-AbrHRZAdminGroupInfo {
             if ($Administrators) {
                 if ($InfoLevel.Settings.Administrators.AdministratorsandGroups -ge 1) {
                     section -Style Heading4 "Administrators and Groups" {
+                        Paragraph "The following section details the configuration of Administrators and Groups for $($HVEnvironment.split('.')[0]) server."
+                        BlankLine
                         $OutObj = @()
                         foreach ($Administrator in $Administrators) {
                             $RoleIDNameResults = ''
@@ -108,7 +110,7 @@ function Get-AbrHRZAdminGroupInfo {
                                             'True' {$Administratorbasegroup = 'Group' }
                                             'False' {$Administratorbasegroup = 'User' }
                                         }
-                                        section -ExcludeFromTOC -Style Heading6 $Administrator.Base.Name {
+                                        section -ExcludeFromTOC -Style NOTOCHeading6 $Administrator.Base.Name {
                                             $OutObj = @()
                                             $inObj = [ordered] @{
                                                 'Name' = $Administrator.base.Name

@@ -31,10 +31,12 @@ function Get-AbrHRZESXiInfo {
         try {
             if ($vCenterHealth) {
                 if ($InfoLevel.Settings.Servers.vCenterServers.ESXiHosts -ge 1) {
-                    section -Style Heading4 "ESXi Hosts Information" {
+                    section -Style Heading4 "ESXi Hosts" {
+                        Paragraph "The following section details the hardware information of ESXi Hosts for $($HVEnvironment.split('.')[0]) server."
+                        BlankLine
                         $ESXHosts = $vCenterHealth.hostdata
                         foreach ($ESXCLUSTER in ($ESXHosts.ClusterName | Select-Object -Unique)) {
-                            section -ExcludeFromTOC -Style Heading5 "$($ESXCLUSTER) Hosts Summary" {
+                            section -ExcludeFromTOC -Style NOTOCHeading5 "$($ESXCLUSTER) Hosts Summary" {
                                 $OutObj = @()
                                 try {
                                     foreach ($ESXHost in ($ESXHosts | Where-Object {$_.ClusterName -eq $ESXCLUSTER})) {

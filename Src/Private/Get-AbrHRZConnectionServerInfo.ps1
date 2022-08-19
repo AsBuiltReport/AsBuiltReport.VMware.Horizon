@@ -31,7 +31,9 @@ function Get-AbrHRZConnectionServerInfo {
         try {
             if ($ConnectionServers) {
                 if ($InfoLevel.Settings.Servers.ConnectionServers.ConnectionServers -ge 1) {
-                    section -Style Heading4 "Connection Servers Summary" {
+                    section -Style Heading4 "Connection Servers" {
+                        Paragraph "The following section details the configuration of Connection Servers for $($HVEnvironment.split('.')[0]) server."
+                        BlankLine
                         $OutObj = @()
                         foreach ($ConnectionServer in $ConnectionServers) {
                             try {

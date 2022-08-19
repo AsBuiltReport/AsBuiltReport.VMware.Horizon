@@ -32,6 +32,8 @@ function Get-AbrHRZADDomainInfo {
             if ($Domains) {
                 if ($InfoLevel.Settings.Servers.vCenterServers.ADDomains -ge 1) {
                     section -Style Heading4 "Active Directory Domains Summary" {
+                        Paragraph "The following section summarizes the configuration of Active Directory Domains for $($HVEnvironment.split('.')[0]) server."
+                        BlankLine
                         $OutObj = @()
                         foreach ($Domain in $Domains) {
                             try {

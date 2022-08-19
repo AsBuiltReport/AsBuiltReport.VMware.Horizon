@@ -67,7 +67,7 @@ function Get-AbrHRZEventConfInfo {
                                     if ($Report.ShowTableCaptions) {
                                         $TableParams['Caption'] = "- $($TableParams.Name)"
                                     }
-                                    $OutObj | Sort-Object -Property 'Name' | Table @TableParams
+                                    $OutObj |  Table @TableParams
                                 }
                             }
                             catch {
@@ -128,7 +128,7 @@ function Get-AbrHRZEventConfInfo {
                                     if ($Report.ShowTableCaptions) {
                                         $TableParams['Caption'] = "- $($TableParams.Name)"
                                     }
-                                    $OutObj | Sort-Object -Property 'Server' | Table @TableParams
+                                    $OutObj | Table @TableParams
                                 }
                             }
                             catch {

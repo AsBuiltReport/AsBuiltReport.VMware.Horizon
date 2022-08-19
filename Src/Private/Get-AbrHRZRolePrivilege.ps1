@@ -32,6 +32,7 @@ function Get-AbrHRZRolePrivilege {
             if ($Roles) {
                 if ($InfoLevel.Settings.Administrators.RolePrivileges -ge 1) {
                     section -Style Heading4 "Role Privileges" {
+                        Paragraph "The following section details the Role Privileges information for $($HVEnvironment.split('.')[0]) server."
                         $OutObj = @()
                         foreach ($Role in $Roles) {
                             Write-PscriboMessage "Discovered Role Provilege Information."

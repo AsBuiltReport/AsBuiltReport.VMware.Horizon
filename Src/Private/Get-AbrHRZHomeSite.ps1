@@ -31,7 +31,9 @@ function Get-AbrHRZHomeSite {
         if ($InfoLevel.UsersAndGroups.HomeSiteAssignments -ge 1) {
             try {
                 if ($Homesites) {
-                    Section -Style Heading3 'Home Site General' {
+                    Section -Style Heading3 'Home Site' {
+                        Paragraph "The following section provide a summary of user and group home site configuration."
+                        BlankLine
                         $OutObj = @()
                         foreach ($HomeSite in $HomeSites) {
                             try {
