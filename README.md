@@ -51,6 +51,7 @@ Below are the instructions on how to install, configure and generate a VMware Ho
 The VMware Horizon As Built Report supports the following Horizon versions;
 
 - Horizon 8+
+- Horizon 7? (Need Testing)
 
 ### PowerShell
 
