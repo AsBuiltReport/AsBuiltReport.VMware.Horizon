@@ -66,21 +66,19 @@ function Get-AbrHRZAccessGroup {
                                     $AccessGroupJoined += $AccessGroups.Children
                                     foreach ($AccessGroup in $AccessGroupJoined) {
                                         Write-PscriboMessage "Discovered $($AccessGroup.base.Name) Access Groups Detailed Information."
-                                        $AdministratorIDNameResults = ''
+                                        $AdministratorIDNameResults = @()
                                         # Find Administrator ID Name
-                                        $AdministratorIDName = ''
                                         foreach ($AccessGroupID in $AccessGroup.data.Permissions.id) {
                                             foreach ($Permission in $Permissions) {
                                                 if ($AccessGroupID -eq $Permission.id.id){
                                                     foreach ($PermissionGroup in $Permission.base.UserOrGroup.id) {
                                                         foreach ($Administrator in $Administrators) {
                                                             if ($Administrator.Id.id -eq $PermissionGroup) {
-                                                                $AdministratorIDName = $Administrator.base.name
+                                                                $AdministratorIDNameResults += $Administrator.base.name
                                                                 break
                                                             }
                                                         }
-                                                        $AdministratorIDNameResults += "$AdministratorIDName, "
-                                                        $AdministratorIDName = $AdministratorIDNameResults.TrimEnd(', ')
+                                                        $AdministratorIDName = $AdministratorIDNameResults
                                                     }
                                                 }
                                             }
@@ -88,17 +86,17 @@ function Get-AbrHRZAccessGroup {
                                         if ($AdministratorIDName) {
                                             section -ExcludeFromTOC -Style NOTOCHeading5 $AccessGroup.base.Name {
                                                 $OutObj = @()
-                                                foreach ($Principal in ($AdministratorIDName.split(', ') | Select-Object -Unique)){
-                                                    $PrincipalPermissionsName = ''
+                                                foreach ($Principal in ($AdministratorIDName | Select-Object -Unique)){
+                                                    $PrincipalPermissionsName = @()
                                                     $PrincipalID = ($Administrators | Where-Object {$_.Base.Name -eq $Principal}).Id.Id
                                                     $PrincipalPermissions = ($Permissions.Base | Where-Object {$_.UserOrGroup.Id -eq $PrincipalID}).Role.Id
                                                     foreach ($PrincipalPermission in $PrincipalPermissions) {
-                                                        $PrincipalPermissionsName += "$(($Roles | Where-Object {$_.Id.id -eq $PrincipalPermission}).Base.Name), "
+                                                        $PrincipalPermissionsName += $(($Roles | Where-Object {$_.Id.id -eq $PrincipalPermission}).Base.Name)
                                                     }
 
                                                     $inObj = [ordered] @{
                                                         'Name' = $Principal
-                                                        'Permissions' = [string](($PrincipalPermissionsName.split(', ') | Select-Object -Unique) -join ', ')
+                                                        'Permissions' = [string](($PrincipalPermissionsName | Select-Object -Unique) -join ', ')
                                                     }
 
                                                     $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
