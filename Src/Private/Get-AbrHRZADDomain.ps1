@@ -1,4 +1,4 @@
-function Get-AbrHRZADDomainInfo {
+function Get-AbrHRZADDomain {
     <#
     .SYNOPSIS
         PowerShell script which documents the configuration of VMware Horizon in Word/HTML/XML/Text formats
@@ -31,7 +31,7 @@ function Get-AbrHRZADDomainInfo {
         try {
             if ($Domains) {
                 if ($InfoLevel.Settings.Servers.vCenterServers.ADDomains -ge 1) {
-                    section -Style Heading4 "Active Directory Domains Summary" {
+                    section -Style Heading4 "Active Directory Domains" {
                         Paragraph "The following section summarizes the configuration of Active Directory Domains for $($HVEnvironment.split('.')[0]) server."
                         BlankLine
                         $OutObj = @()
@@ -58,7 +58,7 @@ function Get-AbrHRZADDomainInfo {
                         }
 
                         $TableParams = @{
-                            Name = "Active Directory Domains - $($HVEnvironment)"
+                            Name = "Active Directory Domains - $($HVEnvironment.split(".").toUpper()[0])"
                             List = $false
                             ColumnWidths = 25, 25, 25, 25
                         }

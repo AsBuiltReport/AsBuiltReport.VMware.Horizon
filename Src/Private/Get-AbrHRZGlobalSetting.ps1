@@ -63,7 +63,7 @@ function Get-AbrHRZGlobalSetting {
                         $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
 
                         $TableParams = @{
-                            Name = "Global Settings - $($HVEnvironment)"
+                            Name = "Global Settings - $($HVEnvironment.split(".").toUpper()[0])"
                             List = $true
                             ColumnWidths = 50, 50
                         }
@@ -88,7 +88,7 @@ function Get-AbrHRZGlobalSetting {
                                     }
 
                                     $TableParams = @{
-                                        Name = "Client Restriction Settings - $($HVEnvironment)"
+                                        Name = "Client Restriction Settings - $($HVEnvironment.split(".").toUpper()[0])"
                                         List = $false
                                         ColumnWidths = 25, 25, 25, 25
                                     }

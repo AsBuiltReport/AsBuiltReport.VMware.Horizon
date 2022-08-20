@@ -1,4 +1,4 @@
-function Get-AbrHRZFarmInfo {
+function Get-AbrHRZFarm {
     <#
     .SYNOPSIS
         PowerShell script which documents the configuration of VMware Horizon in Word/HTML/XML/Text formats
@@ -51,7 +51,7 @@ function Get-AbrHRZFarmInfo {
                         }
 
                         $TableParams = @{
-                            Name = "Farms - $($HVEnvironment)"
+                            Name = "Farms - $($HVEnvironment.split(".").toUpper()[0])"
                             List = $false
                             ColumnWidths = 34, 33, 33
                         }
@@ -105,7 +105,7 @@ function Get-AbrHRZFarmInfo {
                                                     }
 
                                                     $TableParams = @{
-                                                        Name = "Farm General Information - $($Farm.Data.name)"
+                                                        Name = "General Information - $($Farm.Data.name)"
                                                         List = $true
                                                         ColumnWidths = 50, 50
                                                     }
@@ -140,7 +140,7 @@ function Get-AbrHRZFarmInfo {
                                                     }
 
                                                     $TableParams = @{
-                                                        Name = "Farm Settings - $($Farm.Data.name)"
+                                                        Name = "Settings - $($Farm.Data.name)"
                                                         List = $true
                                                         ColumnWidths = 50, 50
                                                     }
@@ -172,7 +172,7 @@ function Get-AbrHRZFarmInfo {
                                                     $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
 
                                                     $TableParams = @{
-                                                        Name = "Farm Load Balancing Settings - $($Farm.Data.name)"
+                                                        Name = "Load Balancing Settings - $($Farm.Data.name)"
                                                         List = $true
                                                         ColumnWidths = 50, 50
                                                     }
@@ -209,7 +209,7 @@ function Get-AbrHRZFarmInfo {
                                                     $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
 
                                                     $TableParams = @{
-                                                        Name = "Farm vCenter Settings - $($Farm.Data.name)"
+                                                        Name = "vCenter Settings - $($Farm.Data.name)"
                                                         List = $true
                                                         ColumnWidths = 50, 50
                                                     }

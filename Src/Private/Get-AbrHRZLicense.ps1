@@ -1,4 +1,4 @@
-function Get-AbrHRZLicenseInfo {
+function Get-AbrHRZLicense {
     <#
     .SYNOPSIS
         PowerShell script which documents the configuration of VMware Horizon in Word/HTML/XML/Text formats
@@ -31,7 +31,7 @@ function Get-AbrHRZLicenseInfo {
         try {
             if ($ProductLicenseingInfo) {
                 if ($InfoLevel.Settings.ProductLicensing.ProductLicensingandUsage -ge 1) {
-                    section -Style Heading3 "Product License" {
+                    section -Style Heading3 "Product Licenses" {
                         Paragraph "The following section details the Product License information for $($HVEnvironment.split('.')[0]) server."
                         BlankLine
                         $OutObj = @()
@@ -60,7 +60,7 @@ function Get-AbrHRZLicenseInfo {
                         }
 
                         $TableParams = @{
-                            Name = "Product License - $($HVEnvironment)"
+                            Name = "Product Licenses - $($HVEnvironment.split(".").toUpper()[0])"
                             List = $true
                             ColumnWidths = 50, 50
                         }
@@ -92,7 +92,7 @@ function Get-AbrHRZLicenseInfo {
                                         }
 
                                         $TableParams = @{
-                                            Name = "Product License Usage - $($HVEnvironment)"
+                                            Name = "Product Licenses Usage - $($HVEnvironment.split(".").toUpper()[0])"
                                             List = $false
                                             ColumnWidths = 60, 20, 20
                                         }

@@ -296,7 +296,6 @@
                 if ($InfoLevel.UsersAndGroups.PSObject.Properties.Value -ne 0) {
                     Section -Style Heading2 'Users and Groups' {
                         Paragraph 'The following section provides information about the permissions that control which remote desktops and applications your users can access.'
-                        BlankLine
                         Get-AbrHRZLocalEntitlement
                         Get-AbrHRZHomeSite
                         Get-AbrHRZUnauthenticatedACL
@@ -306,10 +305,9 @@
                 if ($InfoLevel.Inventory.PSObject.Properties.Value -ne 0) {
                     section -Style Heading2 'Inventory' {
                         Paragraph 'The following section provides detailed information about desktop, application, farm pools and global entitlement permissions that control which remote desktops and applications your users can access.'
-                        BlankLine
-                        Get-AbrHRZDesktopPoolsInfo
-                        Get-AbrHRZApplicationPoolsInfo
-                        Get-AbrHRZFarmInfo
+                        Get-AbrHRZDesktopPool
+                        Get-AbrHRZApplicationPool
+                        Get-AbrHRZFarm
                         Get-AbrHRZGlobalEntitlement
                     }
                 }
@@ -318,25 +316,24 @@
                     Paragraph 'The following section provides detailed information about the configuration of the components that comprise the Horizon Server infrastructure.'
                     if ($InfoLevel.Settings.Servers.PSObject.Properties.Value -ne 0) {
                         section -Style Heading3 'Servers' {
-
-                            Get-AbrHRZVcenterInfo
-                            Get-AbrHRZESXiInfo
-                            Get-AbrHRZDatastoreInfo
-                            Get-AbrHRZADDomainInfo
-                            Get-AbrHRZUAGInfo
-                            Get-AbrHRZConnectionServerInfo
+                            Get-AbrHRZVcenter
+                            Get-AbrHRZESXi
+                            Get-AbrHRZDatastore
+                            Get-AbrHRZADDomain
+                            Get-AbrHRZUAG
+                            Get-AbrHRZConnectionServer
 
                         }
                     }
 
                     Get-AbrHRZInstantClone
-                    Get-AbrHRZLicenseInfo
+                    Get-AbrHRZLicense
                     Get-AbrHRZGlobalSetting
                     Get-AbrHRZRegisteredMachine
 
                     if ($InfoLevel.Settings.Administrators.PSObject.Properties.Value -ne 0) {
                         section -Style Heading3 'Administrators' {
-                            Get-AbrHRZAdminGroupInfo
+                            Get-AbrHRZAdminGroup
                             Get-AbrHRZRolePrivilege
                             Get-AbrHRZRolePermission
                             Get-AbrHRZAccessGroup
@@ -344,7 +341,7 @@
                         }
                     }
 
-                    Get-AbrHRZEventConfInfo
+                    Get-AbrHRZEventConf
                 }
             }
         }

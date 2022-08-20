@@ -57,7 +57,7 @@ function Get-AbrHRZGlobalEntitlement {
                         }
 
                         $TableParams = @{
-                            Name = "Global Entitlements - $($HVEnvironment)"
+                            Name = "Global Entitlements - $($HVEnvironment.split(".").toUpper()[0])"
                             List = $false
                             ColumnWidths = 34, 33, 33
                         }

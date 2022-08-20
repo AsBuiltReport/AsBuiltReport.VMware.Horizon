@@ -51,7 +51,7 @@ function Get-AbrHRZInstantClone {
                         }
 
                         $TableParams = @{
-                            Name = "Instant Clone Domain Accounts - $($HVEnvironment)"
+                            Name = "Instant Clone Domain Accounts - $($HVEnvironment.split(".").toUpper()[0])"
                             List = $false
                             ColumnWidths = 50, 50
                         }

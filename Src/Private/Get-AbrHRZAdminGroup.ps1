@@ -1,4 +1,4 @@
-function Get-AbrHRZAdminGroupInfo {
+function Get-AbrHRZAdminGroup {
     <#
     .SYNOPSIS
         PowerShell script which documents the configuration of VMware Horizon in Word/HTML/XML/Text formats
@@ -71,7 +71,7 @@ function Get-AbrHRZAdminGroupInfo {
                         }
 
                         $TableParams = @{
-                            Name = "Administrators and Groups - $($HVEnvironment)"
+                            Name = "Administrators and Groups - $($HVEnvironment.split(".").toUpper()[0])"
                             List = $false
                             ColumnWidths = 42, 15, 43
                         }

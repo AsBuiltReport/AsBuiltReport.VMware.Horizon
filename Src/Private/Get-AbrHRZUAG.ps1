@@ -1,4 +1,4 @@
-function Get-AbrHRZUAGInfo {
+function Get-AbrHRZUAG {
     <#
     .SYNOPSIS
         PowerShell script which documents the configuration of VMware Horizon in Word/HTML/XML/Text formats
@@ -58,7 +58,7 @@ function Get-AbrHRZUAGInfo {
                         }
 
                         $TableParams = @{
-                            Name = "UAG Servers - $($HVEnvironment)"
+                            Name = "UAG Servers - $($HVEnvironment.split(".").toUpper()[0])"
                             List = $false
                             ColumnWidths = 35, 20, 15, 15, 15
                         }

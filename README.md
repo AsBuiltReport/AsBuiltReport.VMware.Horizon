@@ -35,6 +35,12 @@ VMware Horizon As Built Report is a PowerShell module which works in conjunction
 
 Please refer to the AsBuiltReport [website](https://www.asbuiltreport.com) for more detailed information about this project.
 
+# :books: Sample Reports
+
+## Sample Report - Custom Style
+
+Sample VMware Horizon As Built report HTML file: [Sample VMware Horizon As-Built Report.html](https://htmlpreview.github.io/?https://raw.githubusercontent.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/dev/Samples/Sample%20VMware%20Horizon%20As%20Built%20Report.html)
+
 # :beginner: Getting Started
 
 Below are the instructions on how to install, configure and generate a VMware Horizon As Built report.

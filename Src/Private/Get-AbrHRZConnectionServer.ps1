@@ -1,4 +1,4 @@
-function Get-AbrHRZConnectionServerInfo {
+function Get-AbrHRZConnectionServer {
     <#
     .SYNOPSIS
         PowerShell script which documents the configuration of VMware Horizon in Word/HTML/XML/Text formats
@@ -60,7 +60,7 @@ function Get-AbrHRZConnectionServerInfo {
                         }
 
                         $TableParams = @{
-                            Name = "Connection Servers - $($HVEnvironment)"
+                            Name = "Connection Servers - $($HVEnvironment.split(".").toUpper()[0])"
                             List = $false
                             ColumnWidths = 42, 43, 15
                         }
@@ -115,7 +115,7 @@ function Get-AbrHRZConnectionServerInfo {
                                             $OutObj | Table @TableParams
                                             try {
                                                 $OutObj = @()
-                                                section -Style Heading6 "Authentication" {
+                                                section -ExcludeFromTOC -Style NOTOCHeading6 "Authentication" {
                                                     try {
                                                         if($connectionserver.authentication.samlconfig.SamlAuthenticator) {
                                                             $SAMLAuth = $hzServices.SAMLAuthenticator.SAMLAuthenticator_Get($connectionserver.authentication.samlconfig.SamlAuthenticator)
@@ -165,7 +165,7 @@ function Get-AbrHRZConnectionServerInfo {
                                             }
                                             try {
                                                 $OutObj = @()
-                                                section -Style Heading6 "Backup" {
+                                                section -ExcludeFromTOC -Style NOTOCHeading6 "Backup" {
                                                     try {
                                                         Write-PscriboMessage "Discovered Connection Servers Authentication Information $($ConnectionServer.General.Name)."
                                                         $inObj = [ordered] @{
