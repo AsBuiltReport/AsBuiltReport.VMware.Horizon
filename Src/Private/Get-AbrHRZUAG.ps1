@@ -58,7 +58,7 @@ function Get-AbrHRZUAG {
                         }
 
                         $TableParams = @{
-                            Name = "UAG Servers - $($HVEnvironment)"
+                            Name = "UAG Servers - $($HVEnvironment.split(".").toUpper()[0])"
                             List = $false
                             ColumnWidths = 35, 20, 15, 15, 15
                         }

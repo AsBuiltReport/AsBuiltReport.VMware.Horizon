@@ -47,7 +47,7 @@ function Get-AbrHRZApplicationPool {
                         }
 
                         $TableParams = @{
-                            Name = "Applications - $($HVEnvironment)"
+                            Name = "Applications - $($HVEnvironment.split(".").toUpper()[0])"
                             List = $false
                             ColumnWidths = 34, 33, 33
                         }

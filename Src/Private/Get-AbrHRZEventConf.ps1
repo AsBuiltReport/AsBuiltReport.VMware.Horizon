@@ -59,7 +59,7 @@ function Get-AbrHRZEventConf {
                                     }
 
                                     $TableParams = @{
-                                        Name = "Event Database - $($HVEnvironment)"
+                                        Name = "Event Database - $($HVEnvironment.split(".").toUpper()[0])"
                                         List = $true
                                         ColumnWidths = 50, 50
                                     }
@@ -89,7 +89,7 @@ function Get-AbrHRZEventConf {
                                     }
 
                                     $TableParams = @{
-                                        Name = "Syslog Configuration - $($HVEnvironment)"
+                                        Name = "Syslog Configuration - $($HVEnvironment.split(".").toUpper()[0])"
                                         List = $false
                                         ColumnWidths = 50, 50
                                     }
@@ -120,7 +120,7 @@ function Get-AbrHRZEventConf {
                                     }
 
                                     $TableParams = @{
-                                        Name = "Events to File System - $($HVEnvironment)"
+                                        Name = "Events to File System - $($HVEnvironment.split(".").toUpper()[0])"
                                         List = $true
                                         ColumnWidths = 50, 50
                                     }

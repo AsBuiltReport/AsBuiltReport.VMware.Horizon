@@ -49,7 +49,7 @@ function Get-AbrHRZAccessGroup {
                         }
 
                         $TableParams = @{
-                            Name = "Access Groups - $($HVEnvironment)"
+                            Name = "Access Groups - $($HVEnvironment.split(".").toUpper()[0])"
                             List = $false
                             ColumnWidths = 50, 50
                         }

@@ -54,7 +54,7 @@ function Get-AbrHRZRegisteredMachine {
                             }
 
                             $TableParams = @{
-                                Name = "RDS Hosts - $($HVEnvironment)"
+                                Name = "RDS Hosts - $($HVEnvironment.split(".").toUpper()[0])"
                                 List = $false
                                 ColumnWidths = 34, 33, 33
                             }

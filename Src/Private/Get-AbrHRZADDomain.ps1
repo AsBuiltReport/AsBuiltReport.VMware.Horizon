@@ -58,7 +58,7 @@ function Get-AbrHRZADDomain {
                         }
 
                         $TableParams = @{
-                            Name = "Active Directory Domains - $($HVEnvironment)"
+                            Name = "Active Directory Domains - $($HVEnvironment.split(".").toUpper()[0])"
                             List = $false
                             ColumnWidths = 25, 25, 25, 25
                         }

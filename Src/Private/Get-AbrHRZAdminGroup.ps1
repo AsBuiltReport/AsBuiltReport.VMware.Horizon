@@ -71,7 +71,7 @@ function Get-AbrHRZAdminGroup {
                         }
 
                         $TableParams = @{
-                            Name = "Administrators and Groups - $($HVEnvironment)"
+                            Name = "Administrators and Groups - $($HVEnvironment.split(".").toUpper()[0])"
                             List = $false
                             ColumnWidths = 42, 15, 43
                         }

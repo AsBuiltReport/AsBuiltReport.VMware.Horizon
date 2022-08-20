@@ -55,7 +55,7 @@ function Get-AbrHRZVcenter {
                         }
 
                         $TableParams = @{
-                            Name = "vCenter - $($HVEnvironment)"
+                            Name = "vCenter - $($HVEnvironment.split(".").toUpper()[0])"
                             List = $false
                             ColumnWidths = 40, 15, 15, 15, 15
                         }

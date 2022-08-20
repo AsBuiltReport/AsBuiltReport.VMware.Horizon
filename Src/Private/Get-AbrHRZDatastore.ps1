@@ -31,7 +31,7 @@ function Get-AbrHRZDatastore {
         try {
             if ($vCenterHealth) {
                 if ($InfoLevel.Settings.Servers.vCenterServers.DataStores -ge 1) {
-                    section -Style Heading4 "Datastore" {
+                    section -Style Heading4 "Datastores" {
                         $OutObj = @()
                         $Datastores = $vCenterHealth.datastoredata
                         foreach ($DataStore in $Datastores) {
@@ -56,7 +56,7 @@ function Get-AbrHRZDatastore {
                         }
 
                         $TableParams = @{
-                            Name = "Datastore - $($HVEnvironment)"
+                            Name = "Datastores - $($HVEnvironment.split(".").toUpper()[0])"
                             List = $false
                             ColumnWidths = 50, 50
                         }
@@ -67,7 +67,7 @@ function Get-AbrHRZDatastore {
                         $OutObj | Sort-Object -Property 'Name' | Table @TableParams
                         try {
                             if ($InfoLevel.Settings.Servers.vCenterServers.DataStores -ge 2) {
-                                section -Style Heading5 "Datastore Detailed" {
+                                section -Style Heading5 "Datastores Detailed" {
                                     foreach ($DataStore in $Datastores) {
                                         if ($DataStore) {
                                             try {
@@ -89,7 +89,7 @@ function Get-AbrHRZDatastore {
                                                     }
 
                                                     $TableParams = @{
-                                                        Name = "Datastore Details - $($DataStore.Name)"
+                                                        Name = "Datastores Details - $($DataStore.Name)"
                                                         List = $true
                                                         ColumnWidths = 50, 50
                                                     }

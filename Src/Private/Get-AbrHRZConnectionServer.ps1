@@ -60,7 +60,7 @@ function Get-AbrHRZConnectionServer {
                         }
 
                         $TableParams = @{
-                            Name = "Connection Servers - $($HVEnvironment)"
+                            Name = "Connection Servers - $($HVEnvironment.split(".").toUpper()[0])"
                             List = $false
                             ColumnWidths = 42, 43, 15
                         }

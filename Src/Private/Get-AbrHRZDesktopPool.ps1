@@ -31,7 +31,7 @@ function Get-AbrHRZDesktopPool {
         try {
             if ($Pools) {
                 if ($InfoLevel.Inventory.Desktop -ge 1) {
-                    section -Style Heading3 "Desktop Pool" {
+                    section -Style Heading3 "Desktop Pools" {
                         Paragraph "The following section details the Desktop Pools configuration for $($HVEnvironment.split('.')[0]) server."
                         BlankLine
                         $OutObj = @()
@@ -58,7 +58,7 @@ function Get-AbrHRZDesktopPool {
                         }
 
                         $TableParams = @{
-                            Name = "Desktop Pools - $($HVEnvironment)"
+                            Name = "Desktop Pools - $($HVEnvironment.split(".").toUpper()[0])"
                             List = $false
                             ColumnWidths = 25, 25, 25, 25
                         }
@@ -69,7 +69,7 @@ function Get-AbrHRZDesktopPool {
                         $OutObj | Sort-Object -Property 'Name' | Table @TableParams
                         try {
                             if ($InfoLevel.Inventory.Desktop -ge 2) {
-                                section -Style Heading4 "Desktop Pool Details" {
+                                section -Style Heading4 "Desktop Pools Details" {
                                     foreach ($Pool in $Pools) {
                                         # Find out Access Group for Desktop Pool
                                         $AccessgroupMatch = $false
@@ -77,6 +77,7 @@ function Get-AbrHRZDesktopPool {
                                         $AccessgroupsJoined = @()
                                         $AccessgroupsJoined += $Accessgroups
                                         $AccessgroupsJoined += $Accessgroups.Children
+                                        $AccessGroupName = ''
                                         foreach ($Accessgroup in $AccessgroupsJoined) {
                                             if ($Accessgroup.Id.id -eq $Pool.base.accessgroup.id) {
                                                 $AccessGroupName = $Accessgroup.base.name
@@ -156,6 +157,8 @@ function Get-AbrHRZDesktopPool {
                                         }
 
                                         # Find Base Image ID Name
+                                        $PoolBaseImage = ''
+                                        $PoolBaseImagePath = ''
                                         if ($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.ParentVM.id){
                                             foreach ($CompatibleBaseImageVM in $CompatibleBaseImageVMs) {
                                                 if ($CompatibleBaseImageVM.id.id -eq $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.ParentVM.id){
@@ -167,12 +170,15 @@ function Get-AbrHRZDesktopPool {
                                         }
 
                                         # Get Pool Base Image Snapshot
+                                        $BaseImageSnapshotListLast = ''
                                         if( $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.Snapshot.id) {
                                             $BaseImageSnapshotList = $hzServices.BaseImageSnapshot.BaseImageSnapshot_List($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.ParentVM)
                                             $BaseImageSnapshotListLast = $BaseImageSnapshotList | Select-Object -Last 1
                                         }
 
                                         # DataCenters
+                                        $PoolDataCenterName = ''
+                                        $PoolDatacenterPath = ''
                                         if ($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.Datacenter.id) {
                                             $DataCenterList = $hzServices.Datacenter.Datacenter_List($Pool.automateddesktopdata.virtualcenter)
 
@@ -187,6 +193,8 @@ function Get-AbrHRZDesktopPool {
                                         }
 
                                         # VM Folder List
+                                        $VMFolder = ''
+                                        $VMFolderPath = ''
                                         if ($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.VmFolder.id){
 
                                             $VMFolderPath = $Pool.automateddesktopdata.VirtualCenterNamesData.VmFolderPath
@@ -194,6 +202,7 @@ function Get-AbrHRZDesktopPool {
                                         }
 
                                         # VM Host or Cluster
+                                        $VMhostandCluter = ''
                                         if ($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.HostOrCluster.id){
                                             #$HostAndCluster = $hzServices.HostOrCluster.HostOrCluster_GetHostOrClusterTree($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.Datacenter)
                                             $VMhostandCluterPath = $Pool.automateddesktopdata.VirtualCenterNamesData.HostOrClusterPath
@@ -201,6 +210,7 @@ function Get-AbrHRZDesktopPool {
                                         }
 
                                         # VM Resource Pool
+                                        $VMResourcePool = ''
                                         if ($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.ResourcePool.id){
                                             #$ResourcePoolTree = $hzServices.ResourcePool.ResourcePool_GetResourcePoolTree($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.Datacenter)
                                             $VMResourcePoolPath = $Pool.automateddesktopdata.VirtualCenterNamesData.ResourcePoolPath
@@ -219,6 +229,7 @@ function Get-AbrHRZDesktopPool {
                                         }
 
                                         # VM AD Container
+                                        $PoolContainerName = ''
                                         if ($Pool.automateddesktopdata.CustomizationSettings.AdContainer.id) {
                                             foreach ($ADDomain in $ADDomains){
                                                 $ADDomainID = ($ADDomain.id.id -creplace '^[^/]*/', '')
@@ -235,6 +246,7 @@ function Get-AbrHRZDesktopPool {
                                         }
 
                                         # VM Template
+                                        $PoolTemplateName = ''
                                         if ($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.Template.id){
                                             foreach ($Template in $CompatibleTemplateVMs) {
                                                 if ($Template.id.id -eq $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.Template.id){
@@ -245,9 +257,11 @@ function Get-AbrHRZDesktopPool {
                                         }
                                         try {
                                             section -Style Heading5 $($Pool.Base.name) {
+                                                $SupportedDisplayProtocolsresult = ''
                                                 $SupportedDisplayProtocols = $Pool.DesktopSettings.DisplayProtocolSettings | ForEach-Object { $_.SupportedDisplayProtocols}
                                                 $SupportedDisplayProtocolsresult = $SupportedDisplayProtocols -join ', '
 
+                                                $StorageOvercommitsresult = ''
                                                 $StorageOvercommit = $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterStorageSettings.datastores | ForEach-Object { $_.StorageOvercommit}
                                                 $StorageOvercommitsresult = $StorageOvercommit -join ', '
 
@@ -284,6 +298,7 @@ function Get-AbrHRZDesktopPool {
                                                                 default {$Pool.Automateddesktopdata.ProvisioningType}
                                                             }
                                                             'Enabled for Provisioning' = $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.EnableProvisioning
+                                                            'Client Restrictions Enabled' = $Pool.DesktopSettings.ClientRestrictions
                                                         }
 
                                                         if ($Pool.Type -eq 'MANUAL') {
@@ -355,6 +370,18 @@ function Get-AbrHRZDesktopPool {
                                                             $inObj.Remove('Refresh Threshold Percentage For Replica OS Disk')
                                                         }
 
+                                                        if ($Pool.Type -eq 'RDS') {
+                                                            $inObj.Remove('Max Number of Machines')
+                                                            $inObj.Remove('Min number of Machines')
+                                                            $inObj.Remove('Number of Spare Machines')
+                                                            $inObj.Remove('Stop Provisioning on Error')
+                                                            $inObj.Remove('Naming Method')
+                                                            $inObj.Remove('Naming Pattern')
+                                                            $inObj.Remove('Provisioning Time')
+                                                            $inObj.Remove('Refresh Period Days for Replica OS Disk')
+                                                            $inObj.Remove('Refresh Threshold Percentage For Replica OS Disk')
+                                                        }
+
                                                         $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
 
                                                         $TableParams = @{
@@ -405,6 +432,16 @@ function Get-AbrHRZDesktopPool {
                                                             }
                                                             'Datastores' = $DatastoreFinal
                                                             'Datastores Storage Over-Commit' = $StorageOvercommitsresult
+                                                            'View Storage Accelerator' = Switch ($Pool.Type) {
+                                                                'MANUAL' {$Pool.ManualDesktopData.ViewStorageAcceleratorSettings.UseViewStorageAccelerator}
+                                                                'AUTOMATED' {$Pool.AutomatedDesktopData.VirtualCenterProvisioningSettings.VirtualCenterStorageSettings.ViewStorageAcceleratorSettings.UseViewStorageAccelerator}
+                                                                default {'Not Supported'}
+                                                            }
+                                                            'Transparent Page Sharing Scope' = Switch ($Pool.Type) {
+                                                                'MANUAL' {$Pool.ManualDesktopData.VirtualCenterManagedCommonSettings.TransparentPageSharingScope}
+                                                                'AUTOMATED' {$Pool.AutomatedDesktopData.VirtualCenterManagedCommonSettings.TransparentPageSharingScope}
+                                                                default {'Not Supported'}
+                                                            }
                                                             'Replica Disk Datastore Path' = $Pool.automateddesktopdata.VirtualCenterNamesData.ReplicaDiskDatastorePath
                                                             'Networks' = Switch ($Pool.AutomatedDesktopData.VirtualCenterNamesData.NetworkLabelNames) {
                                                                 $null {'Golden Image network selected'}
@@ -416,7 +453,7 @@ function Get-AbrHRZDesktopPool {
                                                             'Reuse Pre-Existing Accounts' = $Pool.automateddesktopdata.CustomizationSettings.ReusePreExistingAccounts
                                                         }
 
-                                                        if ($Pool.Automateddesktopdata.ProvisioningType -eq 'VIRTUAL_CENTER' -or $Pool.Type -eq 'MANUAL') {
+                                                        if ($Pool.Automateddesktopdata.ProvisioningType -eq 'VIRTUAL_CENTER') {
                                                             $inObj.Remove('Parent VM')
                                                             $inObj.Remove('Parent VM Path')
                                                             $inObj.Remove('Snapshot')
@@ -432,6 +469,33 @@ function Get-AbrHRZDesktopPool {
                                                             $inObj.Remove('Ad Container')
                                                             $inObj.Remove('Reuse Pre-Existing Accounts')
                                                             $inObj.Remove('Customization Type')
+                                                        }
+
+                                                        if ($Pool.Type -eq 'MANUAL') {
+                                                            $inObj.Remove('Template')
+                                                            $inObj.Remove('Parent VM')
+                                                            $inObj.Remove('Parent VM Path')
+                                                            $inObj.Remove('Snapshot')
+                                                            $inObj.Remove('Snapshot Path')
+                                                            $inObj.Remove('VM Folder')
+                                                            $inObj.Remove('VM Folder Path')
+                                                            $inObj.Remove('Datastores')
+                                                            $inObj.Remove('Datastores Storage Over-Commit')
+                                                            $inObj.Remove('Replica Disk Datastore Path')
+                                                            $inObj.Remove('Pool Customization Type')
+                                                            $inObj.Remove('Pool Domain Administrator')
+                                                            $inObj.Remove('Pool Reuse Pre-Existing Accounts')
+                                                            $inObj.Remove('Ad Container')
+                                                            $inObj.Remove('Reuse Pre-Existing Accounts')
+                                                            $inObj.Remove('Customization Type')
+                                                            $inObj.Remove('Datacenter')
+                                                            $inObj.Remove('Datacenter Path')
+                                                            $inObj.Remove('Host or Cluster')
+                                                            $inObj.Remove('Host or Cluster Path')
+                                                            $inObj.Remove('Resource Pool')
+                                                            $inObj.Remove('Resource Pool Path')
+                                                            $inObj.Remove('Networks')
+                                                            $inObj.Remove('Guest Customization Account')
                                                         }
 
                                                         if ($Pool.Automateddesktopdata.ProvisioningType -eq 'INSTANT_CLONE_ENGINE') {

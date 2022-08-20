@@ -296,7 +296,6 @@
                 if ($InfoLevel.UsersAndGroups.PSObject.Properties.Value -ne 0) {
                     Section -Style Heading2 'Users and Groups' {
                         Paragraph 'The following section provides information about the permissions that control which remote desktops and applications your users can access.'
-                        BlankLine
                         Get-AbrHRZLocalEntitlement
                         Get-AbrHRZHomeSite
                         Get-AbrHRZUnauthenticatedACL
@@ -306,7 +305,6 @@
                 if ($InfoLevel.Inventory.PSObject.Properties.Value -ne 0) {
                     section -Style Heading2 'Inventory' {
                         Paragraph 'The following section provides detailed information about desktop, application, farm pools and global entitlement permissions that control which remote desktops and applications your users can access.'
-                        BlankLine
                         Get-AbrHRZDesktopPool
                         Get-AbrHRZApplicationPool
                         Get-AbrHRZFarm
@@ -318,7 +316,6 @@
                     Paragraph 'The following section provides detailed information about the configuration of the components that comprise the Horizon Server infrastructure.'
                     if ($InfoLevel.Settings.Servers.PSObject.Properties.Value -ne 0) {
                         section -Style Heading3 'Servers' {
-
                             Get-AbrHRZVcenter
                             Get-AbrHRZESXi
                             Get-AbrHRZDatastore

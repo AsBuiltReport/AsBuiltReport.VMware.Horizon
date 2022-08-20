@@ -110,7 +110,7 @@ function Get-AbrHRZRolePermission {
                         }
 
                         $TableParams = @{
-                            Name = "Role Permissions - $($HVEnvironment)"
+                            Name = "Role Permissions - $($HVEnvironment.split(".").toUpper()[0])"
                             List = $false
                             ColumnWidths = 33, 33, 34
                         }
