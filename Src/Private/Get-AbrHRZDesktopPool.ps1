@@ -1,4 +1,4 @@
-function Get-AbrHRZDesktopPoolsInfo {
+function Get-AbrHRZDesktopPool {
     <#
     .SYNOPSIS
         PowerShell script which documents the configuration of VMware Horizon in Word/HTML/XML/Text formats
@@ -31,7 +31,7 @@ function Get-AbrHRZDesktopPoolsInfo {
         try {
             if ($Pools) {
                 if ($InfoLevel.Inventory.Desktop -ge 1) {
-                    section -Style Heading3 "Desktop Pool Summary" {
+                    section -Style Heading3 "Desktop Pool" {
                         Paragraph "The following section details the Desktop Pools configuration for $($HVEnvironment.split('.')[0]) server."
                         BlankLine
                         $OutObj = @()

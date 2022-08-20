@@ -1,4 +1,4 @@
-function Get-AbrHRZApplicationPoolsInfo {
+function Get-AbrHRZApplicationPool {
     <#
     .SYNOPSIS
         PowerShell script which documents the configuration of VMware Horizon in Word/HTML/XML/Text formats
@@ -31,7 +31,7 @@ function Get-AbrHRZApplicationPoolsInfo {
         try {
             if ($Apps) {
                 if ($InfoLevel.Inventory.Applications -ge 1) {
-                    section -Style Heading3 "Application Pool Summary" {
+                    section -Style Heading3 "Application Pool" {
                         Paragraph "The following section details the configuration of Application Pool for $($HVEnvironment.split('.')[0]) server."
                         BlankLine
                         $OutObj = @()

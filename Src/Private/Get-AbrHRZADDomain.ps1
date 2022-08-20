@@ -1,4 +1,4 @@
-function Get-AbrHRZUAGInfo {
+function Get-AbrHRZADDomain {
     <#
     .SYNOPSIS
         PowerShell script which documents the configuration of VMware Horizon in Word/HTML/XML/Text formats
@@ -23,31 +23,27 @@ function Get-AbrHRZUAGInfo {
     )
 
     begin {
-        Write-PScriboMessage "SecurityServers InfoLevel set at $($InfoLevel.Settings.Servers.vCenterServers.ADDomains)."
-        Write-PscriboMessage "Collecting Security Servers information."
+        Write-PScriboMessage "ADDomains InfoLevel set at $($InfoLevel.Settings.Servers.vCenterServers.ADDomains)."
+        Write-PscriboMessage "Collecting Active Directory Domain information."
     }
 
     process {
         try {
-            if ($GatewayServers) {
-                if ($InfoLevel.Settings.Servers.UAG.UAGServers -ge 1) {
-                    section -Style Heading4 "UAG Servers" {
-                        Paragraph "The following section details the UAG Servers information for $($HVEnvironment.split('.')[0]) server."
+            if ($Domains) {
+                if ($InfoLevel.Settings.Servers.vCenterServers.ADDomains -ge 1) {
+                    section -Style Heading4 "Active Directory Domains" {
+                        Paragraph "The following section summarizes the configuration of Active Directory Domains for $($HVEnvironment.split('.')[0]) server."
                         BlankLine
                         $OutObj = @()
-                        foreach ($GatewayServer in $GatewayServers.GeneralData) {
+                        foreach ($Domain in $Domains) {
                             try {
-                                Write-PscriboMessage "Discovered UAG Information $($GatewayServer.Name)."
-                                Switch ($GatewayServer.Type)
-                                {
-                                    'AP' {$GatewayType = 'UAG' }
-                                }
+                                Write-PscriboMessage "Discovered Domain Information $($Domain.DNSName)."
                                 $inObj = [ordered] @{
-                                    'Name' = $GatewayServer.Name
-                                    'IP' = $GatewayServer.Address
-                                    'Version' = $GatewayServer.Version
-                                    'Type' = $GatewayType
-                                    'Zone Internal' = $GatewayServer.GatewayZoneInternal
+                                    'Domain DNS Name' = $Domain.DNSName
+                                    'Status' = $Domain.ConnectionServerState[0].Status
+                                    'Trust Relationship' = $Domain.ConnectionServerState[0].TrustRelationship
+                                    'Connection Status' = $Domain.ConnectionServerState[0].Contactable
+
                                 }
 
                                 $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
@@ -57,10 +53,14 @@ function Get-AbrHRZUAGInfo {
                             }
                         }
 
+                        if ($HealthCheck.DataStores.Status) {
+                            $OutObj | Where-Object { $_.'Status' -eq 'ERROR'} | Set-Style -Style Warning
+                        }
+
                         $TableParams = @{
-                            Name = "UAG Servers - $($HVEnvironment)"
+                            Name = "Active Directory Domains - $($HVEnvironment)"
                             List = $false
-                            ColumnWidths = 35, 20, 15, 15, 15
+                            ColumnWidths = 25, 25, 25, 25
                         }
 
                         if ($Report.ShowTableCaptions) {

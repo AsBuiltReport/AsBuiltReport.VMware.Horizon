@@ -31,7 +31,7 @@ function Get-AbrHRZAccessGroup {
         try {
             if ($AccessGroups) {
                 if ($InfoLevel.Settings.Administrators.AccessGroup -ge 1) {
-                    section -Style Heading4 "Access Groups Summary" {
+                    section -Style Heading4 "Access Groups" {
                         Paragraph "The following section summarizes the configuration of Access Groups for $($HVEnvironment.split('.')[0]) server."
                         BlankLine
                         $OutObj = @()

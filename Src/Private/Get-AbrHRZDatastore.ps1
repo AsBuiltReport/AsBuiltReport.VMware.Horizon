@@ -1,4 +1,4 @@
-function Get-AbrHRZDatastoreInfo {
+function Get-AbrHRZDatastore {
     <#
     .SYNOPSIS
         PowerShell script which documents the configuration of VMware Horizon in Word/HTML/XML/Text formats
@@ -31,7 +31,7 @@ function Get-AbrHRZDatastoreInfo {
         try {
             if ($vCenterHealth) {
                 if ($InfoLevel.Settings.Servers.vCenterServers.DataStores -ge 1) {
-                    section -Style Heading4 "Datastore Summary" {
+                    section -Style Heading4 "Datastore" {
                         $OutObj = @()
                         $Datastores = $vCenterHealth.datastoredata
                         foreach ($DataStore in $Datastores) {
@@ -56,7 +56,7 @@ function Get-AbrHRZDatastoreInfo {
                         }
 
                         $TableParams = @{
-                            Name = "Datastore Summary - $($HVEnvironment)"
+                            Name = "Datastore - $($HVEnvironment)"
                             List = $false
                             ColumnWidths = 50, 50
                         }

@@ -1,4 +1,4 @@
-function Get-AbrHRZESXiInfo {
+function Get-AbrHRZESXi {
     <#
     .SYNOPSIS
         PowerShell script which documents the configuration of VMware Horizon in Word/HTML/XML/Text formats
@@ -36,7 +36,7 @@ function Get-AbrHRZESXiInfo {
                         BlankLine
                         $ESXHosts = $vCenterHealth.hostdata
                         foreach ($ESXCLUSTER in ($ESXHosts.ClusterName | Select-Object -Unique)) {
-                            section -ExcludeFromTOC -Style NOTOCHeading5 "$($ESXCLUSTER) Hosts Summary" {
+                            section -Style Heading5 "$($ESXCLUSTER) Cluster" {
                                 $OutObj = @()
                                 try {
                                     foreach ($ESXHost in ($ESXHosts | Where-Object {$_.ClusterName -eq $ESXCLUSTER})) {
@@ -73,7 +73,7 @@ function Get-AbrHRZESXiInfo {
                                         foreach ($ESXHost in ($ESXHosts | Where-Object {$_.ClusterName -eq $ESXCLUSTER})) {
                                             if ($ESXHost.Name) {
                                                 try {
-                                                    section -Style Heading5 "$($ESXHost.Name) Details" {
+                                                    section -ExcludeFromTOC -Style NOTOCHeading5 "$($ESXHost.Name) Details" {
                                                         Write-PscriboMessage "Discovered ESXI Server Information from $($ESXHost.Name)."
                                                         $inObj = [ordered] @{
                                                             'Cpu Cores' = $ESXHost.NumCpuCores

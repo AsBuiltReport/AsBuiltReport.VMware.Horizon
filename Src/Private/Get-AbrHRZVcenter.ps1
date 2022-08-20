@@ -1,4 +1,4 @@
-function Get-AbrHRZVcenterInfo {
+function Get-AbrHRZVcenter {
     <#
     .SYNOPSIS
         PowerShell script which documents the configuration of VMware Horizon in Word/HTML/XML/Text formats
@@ -55,7 +55,7 @@ function Get-AbrHRZVcenterInfo {
                         }
 
                         $TableParams = @{
-                            Name = "vCenter Summary - $($HVEnvironment)"
+                            Name = "vCenter - $($HVEnvironment)"
                             List = $false
                             ColumnWidths = 40, 15, 15, 15, 15
                         }
@@ -106,7 +106,7 @@ function Get-AbrHRZVcenterInfo {
                                             try {
                                                 $HorizonVirtualCenterStorageAcceleratorHostOverrides = $vCenterServer.StorageAcceleratorData.HostOverrides
                                                 if ($HorizonVirtualCenterStorageAcceleratorHostOverrides) {
-                                                    section -Style Heading6 "Storage Accelerator Overrides" {
+                                                    section -ExcludeFromTOC -Style NOTOCHeading6 "Storage Accelerator Overrides" {
                                                         $OutObj = @()
                                                         foreach ($HorizonVirtualCenterStorageAcceleratorHostOverride in $HorizonVirtualCenterStorageAcceleratorHostOverrides) {
                                                             try {
