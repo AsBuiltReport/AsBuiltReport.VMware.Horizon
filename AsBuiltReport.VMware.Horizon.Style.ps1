@@ -9,6 +9,7 @@ Style -Name 'Title 2' -Size 18 -Color 'A1A0A4' -Align Center
 Style -Name 'Title 3' -Size 12 -Color '006A91' -Align Center
 Style -Name 'Heading 1' -Size 16 -Color '00364D'
 Style -Name 'Heading 2' -Size 14 -Color '004B6B'
+Style -Name 'NO TOC Heading 2' -Size 14 -Color '004B6B'
 Style -Name 'Heading 3' -Size 12 -Color '00567A'
 Style -Name 'Heading 4' -Size 11 -Color '00648F'
 Style -Name 'Heading 5' -Size 10 -Color '0072A3'

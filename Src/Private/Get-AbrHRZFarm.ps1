@@ -31,7 +31,7 @@ function Get-AbrHRZFarm {
         try {
             if ($Farms) {
                 if ($InfoLevel.Inventory.Farms -ge 1) {
-                    section -Style Heading3 "Farms" {
+                    section -Style Heading3 "Farm Pools" {
                         Paragraph "The following section details the Farms configuration for $($HVEnvironment.split('.')[0]) server."
                         BlankLine
                         $OutObj = @()
@@ -62,7 +62,7 @@ function Get-AbrHRZFarm {
                         $OutObj | Sort-Object -Property 'Name' | Table @TableParams
                         try {
                             if ($InfoLevel.Inventory.Farms -ge 2) {
-                                section -Style Heading4 "Farms Details" {
+                                section -Style Heading4 "Farm Pools Details" {
                                     foreach ($Farm in $Farms) {
                                         section -Style Heading5 $($Farm.Data.name) {
                                             # Find out Access Group for Applications
