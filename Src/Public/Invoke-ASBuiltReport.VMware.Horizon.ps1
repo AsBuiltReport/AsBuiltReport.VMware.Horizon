@@ -23,6 +23,11 @@
         [PSCredential] $Credential
     )
 
+    Write-PScriboMessage -IsWarning "Please refer to the AsBuiltReport.VMware.Horizon github website for more detailed information about this project."
+    Write-PScriboMessage -IsWarning "Do not forget to update your report configuration file after each new version release."
+    Write-PScriboMessage -IsWarning "Documentation: https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon"
+    Write-PScriboMessage -IsWarning "Issues or bug reporting: https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues"
+
     # Check if the required version of VMware PowerCLI is installed
     Get-RequiredModule -Name 'VMware.PowerCLI' -Version '12.7'
 
@@ -293,6 +298,7 @@
             }
 
             section -Style Heading1 "$($HVEnvironment.split(".").toUpper()[0])" {
+                Get-AbrHRZInfrastructure
                 if ($InfoLevel.UsersAndGroups.PSObject.Properties.Value -ne 0) {
                     Section -Style Heading2 'Users and Groups' {
                         Paragraph 'The following section provides information about the permissions that control which remote desktops and applications your users can access.'

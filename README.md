@@ -154,6 +154,46 @@ There are 3 levels (0-3) of detail granularity for each section as follows;
 |    1    | Enabled / Summary | Provides summarised information for a collection of objects                                                                                |
 |    2    | Adv Summary       | Provides condensed, detailed information for a collection of objects                                                                       |
 
+The table below outlines the default and maximum InfoLevel settings for each UsersandGroups section.
+
+| Sub-Schema   | Default Setting | Maximum Setting |
+|--------------|:---------------:|:---------------:|
+| Entitlements      |        1        |        2        |
+| HomeSiteAssignments    |        1        |        1        |
+| UnauthenticatedAccess     |        1        |        1        |
+
+The table below outlines the default and maximum InfoLevel settings for each Inventory section.
+
+| Sub-Schema   | Default Setting | Maximum Setting |
+|--------------|:---------------:|:---------------:|
+| Desktop      |        1        |        2        |
+| Applications    |        1        |        2        |
+| Farms     |        1        |        2        |
+| Machines     |        1        |        1        |
+| GlobalEntitlements     |        1        |        1        |
+
+The table below outlines the default and maximum InfoLevel settings for each Settings section.
+
+| Sub-Schema   | Default Setting | Maximum Setting |
+|--------------|:---------------:|:---------------:|
+| vCenter      |        1        |        2        |
+| ESXiHosts    |        1        |        2        |
+| DataStores     |        1        |        2        |
+| ADDomains     |        1        |        1        |
+| UAGServers      |        1        |        1     |
+| ConnectionServers      |        1        |        2     |
+| InstantCloneDomainAccounts      |        1        |        1     |
+| ProductLicensingandUsage      |        1        |        2     |
+| GlobalSettings      |        1        |        1     |
+| RegisteredMachines      |        1        |        2     |
+| AdministratorsandGroups      |        1        |        2     |
+| RolePrivileges      |        1        |        1     |
+| RolePermissions      |        1        |        1     |
+| AccessGroup      |        1        |        2     |
+| EventDatabase      |        1        |        1     |
+| Syslog      |        1        |        1     |
+| EventstoFileSystem      |        1        |        1     |
+
 ### Healthcheck
 
 The **Healthcheck** schema is used to toggle health checks on or off.
