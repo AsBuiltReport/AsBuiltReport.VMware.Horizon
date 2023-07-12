@@ -208,3 +208,9 @@ PS C:\> New-AsBuiltReport -Report VMware.Horizon -Target 'Horizon-cs-01.corp.loc
 
 # Generate a Horizon As Built Report for Horizon Connection Server 'Horizon-cs-01.corp.local' using specified credentials. Export report to HTML & DOCX formats. Use default report style. Reports are saved to the user profile folder by default. Attach and send reports via e-mail.
 PS C:\> New-AsBuiltReport -Report VMware.Horizon -Target 'Horizon-cs-01.corp.local' -Username 'administrator@domain.local' -Password 'VMware1!' -Format Html,Word -OutputFolderPath 'C:\Users\Jon\Documents' -SendEmail
+```
+
+## :x: Known Issues
+
+- There are problems with the report when the IP address is used instead of the "Fully Qualified Domain Name" of the server.
+- The report requires the user to be specified as follows: "username@domain.local". Specifying otherwise will generate an error like this: "Valid Domain is required".
