@@ -69,7 +69,7 @@ body:
     id: powershell-modules
     attributes:
       label: PowerShell Modules
-      description: Please provide information about the PowerShell modules are you using. Please provide the output from the following PowerShell command `Get-Module -ListAvailable @("AsBuiltReport.Core";"AsBuiltReport.VMware.Horizon";"PSPKI";"PScriboCharts";"PScribo") | Select Name, Version`
+      description: Please provide information about the PowerShell modules are you using. Please provide the output from the following PowerShell command `Get-Module -ListAvailable @("AsBuiltReport.Core";"AsBuiltReport.VMware.Horizon";"PScribo") | Select Name, Version`
       placeholder: Get-Module -ListAvailable @("AsBuiltReport.Core";"AsBuiltReport.VMware.Horizon";"PScribo") | Select Name, Version
     validations:
       required: true
