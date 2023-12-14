@@ -5,7 +5,7 @@ function Get-AbrHRZFarm {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        0.2.0
+        Version:        1.1.0
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -32,7 +32,7 @@ function Get-AbrHRZFarm {
             if ($Farms) {
                 if ($InfoLevel.Inventory.Farms -ge 1) {
                     section -Style Heading3 "Farm Pools" {
-                        Paragraph "The following section details the Farms configuration for $($HVEnvironment.split('.')[0]) server."
+                        Paragraph "The following section details the Farms configuration for $($HVEnvironment.toUpper()[0]) server."
                         BlankLine
                         $OutObj = @()
                         foreach ($Farm in $Farms) {
@@ -51,7 +51,7 @@ function Get-AbrHRZFarm {
                         }
 
                         $TableParams = @{
-                            Name = "Farms - $($HVEnvironment.split(".").toUpper()[0])"
+                            Name = "Farms - $($HVEnvironment.toUpper()[0])"
                             List = $false
                             ColumnWidths = 34, 33, 33
                         }
@@ -79,6 +79,39 @@ function Get-AbrHRZFarm {
                                                     break
                                                 }
                                             }
+
+                                            # Farm AD Container
+                                            $FarmContainerName = ''
+                                            if ($Farm.AutomatedFarmData.CustomizationSettings.AdContainer.id) {
+                                                foreach ($ADDomain in $ADDomains){
+                                                    $ADDomainID = ($ADDomain.id.id -creplace '^[^/]*/', '')
+                                                    if ($Farm.AutomatedFarmData.CustomizationSettings.AdContainer.id -like "ADContainer/$ADDomainID/*") {
+                                                        $ADContainers = $hzServices.ADContainer.ADContainer_ListByDomain($ADDomain.id)
+                                                        foreach ($ADContainer in $ADContainers) {
+                                                            if ($ADContainer.id.id -eq $Farm.AutomatedFarmData.CustomizationSettings.AdContainer.id){
+                                                                $FarmContainerName = $ADContainer.rdn
+                                                                break
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            # Farm Customization Type
+                                            $Customizations = ('')
+                                            If($Farm.AutomatedFarmData.CustomizationSettings.SysprepCustomizationSettings.CustomizationSpec){
+                                                Foreach ($vCenterServer in $vCenterServers){
+                                                    $Customizations = $hzServices.CustomizationSpec.CustomizationSpec_List($vCenterServer.id)
+                                                    Foreach ($Customization in $Customizations){
+                                                        if($Farm.AutomatedFarmData.CustomizationSettings.SysprepCustomizationSettings.CustomizationSpec.id -eq $Customization.id.id){
+                                                            $FarmCustomization = $($Customization.CustomizationSpecData.Name)
+                                                        }
+                                                    }
+                                                                                
+                                                }
+                                            }
+
+
                                             try {
                                                 section -ExcludeFromTOC -Style NOTOCHeading5 "General" {
                                                     $OutObj = @()
@@ -87,15 +120,19 @@ function Get-AbrHRZFarm {
                                                         'Pool Name' = $Farm.Data.name
                                                         'Display Name' = $Farm.Data.displayName
                                                         'Description' = $Farm.Data.description
+                                                        'Access Group' = $AccessGroupName
                                                         'Type' = $Farm.Type
                                                         'Source' = $Farm.Source
                                                         'Enabled' = $Farm.Data.Enabled
                                                         'Deleting' = $Farm.Data.Deleting
                                                         'Desktop' = $Farm.Data.Desktop
-                                                        'Access Group' = $AccessGroupName
+                                                        'App Volumes Server' = $Farm.Data.AppVolumesManagerGuid
+                                                        
                                                         'Default Display Protocol' = $Farm.Data.DisplayProtocolSettings.DefaultDisplayProtocol
                                                         'Allow Users to Choose Protocol' = $Farm.Data.DisplayProtocolSettings.AllowDisplayProtocolOverride
                                                         'HTML Access' = $Farm.Data.DisplayProtocolSettings.EnableHTMLAccess
+                                                        'Enable Grid GPUs' = $Farm.Data.DisplayProtocolSettings.EnableGridGpu
+                                                        'vGPU Profile' = $Farm.Data.DisplayProtocolSettings.VGPUGridProfile
                                                     }
 
                                                     $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
@@ -120,7 +157,39 @@ function Get-AbrHRZFarm {
                                                 Write-PscriboMessage -IsWarning $_.Exception.Message
                                             }
                                             try {
-                                                section -ExcludeFromTOC -Style NOTOCHeading5 "Settings" {
+                                                section -ExcludeFromTOC -Style NOTOCHeading5 "Load Balancing Settings" {
+                                                    $OutObj = @()
+                                                    Write-PscriboMessage "Discovered $($Farm.Data.name) Load Balancing Settings."
+                                                    $inObj = [ordered] @{
+                                                        'Use Custom Script' = $Farm.Data.LbSettings.UseCustomScript
+                                                        'Include Session Count' = $Farm.Data.LbSettings.LbMetricsSettings.IncludeSessionCount
+                                                        'CPU Usage Threshold' = $Farm.Data.LbSettings.LbMetricsSettings.CpuThreshold
+                                                        'Memory Usage Threshold' = $Farm.Data.LbSettings.LbMetricsSettings.MemThreshold
+                                                        'Disk Queue Length Threshold' = $Farm.Data.LbSettings.LbMetricsSettings.DiskQueueLengthThreshold
+                                                        'Disk Read Latency Threshold' = $Farm.Data.LbSettings.LbMetricsSettings.DiskReadLatencyThreshold
+                                                        'Disk Write Latency Threshold' = $Farm.Data.LbSettings.LbMetricsSettings.DiskWriteLatencyThreshold
+
+                                                    }
+
+                                                    $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
+
+                                                    $TableParams = @{
+                                                        Name = "Load Balancing Settings - $($Farm.Data.name)"
+                                                        List = $true
+                                                        ColumnWidths = 50, 50
+                                                    }
+
+                                                    if ($Report.ShowTableCaptions) {
+                                                        $TableParams['Caption'] = "- $($TableParams.Name)"
+                                                    }
+                                                    $OutObj | Table @TableParams
+                                                }
+                                            }
+                                            catch {
+                                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                                            }
+                                            try {
+                                                section -ExcludeFromTOC -Style NOTOCHeading5 "Provisioning Settings" {
                                                     $OutObj = @()
                                                     Write-PscriboMessage "Discovered $($Farm.Data.name) Settings."
                                                     $inObj = [ordered] @{
@@ -140,39 +209,7 @@ function Get-AbrHRZFarm {
                                                     }
 
                                                     $TableParams = @{
-                                                        Name = "Settings - $($Farm.Data.name)"
-                                                        List = $true
-                                                        ColumnWidths = 50, 50
-                                                    }
-
-                                                    if ($Report.ShowTableCaptions) {
-                                                        $TableParams['Caption'] = "- $($TableParams.Name)"
-                                                    }
-                                                    $OutObj | Table @TableParams
-                                                }
-                                            }
-                                            catch {
-                                                Write-PscriboMessage -IsWarning $_.Exception.Message
-                                            }
-                                            try {
-                                                section -ExcludeFromTOC -Style NOTOCHeading5 "Load Balancing Settings" {
-                                                    $OutObj = @()
-                                                    Write-PscriboMessage "Discovered $($Farm.Data.name) Load Balancing Settings."
-                                                    $inObj = [ordered] @{
-                                                        'Use Custom Script' = $Farm.Data.LbSettings.UseCustomScript
-                                                        'Include Session Count' = $Farm.Data.LbSettings.LbMetricsSettings.IncludeSessionCount
-                                                        'Cpu Usage Threshold' = $Farm.Data.LbSettings.LbMetricsSettings.CpuThreshold
-                                                        'Memory UsageThreshold' = $Farm.Data.LbSettings.LbMetricsSettings.MemThreshold
-                                                        'Disk Queue Length Threshold' = $Farm.Data.LbSettings.LbMetricsSettings.DiskQueueLengthThreshold
-                                                        'Disk Read Latency Threshold' = $Farm.Data.LbSettings.LbMetricsSettings.DiskReadLatencyThreshold
-                                                        'Disk Write Latency Threshold' = $Farm.Data.LbSettings.LbMetricsSettings.DiskWriteLatencyThreshold
-
-                                                    }
-
-                                                    $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
-
-                                                    $TableParams = @{
-                                                        Name = "Load Balancing Settings - $($Farm.Data.name)"
+                                                        Name = "Provisioning Settings - $($Farm.Data.name)"
                                                         List = $true
                                                         ColumnWidths = 50, 50
                                                     }
@@ -201,9 +238,9 @@ function Get-AbrHRZFarm {
                                                             $null {'Golden Image network selected'}
                                                             default {$Farm.AutomatedFarmData.VirtualCenterNamesData.NetworkLabelNames}
                                                         }
-                                                        'Guest Customization' = $Farm.AutomatedFarmData.CustomizationSettings.CustomizationType
-                                                        'Guest Customization Domain and Account' = ($InstantCloneDomainAdmins | Where-Object {$_.Id.id -eq $Farm.AutomatedFarmData.CustomizationSettings.InstantCloneEngineDomainAdministrator.id}).Base.UserName
-                                                        'Allow Reuse of Existing Computer Accounts' = $Farm.AutomatedFarmData.CustomizationSettings.ReusePreExistingAccounts
+                                                        #'Guest Customization' = $Farm.AutomatedFarmData.CustomizationSettings.CustomizationType
+                                                        #'Guest Customization Domain and Account' = ($InstantCloneDomainAdmins | Where-Object {$_.Id.id -eq $Farm.AutomatedFarmData.CustomizationSettings.InstantCloneEngineDomainAdministrator.id}).Base.UserName
+                                                        #'Allow Reuse of Existing Computer Accounts' = $Farm.AutomatedFarmData.CustomizationSettings.ReusePreExistingAccounts
                                                     }
 
                                                     $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
@@ -223,6 +260,54 @@ function Get-AbrHRZFarm {
                                             catch {
                                                 Write-PscriboMessage -IsWarning $_.Exception.Message
                                             }
+
+                                            try {
+                                                section -ExcludeFromTOC -Style NOTOCHeading5 "Guest Customization" {
+                                                    $OutObj = @()
+                                                    Write-PscriboMessage "Guest Customization $($Farm.Data.name) Settings."
+                                                    $inObj = [ordered] @{
+                                                        'Guest Customization' = $Farm.AutomatedFarmData.CustomizationSettings.CustomizationType
+                                                        'Guest Customization Domain and Account' = ($InstantCloneDomainAdmins | Where-Object {$_.Id.id -eq $Farm.AutomatedFarmData.CustomizationSettings.InstantCloneEngineDomainAdministrator.id}).Base.UserName
+                                                        'Allow Reuse of Existing Computer Accounts' = $Farm.AutomatedFarmData.CustomizationSettings.ReusePreExistingAccounts
+                                                        'AD Container' = $FarmContainerName
+                                                        'Farm Customization Specification' = $FarmCustomization
+                                                        'Power Off Script Name' = $Farm.AutomatedFarmData.CustomizationSettings.CloneprepCustomizationSettings.PowerOffScriptName
+                                                        'Power Off Script Parameters' = $Farm.AutomatedFarmData.CustomizationSettings.CloneprepCustomizationSettings.PowerOffScriptParameters
+                                                        'Post Sync Script Name' = $Farm.AutomatedFarmData.CustomizationSettings.CloneprepCustomizationSettings.PostSynchronizationScriptName
+                                                        'Post Sync Script Parameters' = $Farm.AutomatedFarmData.CustomizationSettings.CloneprepCustomizationSettings.PostSynchronizationScriptParameters
+                                                        'Priming Computer Account' = $Farm.AutomatedFarmData.CustomizationSettings.CloneprepCustomizationSettings.PrimingComputerAccount
+                                                    }
+
+                                                    $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
+
+                                                    if ($Farm.AutomatedFarmData.CustomizationSettings.SysprepCustomizationSettings.CustomizationSpec -eq "SYS_PREP") {
+                                                        $inObj.Remove('Power Off Script Name')
+                                                        $inObj.Remove('Power Off Script Parameters')
+                                                        $inObj.Remove('Post Sync Script Name')
+                                                        $inObj.Remove('Post Sync Script Parameters')
+                                                        $inObj.Remove('Priming Computer Account')
+
+                                                    }
+
+
+
+                                                    $TableParams = @{
+                                                        Name = "Guest Customization - $($Farm.Data.name)"
+                                                        List = $true
+                                                        ColumnWidths = 50, 50
+                                                    }
+
+                                                    if ($Report.ShowTableCaptions) {
+                                                        $TableParams['Caption'] = "- $($TableParams.Name)"
+                                                    }
+                                                    $OutObj | Table @TableParams
+                                                }
+                                            }
+                                            catch {
+                                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                                            }
+
+
                                         }
                                     }
                                 }

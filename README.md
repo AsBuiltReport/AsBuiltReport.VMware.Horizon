@@ -1,7 +1,7 @@
 <!-- ********** DO NOT EDIT THESE LINKS ********** -->
 <p align="center">
     <a href="https://www.asbuiltreport.com/" alt="AsBuiltReport"></a>
-            <img src='https://avatars.githubusercontent.com/u/42958564' width="8%" height="8%" /></a>
+            <img src='https://raw.githubusercontent.com/AsBuiltReport/AsBuiltReport/master/AsBuiltReport.png' width="8%" height="8%" /></a>
 </p>
 <p align="center">
     <a href="https://www.powershellgallery.com/packages/AsBuiltReport.VMware.Horizon/" alt="PowerShell Gallery Version">
@@ -67,6 +67,14 @@ PowerShell 5.1 or PowerShell 7, and the following PowerShell modules are require
 
 - [VMware PowerCLI Module](https://www.powershellgallery.com/packages/VMware.PowerCLI/)
 - [AsBuiltReport.VMware.Horizon Module](https://www.powershellgallery.com/packages/AsBuiltReport.VMware.Horizon/)
+
+### Linux & macOS
+
+* .NET Core is required for cover page image support on Linux and macOS operating systems.
+    * [Installing .NET Core for macOS](https://docs.microsoft.com/en-us/dotnet/core/install/macos)
+    * [Installing .NET Core for Linux](https://docs.microsoft.com/en-us/dotnet/core/install/linux)
+
+❗ If you are unable to install .NET Core, you must set `ShowCoverPageImage` to `False` in the report JSON configuration file.
 
 ### :closed_lock_with_key: Required Privileges
 
@@ -208,9 +216,3 @@ PS C:\> New-AsBuiltReport -Report VMware.Horizon -Target 'Horizon-cs-01.corp.loc
 
 # Generate a Horizon As Built Report for Horizon Connection Server 'Horizon-cs-01.corp.local' using specified credentials. Export report to HTML & DOCX formats. Use default report style. Reports are saved to the user profile folder by default. Attach and send reports via e-mail.
 PS C:\> New-AsBuiltReport -Report VMware.Horizon -Target 'Horizon-cs-01.corp.local' -Username 'administrator@domain.local' -Password 'VMware1!' -Format Html,Word -OutputFolderPath 'C:\Users\Jon\Documents' -SendEmail
-```
-
-## :x: Known Issues
-
-- There are problems with the report when the IP address is used instead of the "Fully Qualified Domain Name" of the server.
-- The report requires the user to be specified as follows: "username@domain.local". Specifying otherwise will generate an error like this: "Valid Domain is required".

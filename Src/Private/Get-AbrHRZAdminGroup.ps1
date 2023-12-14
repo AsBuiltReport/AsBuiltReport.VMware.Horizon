@@ -5,7 +5,7 @@ function Get-AbrHRZAdminGroup {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        0.2.0
+        Version:        1.1.0
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -31,8 +31,8 @@ function Get-AbrHRZAdminGroup {
         try {
             if ($Administrators) {
                 if ($InfoLevel.Settings.Administrators.AdministratorsandGroups -ge 1) {
-                    section -Style Heading4 "Administrators and Groups" {
-                        Paragraph "The following section details the configuration of Administrators and Groups for $($HVEnvironment.split('.')[0]) server."
+                    section -Style Heading3 "Administrators and Groups" {
+                        Paragraph "The following section details the configuration of Administrators and Groups for $($HVEnvironment) server."
                         BlankLine
                         $OutObj = @()
                         foreach ($Administrator in $Administrators) {
@@ -71,7 +71,7 @@ function Get-AbrHRZAdminGroup {
                         }
 
                         $TableParams = @{
-                            Name = "Administrators and Groups - $($HVEnvironment.split(".").toUpper()[0])"
+                            Name = "Administrators and Groups - $($HVEnvironment)"
                             List = $false
                             ColumnWidths = 42, 15, 43
                         }
@@ -82,7 +82,7 @@ function Get-AbrHRZAdminGroup {
                         $OutObj | Sort-Object -Property 'Display Name' | Table @TableParams
                         try {
                             if ($InfoLevel.Settings.Administrators.AdministratorsandGroups -ge 2) {
-                                section -Style Heading5 'Administrators Details' {
+                                section -Style Heading4 "Administrators Users and Groups Details for $($Administrator.base.Name)" {
                                     foreach ($Administrator in $Administrators) {
                                         Write-PscriboMessage "Discovered $($Administrator.base.Name) Information."
                                         $RoleIDNameResults = ''
@@ -124,6 +124,7 @@ function Get-AbrHRZAdminGroup {
                                                 'AD Distinguished Name' = $Administrator.base.AdDistinguishedName
                                                 'Email' = $Administrator.base.Email
                                                 'Kiosk User' = $Administrator.base.KioskUser
+                                                'Un-Authenticated User' = $Administrator.base.UnauthenticatedUser
                                                 'Phone Number' = $Administrator.base.Phone
                                                 'Description' = $Administrator.base.Description
                                                 'in Folder' = $Administrator.base.InFolder
@@ -135,7 +136,7 @@ function Get-AbrHRZAdminGroup {
                                             $TableParams = @{
                                                 Name = "Administrator - $($Administrator.base.Name)"
                                                 List = $true
-                                                ColumnWidths = 50, 50
+                                                ColumnWidths = 40, 60
                                             }
 
                                             if ($Report.ShowTableCaptions) {

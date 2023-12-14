@@ -148,7 +148,6 @@ function Get-AbrHRZLocalEntitlement {
                                                 $inObj = [ordered] @{
                                                     'Name' = $EntitledUserOrGroupLocalMachine.base.Name
                                                     'Group or User' = $EntitledUserOrGroupLocalMachinegroup
-                                                    'SID' = $EntitledUserOrGroupLocalMachine.base.Sid
                                                     'Domain' = $EntitledUserOrGroupLocalMachine.base.Domain
                                                     'Ad Distinguished Name' = $EntitledUserOrGroupLocalMachine.base.AdDistinguishedName
                                                     'First Name' = $EntitledUserOrGroupLocalMachine.base.FirstName
@@ -160,7 +159,7 @@ function Get-AbrHRZLocalEntitlement {
                                                     'Kiosk User' = $EntitledUserOrGroupLocalMachine.base.KioskUser
                                                     'Phone' = $EntitledUserOrGroupLocalMachine.base.Phone
                                                     'Description' = $EntitledUserOrGroupLocalMachine.base.Description
-                                                    'in Folder' = $EntitledUserOrGroupLocalMachine.base.InFolder
+                                                    'In Folder' = $EntitledUserOrGroupLocalMachine.base.InFolder
                                                     'User Principal Name' = $EntitledUserOrGroupLocalMachine.base.UserPrincipalName
                                                     'Local Machines' = $MachineIDName
                                                     'Local User Persistent Disks' = $EntitledUserOrGroupLocalMachine.LocalData.PersistentDisks

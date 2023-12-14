@@ -5,7 +5,7 @@ function Get-AbrHRZAccessGroup {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        0.2.0
+        Version:        1.1.0
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -31,8 +31,8 @@ function Get-AbrHRZAccessGroup {
         try {
             if ($AccessGroups) {
                 if ($InfoLevel.Settings.Administrators.AccessGroup -ge 1) {
-                    section -Style Heading4 "Access Groups" {
-                        Paragraph "The following section summarizes the configuration of Access Groups for $($HVEnvironment.split('.')[0]) server."
+                    section -Style Heading3 "Access Groups" {
+                        Paragraph "The following section summarizes the configuration of Access Groups for $($HVEnvironment) server."
                         BlankLine
                         $OutObj = @()
                         $AccessGroupJoined = @()
@@ -49,9 +49,9 @@ function Get-AbrHRZAccessGroup {
                         }
 
                         $TableParams = @{
-                            Name = "Access Groups - $($HVEnvironment.split(".").toUpper()[0])"
+                            Name = "Access Groups - $($HVEnvironment)"
                             List = $false
-                            ColumnWidths = 50, 50
+                            ColumnWidths = 35, 65
                         }
 
                         if ($Report.ShowTableCaptions) {
@@ -105,7 +105,7 @@ function Get-AbrHRZAccessGroup {
                                                 $TableParams = @{
                                                     Name = "Access Groups - $($AccessGroup.base.Name)"
                                                     List = $false
-                                                    ColumnWidths = 50, 50
+                                                    ColumnWidths = 35, 65
                                                 }
 
                                                 if ($Report.ShowTableCaptions) {

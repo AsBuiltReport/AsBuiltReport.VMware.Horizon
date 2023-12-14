@@ -5,7 +5,7 @@ function Get-AbrHRZRolePermission {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        0.2.0
+        Version:        1.1.0
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -31,11 +31,15 @@ function Get-AbrHRZRolePermission {
         try {
             if ($Permissions) {
                 if ($InfoLevel.Settings.Administrators.RolePermissions -ge 1) {
-                    section -Style Heading4 "Role Permissions" {
-                        Paragraph "The following section details the Role Permissions information for $($HVEnvironment.split('.')[0]) server."
+                    section -Style Heading3 "Role Permissions" {
+                        Paragraph "The following section details the Role Permissions information for $($HVEnvironment) server."
                         BlankLine
                         $OutObj = @()
-                        foreach ($Permission in $Permissions) {
+
+                        $FilteredPermissions = ''
+                        $FilteredPermissions = $Permissions | Where-Object{$null -eq $_.base.GlobalAccessGroup}
+
+                        foreach ($Permission in $FilteredPermissions) {
                             Write-PscriboMessage "Discovered Role Permissions Information."
                             $AdministratorIDNameResults = ''
                             # Find Administrator ID Name
@@ -110,7 +114,7 @@ function Get-AbrHRZRolePermission {
                         }
 
                         $TableParams = @{
-                            Name = "Role Permissions - $($HVEnvironment.split(".").toUpper()[0])"
+                            Name = "Role Permissions - $($HVEnvironment)"
                             List = $false
                             ColumnWidths = 33, 33, 34
                         }

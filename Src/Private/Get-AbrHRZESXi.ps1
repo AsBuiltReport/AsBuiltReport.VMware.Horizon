@@ -5,7 +5,7 @@ function Get-AbrHRZESXi {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        0.2.0
+        Version:        1.1.0
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -31,8 +31,8 @@ function Get-AbrHRZESXi {
         try {
             if ($vCenterHealth) {
                 if ($InfoLevel.Settings.Servers.vCenterServers.ESXiHosts -ge 1) {
-                    section -Style Heading4 "ESXi Hosts" {
-                        Paragraph "The following section details the hardware information of ESXi Hosts for $($HVEnvironment.split('.')[0]) server."
+                    section -Style Heading5 "ESXi Hosts" {
+                        Paragraph "The following section details the hardware information of ESXi Hosts for $($HVEnvironment) server."
                         BlankLine
                         $ESXHosts = $vCenterHealth.hostdata
                         foreach ($ESXCLUSTER in ($ESXHosts.ClusterName | Select-Object -Unique)) {
@@ -73,13 +73,13 @@ function Get-AbrHRZESXi {
                                         foreach ($ESXHost in ($ESXHosts | Where-Object {$_.ClusterName -eq $ESXCLUSTER})) {
                                             if ($ESXHost.Name) {
                                                 try {
-                                                    section -ExcludeFromTOC -Style NOTOCHeading5 "$($ESXHost.Name) Details" {
+                                                    section -ExcludeFromTOC -Style NOTOCHeading6 "$($ESXHost.Name) Details" {
                                                         Write-PscriboMessage "Discovered ESXI Server Information from $($ESXHost.Name)."
                                                         $inObj = [ordered] @{
-                                                            'Cpu Cores' = $ESXHost.NumCpuCores
-                                                            'Cpu in Mhz' = $ESXHost.CpuMhz
+                                                            'CPU Cores' = $ESXHost.NumCpuCores
+                                                            'CPU in Mhz' = $ESXHost.CpuMhz
                                                             'Memory Size' = "$([math]::round($ESXHost.MemorySizeBytes / 1GB))GB"
-                                                            'VGPU Types' = $ESXHost.VGPUTypes
+                                                            'vGPU Types' = $ESXHost.VGPUTypes
                                                             'VDI Machines' = $ESXHost.NumMachines
                                                         }
 

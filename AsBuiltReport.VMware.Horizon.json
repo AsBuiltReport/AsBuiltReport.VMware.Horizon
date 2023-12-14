@@ -21,12 +21,9 @@
             "Desktop": 1,
             "Applications": 1,
             "Farms": 1,
-            "Machines": {
-				"vCenterVM": 1,
-				"RDSHosts": 1
-			},
+            "Machines": 1,
             "PersistentDisks": 1,
-            "ThinApps": 0,
+            "ThinApps": 1,
             "GlobalEntitlements": 1
         },
         "Settings": {
@@ -61,7 +58,14 @@
                 "AdministratorsandGroups": 1,
                 "RolePrivileges": 1,
                 "RolePermissions": 1,
-                "AccessGroup": 1
+                "AccessGroup": 1,
+                "FederationAccessGroup": 1
+            },
+            "CloudPodArch": {
+                "CloudPodArch": 1
+            },
+            "Sites": {
+                "Sites": 1
             },
             "EventConfiguration": {
                 "EventDatabase": 1,
@@ -69,7 +73,7 @@
                 "EventstoFileSystem": 1
             },
             "GlobalPolicies": {
-                "GlobalPolicies": 0
+                "GlobalPolicies": 1
             }
         }
     },

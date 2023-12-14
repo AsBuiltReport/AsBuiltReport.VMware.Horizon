@@ -5,7 +5,7 @@ function Get-AbrHRZEventConf {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        0.2.0
+        Version:        1.1.0
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -31,10 +31,12 @@ function Get-AbrHRZEventConf {
         try {
             if ($EventDataBases -or $Syslog) {
                 if ($InfoLevel.Settings.EventConfiguration.PSObject.Properties.Value -ne 0) {
-                    section -Style Heading4 "Event Configuration" {
+                    section -Style Heading2 "Event Configuration" {
+                        Paragraph "The following section details on the events configuration information for $($HVEnvironment)."
+                        BlankLine
                         if ($InfoLevel.Settings.EventConfiguration.EventDatabase -ge 1) {
                             try {
-                                section -Style Heading5 "Event Database" {
+                                section -Style Heading3 "Event Database" {
                                     $OutObj = @()
                                     foreach ($EventDataBase in $EventDataBases) {
                                         Write-PscriboMessage "Discovered Event Database Information."
@@ -76,7 +78,7 @@ function Get-AbrHRZEventConf {
                         }
                         if ($InfoLevel.Settings.EventConfiguration.Syslog -ge 1 -and $Syslog.UdpData.Enabled) {
                             try {
-                                section -Style Heading5 "Syslog Configuration" {
+                                section -Style Heading3 "Syslog Configuration" {
                                     $OutObj = @()
                                     foreach ($Logging in $Syslog.UdpData.NetworkAddresses) {
                                         Write-PscriboMessage "Discovered Syslog Information."
@@ -106,13 +108,15 @@ function Get-AbrHRZEventConf {
                         }
                         if ($InfoLevel.Settings.EventConfiguration.EventstoFileSystem -ge 1 -and ($Syslog.FileData.Enabled -or $Syslog.FileData.EnabledOnError)) {
                             try {
-                                section -Style Heading5 "Events to File System" {
+                                section -Style Heading3 "Events to File System" {
                                     $OutObj = @()
                                     foreach ($Logging in $Syslog) {
                                         Write-PscriboMessage "Discovered Events to File System Information."
                                         $inObj = [ordered] @{
+                                            'Enabled' = $Logging.FileData.Enabled
+                                            'Enabled on Error' = $Logging.FileData.EnabledOnError
                                             'Path' = $Logging.FileData.UncPath
-                                            'UserName' = $Logging.FileData.UncUserName
+                                            'User name' = $Logging.FileData.UncUserName
                                             'Domain' = $Logging.FileData.UncDomain
                                         }
 

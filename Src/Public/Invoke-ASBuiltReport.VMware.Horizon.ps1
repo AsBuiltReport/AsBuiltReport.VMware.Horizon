@@ -76,6 +76,9 @@
             # Connection Server Info
             $connectionservers = try {$hzServices.ConnectionServer.ConnectionServer_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
 
+            # Connection Server Health
+            $ConnectionServersHealth = try {$hzServices.ConnectionServerHealth.ConnectionServerHealth_List()}  catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
+
             # GateWay Server Info
             $GatewayServers = try {$hzServices.Gateway.Gateway_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
 
@@ -84,7 +87,6 @@
 
             # AD Domains
             $ADDomains = try {$hzServices.ADDomain.ADDomain_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
-
 
             # Product Licensing Info
             $ProductLicenseingInfo = try {$hzServices.License.License_Get()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
@@ -114,6 +116,18 @@
             # Virtual Centers
             $vCenterServers = try {$hzServices.VirtualCenter.VirtualCenter_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
 
+            # Global Policies
+            try {
+            $GlobalPoliciesService = New-Object VMware.Hv.PoliciesService
+            $GlobalPolicies = $GlobalPoliciesService.Policies_Get($hvServer.ExtensionData,$null,$null)
+            }
+            catch {
+                Write-PscriboMessage -IsWarning $_.Exception.Message
+            }
+
+            # Unauthenticated Access
+            $unauthenticatedAccessList = try {$hzServices.UnauthenticatedAccessUser.UnauthenticatedAccessUser_List()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
+
             try {
                 $EntitledUserOrGroupLocalMachineQueryDefn = New-Object VMware.Hv.QueryDefinition
                 $EntitledUserOrGroupLocalMachineQueryDefn.queryentitytype='EntitledUserOrGroupLocalSummaryView'
@@ -140,14 +154,6 @@
             }
 
             try {
-                # Unauthenticated Access
-                $unauthenticatedAccessList = $hzServices.UnauthenticatedAccessUser.UnauthenticatedAccessUser_List()
-            }
-            catch {
-                Write-PscriboMessage -IsWarning $_.Exception.Message
-            }
-
-            try {
                 # Pool Info
                 $PoolQueryDefn = New-Object VMware.Hv.QueryDefinition
                 $PoolQueryDefn.queryentitytype='DesktopSummaryView'
@@ -155,6 +161,18 @@
                 $Pools = foreach ($poolresult in $poolqueryResults.results) {
                     $hzServices.desktop.desktop_get($poolresult.id)
                 }
+                $queryservice.QueryService_DeleteAll($hzServices)
+            }
+            catch {
+                Write-PscriboMessage -IsWarning $_.Exception.Message
+            }
+
+            try {
+                # Desktop Assignment Info
+                $DesktopAssignmentViewQueryDefn = New-Object VMware.Hv.QueryDefinition
+                $DesktopAssignmentViewQueryDefn.queryentitytype='DesktopAssignmentView'
+                $DesktopAssignmentViewResults = $Queryservice.QueryService_Create($hzServices, $DesktopAssignmentViewQueryDefn)
+                $DesktopAssignmentViewResultsData = $DesktopAssignmentViewResults.results
                 $queryservice.QueryService_DeleteAll($hzServices)
             }
             catch {
@@ -210,6 +228,21 @@
                 $EntitledUserOrGroupGlobalMachinequeryResults = $Queryservice.QueryService_Create($hzServices, $EntitledUserOrGroupGlobalMachineQueryDefn)
                 $EntitledUserOrGroupGlobalMachines = foreach ($EntitledUserOrGroupGlobalMachineresult in $EntitledUserOrGroupGlobalMachinequeryResults.results) {
                     $hzServices.EntitledUserOrGroup.EntitledUserOrGroup_GetGlobalSummaryView($EntitledUserOrGroupGlobalMachineresult.id)
+                }
+                $queryservice.QueryService_DeleteAll($hzServices)
+            }
+            catch {
+                Write-PscriboMessage -IsWarning $_.Exception.Message
+            }
+
+            # Entitled Global Users and Groups
+            try {
+                # EntitledUserOrGroupGlobal Info
+                $EntitledUserOrGroupGlobalQueryDefn = New-Object VMware.Hv.QueryDefinition
+                $EntitledUserOrGroupGlobalQueryDefn.queryentitytype='EntitledUserOrGroupGlobalSummaryView'
+                $EntitledUserOrGroupGlobalqueryResults = $Queryservice.QueryService_Create($hzServices, $EntitledUserOrGroupGlobalQueryDefn)
+                $EntitledUserOrGroupGlobals = foreach ($EntitledUserOrGroupGlobalresult in $EntitledUserOrGroupGlobalqueryResults.results) {
+                    $hzServices.EntitledUserOrGroup.EntitledUserOrGroup_GetGlobalSummaryView($EntitledUserOrGroupGlobalresult.id)
                 }
                 $queryservice.QueryService_DeleteAll($hzServices)
             }
@@ -286,6 +319,18 @@
                 Write-PscriboMessage -IsWarning $_.Exception.Message
             }
 
+            # Registerd Physical Machines
+            Try{
+                $RegisteredPhysicalMachineInfoQueryDefn = New-Object VMware.Hv.QueryDefinition
+                $RegisteredPhysicalMachineInfoQueryDefn.queryentitytype='RegisteredPhysicalMachineInfo'
+                $RegisteredPhysicalMachineResults = $Queryservice.QueryService_Create($hzServices, $RegisteredPhysicalMachineInfoQueryDefn)
+                $RegisteredPhysicalMachines = foreach ($RegisteredPhysicalMachineresult in $RegisteredPhysicalMachineResults.results) {$hzServices.RegisteredPhysicalMachine.RegisteredPhysicalMachine_Get($RegisteredPhysicalMachineResult.id)}
+                $queryservice.QueryService_DeleteAll($hzServices)
+            }
+            catch {
+                Write-PscriboMessage -IsWarning $_.Exception.Message
+            }
+
             try {
                 # Template Images
                 $TemplateVMList = $vCenterServers | ForEach-Object  {$hzServices.VmTemplate.VmTemplate_List($_.id)}
@@ -297,59 +342,100 @@
                 Write-PscriboMessage -IsWarning $_.Exception.Message
             }
 
-            section -Style Heading1 "$($HVEnvironment.split(".").toUpper()[0])" {
+            try {
+                # CEIP Info
+                $CEIP = $hzServices.CEIP.CEIP_Get()
+            }
+            catch {
+                Write-PscriboMessage -IsWarning $_.Exception.Message
+            }
+            
+            try {
+                # Certificate Management
+                $CertificateManagement = $hzServices.GlobalSettings.GlobalSettings_ListGatewayCertificates()
+
+            }
+            catch {
+                Write-PscriboMessage -IsWarning $_.Exception.Message
+            }
+
+            try {
+                # Global Access Group Info
+                $GlobalAccessGroups = $hzServices.GlobalAccessGroup.GlobalAccessGroup_List()
+            }
+            catch {
+                Write-PscriboMessage -IsWarning $_.Exception.Message
+            }
+
+            try {
+                # Gateway Certificates
+                $GatewayCerts = $hzServices.GlobalSettings.GlobalSettings_ListGatewayCertificates()
+            }
+            catch {
+                Write-PscriboMessage -IsWarning $_.Exception.Message
+            }
+            
+            section -Style Heading1 "$($HVEnvironment)" {
                 Get-AbrHRZInfrastructure
-                if ($InfoLevel.UsersAndGroups.PSObject.Properties.Value -ne 0) {
-                    Section -Style Heading2 'Users and Groups' {
-                        Paragraph 'The following section provides information about the permissions that control which remote desktops and applications your users can access.'
-                        Get-AbrHRZLocalEntitlement
-                        Get-AbrHRZHomeSite
-                        Get-AbrHRZUnauthenticatedACL
-                    }
-                }
+            }
 
-                if ($InfoLevel.Inventory.PSObject.Properties.Value -ne 0) {
-                    section -Style Heading2 'Inventory' {
-                        Paragraph 'The following section provides detailed information about desktop, application, farm pools and global entitlement permissions that control which remote desktops and applications your users can access.'
-                        Get-AbrHRZDesktopPool
-                        Get-AbrHRZApplicationPool
-                        Get-AbrHRZFarm
-                        Get-AbrHRZGlobalEntitlement
-                    }
-                }
-
-                section -Style Heading2 'Settings' {
-                    Paragraph 'The following section provides detailed information about the configuration of the components that comprise the Horizon Server infrastructure.'
-                    if ($InfoLevel.Settings.Servers.PSObject.Properties.Value -ne 0) {
-                        section -Style Heading3 'Servers' {
-                            Get-AbrHRZVcenter
-                            Get-AbrHRZESXi
-                            Get-AbrHRZDatastore
-                            Get-AbrHRZADDomain
-                            Get-AbrHRZUAG
-                            Get-AbrHRZConnectionServer
-
-                        }
-                    }
-
-                    Get-AbrHRZInstantClone
-                    Get-AbrHRZLicense
-                    Get-AbrHRZGlobalSetting
-                    Get-AbrHRZRegisteredMachine
-
-                    if ($InfoLevel.Settings.Administrators.PSObject.Properties.Value -ne 0) {
-                        section -Style Heading3 'Administrators' {
-                            Get-AbrHRZAdminGroup
-                            Get-AbrHRZRolePrivilege
-                            Get-AbrHRZRolePermission
-                            Get-AbrHRZAccessGroup
-
-                        }
-                    }
-
-                    Get-AbrHRZEventConf
+            if ($InfoLevel.UsersAndGroups.PSObject.Properties.Value -ne 0) {
+                Section -Style Heading1 'Users and Groups' {
+                    Paragraph 'The following section provides information about the permissions that control which remote desktops and applications your users can access.'
+                    Get-AbrHRZLocalEntitlement
+                    Get-AbrHRZHomeSite
+                    Get-AbrHRZUnauthenticatedACL
                 }
             }
+
+            if ($InfoLevel.Inventory.PSObject.Properties.Value -ne 0) {
+                section -Style Heading1 'Inventory' {
+                    Paragraph 'The following section provides detailed information about desktop, application, farm pools and global entitlement permissions that control which remote desktops and applications your users can access.'
+                    Get-AbrHRZDesktopPool
+                    Get-AbrHRZApplicationPool
+                    Get-AbrHRZFarm
+                    Get-AbrHRZMachines
+                    Get-AbrHRZGlobalEntitlement
+                }
+            }
+
+            section -Style Heading1 'Settings' {
+                Paragraph 'The following section provides detailed information about the configuration of the components that comprise the Horizon Server infrastructure.'
+                if ($InfoLevel.Settings.Servers.PSObject.Properties.Value -ne 0) {
+                    section -Style Heading2 'Servers' {
+                        Get-AbrHRZVcenter
+                        Get-AbrHRZDatastore
+                        Get-AbrHRZESXi
+                        Get-AbrHRZUAG
+                        Get-AbrHRZConnectionServer
+                        Get-AbrHRZGatewayCert
+                    }
+                }
+
+                #Get-AbrHRZADDomain
+                Get-AbrHRZDomains
+                Get-AbrHRZCertMgmt
+                Get-AbrHRZLicense
+                Get-AbrHRZGlobalSetting
+                Get-AbrHRZRegisteredMachine
+
+                if ($InfoLevel.Settings.Administrators.PSObject.Properties.Value -ne 0) {
+                    section -Style Heading2 'Administrators' {
+                        Get-AbrHRZAdminGroup
+                        Get-AbrHRZRolePrivilege
+                        Get-AbrHRZRolePermission
+                        Get-AbrHRZAccessGroup
+                        Get-AbrHRZFederationAccessGroups
+                                               
+                    }
+                }
+
+                Get-AbrHRZCloudPod
+                Get-AbrHRZSites
+                Get-AbrHRZEventConf
+                Get-AbrHRZGlobalPolicies
+            }
+            
         }
     }
 }

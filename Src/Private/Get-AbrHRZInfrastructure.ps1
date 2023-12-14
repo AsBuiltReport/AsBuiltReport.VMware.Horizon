@@ -5,10 +5,10 @@ function Get-AbrHRZInfrastructure {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        0.2.0
+        Version:        0.3.0
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
-        Editor:         Jonathan Colon, @jcolonfzenpr
+        Editor:         Jonathan Colon, @jcolonfzenpr, Chris Hildebrandt
         Twitter:        @asbuiltreport
         Github:         AsBuiltReport
         Credits:        Iain Brighton (@iainbrighton) - PScribo module
@@ -28,7 +28,7 @@ function Get-AbrHRZInfrastructure {
 
     process {
         try {
-            section -Style NOTOCHeading2 "Executive Summary" {
+            section -Style NOTOCHeading2 "Executive Summary for $($HVEnvironment.split(".").toUpper()[0])" {
                 $OutObj = @()
                 Write-PscriboMessage "Discovered Infrastructure Summary Information."
                 $inObj = [ordered] @{
