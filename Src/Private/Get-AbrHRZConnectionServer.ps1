@@ -32,7 +32,7 @@ function Get-AbrHRZConnectionServer {
             if ($ConnectionServers) {
                 if ($InfoLevel.Settings.Servers.ConnectionServers.ConnectionServers -ge 1) {
                     section -Style Heading3 "Connection Servers" {
-                        Paragraph "The following section details the configuration of Connection Servers for $($HVEnvironment) server."
+                        Paragraph "The following section details the configuration of Connection Servers for $($HVEnvironment.toUpper()) server."
                         BlankLine
                         $OutObj = @()
                         foreach ($ConnectionServer in $ConnectionServers) {
@@ -60,7 +60,7 @@ function Get-AbrHRZConnectionServer {
                         }
 
                         $TableParams = @{
-                            Name = "Connection Servers - $($HVEnvironment)"
+                            Name = "Connection Servers - $($HVEnvironment.toUpper())"
                             List = $false
                             ColumnWidths = 42, 43, 15
                         }

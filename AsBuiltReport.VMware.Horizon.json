@@ -1,7 +1,7 @@
 {
 	"Report": {
         "Name": "VMware Horizon As Built Report",
-        "Version": "1.0",
+        "Version": "1.1",
         "Status": "Released",
         "ShowCoverPageImage": true,
         "ShowTableOfContents": true,
@@ -22,8 +22,6 @@
             "Applications": 1,
             "Farms": 1,
             "Machines": 1,
-            "PersistentDisks": 1,
-            "ThinApps": 1,
             "GlobalEntitlements": 1
         },
         "Settings": {
@@ -32,7 +30,6 @@
                     "vCenter": 1,
                     "ESXiHosts": 1,
                     "DataStores": 1,
-                    "Composers": 1,
                     "ADDomains": 1
                 },
                 "UAG":{

@@ -90,7 +90,7 @@ function Get-AbrHRZHomeSite {
                         }
 
                         $TableParams = @{
-                            Name = "Home Site General - $($HVEnvironment.split(".").toUpper()[0])"
+                            Name = "Home Site General - $($HVEnvironment.toUpper())"
                             List = $false
                             ColumnWidths = 17, 10, 10, 18, 15, 15, 15
                         }

@@ -32,7 +32,7 @@ function Get-AbrHRZLicense {
             if ($ProductLicenseingInfo) {
                 if ($InfoLevel.Settings.ProductLicensing.ProductLicensingandUsage -ge 1) {
                     section -Style Heading2 "Product Licensing and Usage" {
-                        Paragraph "The following section details the product license and usage information for $($HVEnvironment) server."
+                        Paragraph "The following section details the product license and usage information for $($HVEnvironment.toUpper()) server."
                         BlankLine
 
                         section -Style Heading3 "Licensing" {
@@ -74,9 +74,8 @@ function Get-AbrHRZLicense {
                                 }
                             }
                         
-
                             $TableParams = @{
-                                Name = "Licensing - $($HVEnvironment)"
+                                Name = "Licensing - $($HVEnvironment.toUpper())"
                                 List = $true
                                 ColumnWidths = 50, 50
                             }
@@ -110,7 +109,7 @@ function Get-AbrHRZLicense {
                                         }
 
                                         $TableParams = @{
-                                            Name = "Usage - $($HVEnvironment)"
+                                            Name = "Usage - $($HVEnvironment.toUpper())"
                                             List = $false
                                             ColumnWidths = 60, 20, 20
                                         }
@@ -148,7 +147,7 @@ function Get-AbrHRZLicense {
                                         }
 
                                         $TableParams = @{
-                                            Name = "Customer Experience Program - $($HVEnvironment)"
+                                            Name = "Customer Experience Program - $($HVEnvironment.toUpper())"
                                             List = $true
                                             ColumnWidths = 40, 60
                                         }
@@ -164,8 +163,6 @@ function Get-AbrHRZLicense {
                         catch {
                             Write-PscriboMessage -IsWarning $_.Exception.Message
                         }
-
-                    
                     }
                 }
             }

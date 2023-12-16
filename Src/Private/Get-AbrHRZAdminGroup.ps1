@@ -32,7 +32,7 @@ function Get-AbrHRZAdminGroup {
             if ($Administrators) {
                 if ($InfoLevel.Settings.Administrators.AdministratorsandGroups -ge 1) {
                     section -Style Heading3 "Administrators and Groups" {
-                        Paragraph "The following section details the configuration of Administrators and Groups for $($HVEnvironment) server."
+                        Paragraph "The following section details the configuration of Administrators and Groups for $($HVEnvironment.toUpper()) server."
                         BlankLine
                         $OutObj = @()
                         foreach ($Administrator in $Administrators) {
@@ -71,7 +71,7 @@ function Get-AbrHRZAdminGroup {
                         }
 
                         $TableParams = @{
-                            Name = "Administrators and Groups - $($HVEnvironment)"
+                            Name = "Administrators and Groups - $($HVEnvironment.toUpper())"
                             List = $false
                             ColumnWidths = 42, 15, 43
                         }

@@ -61,7 +61,7 @@ function Get-AbrHRZLocalEntitlement {
                     }
 
                     $TableParams = @{
-                        Name = "Local Entitlements - $($HVEnvironment)"
+                        Name = "Local Entitlements - $($HVEnvironment.toUpper())"
                         List = $false
                         ColumnWidths = 55, 15, 15, 15
                     }
@@ -141,7 +141,7 @@ function Get-AbrHRZLocalEntitlement {
                                             'True' {$EntitledUserOrGroupLocalMachinegroup = 'Group' }
                                             'False' {$EntitledUserOrGroupLocalMachinegroup = 'User' }
                                         }
-                                        Section -ExcludeFromTOC -Style NOTOCHeading5 "$($EntitledUserOrGroupLocalMachine.base.Name)" {
+                                        Section -ExcludeFromTOC -Style NOTOCHeading5 "Local Entitlement Details - $($EntitledUserOrGroupLocalMachine.base.Name)" {
                                             $OutObj = @()
                                             try {
                                                 Write-PscriboMessage "Local Entitlements Details for $($EntitledUserOrGroupLocalMachine.base.Name)."

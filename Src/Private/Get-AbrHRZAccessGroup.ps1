@@ -32,7 +32,7 @@ function Get-AbrHRZAccessGroup {
             if ($AccessGroups) {
                 if ($InfoLevel.Settings.Administrators.AccessGroup -ge 1) {
                     section -Style Heading3 "Access Groups" {
-                        Paragraph "The following section summarizes the configuration of Access Groups for $($HVEnvironment) server."
+                        Paragraph "The following section summarizes the configuration of Access Groups for $($HVEnvironment.toUpper()) server."
                         BlankLine
                         $OutObj = @()
                         $AccessGroupJoined = @()
@@ -49,7 +49,7 @@ function Get-AbrHRZAccessGroup {
                         }
 
                         $TableParams = @{
-                            Name = "Access Groups - $($HVEnvironment)"
+                            Name = "Access Groups - $($HVEnvironment.toUpper())"
                             List = $false
                             ColumnWidths = 35, 65
                         }

@@ -375,7 +375,7 @@
                 Write-PscriboMessage -IsWarning $_.Exception.Message
             }
             
-            section -Style Heading1 "$($HVEnvironment)" {
+            section -Style Heading1 "$($HVEnvironment.toUpper())" {
                 Get-AbrHRZInfrastructure
             }
 

@@ -28,7 +28,7 @@ function Get-AbrHRZInfrastructure {
 
     process {
         try {
-            section -Style NOTOCHeading2 "Executive Summary for $($HVEnvironment.split(".").toUpper()[0])" {
+            section -Style NOTOCHeading2 "Executive Summary for $($HVEnvironment.toUpper())" {
                 $OutObj = @()
                 Write-PscriboMessage "Discovered Infrastructure Summary Information."
                 $inObj = [ordered] @{
@@ -51,7 +51,7 @@ function Get-AbrHRZInfrastructure {
                 $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
 
                 $TableParams = @{
-                    Name = "Executive Summary  - $($HVEnvironment.split(".").toUpper()[0])"
+                    Name = "Executive Summary  - $($HVEnvironment.toUpper())"
                     List = $true
                     ColumnWidths = 50, 50
                 }

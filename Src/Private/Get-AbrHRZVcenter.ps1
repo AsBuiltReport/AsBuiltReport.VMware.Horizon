@@ -32,7 +32,7 @@ function Get-AbrHRZVcenter {
             if ($vCenterServers) {
                 if ($InfoLevel.Settings.Servers.vCenterServers.vCenter -ge 1) {
                     section -Style Heading3 "vCenter Servers" {
-                        Paragraph "The following section details the vCenter Servers configuration for $($HVEnvironment) server."
+                        Paragraph "The following section details the vCenter Servers configuration for $($HVEnvironment.toUpper()) server."
                         BlankLine
                         $vCenterHealthData = $vCenterHealth.data
                         $OutObj = @()

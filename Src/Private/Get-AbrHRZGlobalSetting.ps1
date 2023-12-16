@@ -32,7 +32,7 @@ function Get-AbrHRZGlobalSetting {
             if ($GlobalSettings) {
                 if ($InfoLevel.Settings.GlobalSettings.GlobalSettings -ge 1) {
                     section -Style Heading2 "Global Settings" {
-                        Paragraph "The following section details the Global Settings configuration for $($HVEnvironment) server."
+                        Paragraph "The following section details the Global Settings configuration for $($HVEnvironment.toUpper()) server."
                         BlankLine
                         section -Style Heading3 "General Settings" {
                             $OutObj = @()
@@ -78,7 +78,7 @@ function Get-AbrHRZGlobalSetting {
                             $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
 
                             $TableParams = @{
-                                Name = "Global Settings - $($HVEnvironment)"
+                                Name = "Global Settings - $($HVEnvironment.toUpper())"
                                 List = $true
                                 ColumnWidths = 50, 50
                             }
@@ -94,7 +94,6 @@ function Get-AbrHRZGlobalSetting {
                                 section -Style Heading3 "Security Settings" {
                                     $OutObj = @()
                                     Write-PscriboMessage "Discovered Security Settings Information."
-                                    foreach ($CLientData in $GlobalSettings.ClientRestrictionConfiguration.ClientData) {
                                         $inObj = [ordered] @{
                                             'Reauthenticate Secure Tunnel After Interruption' = $GlobalSettings.SecurityData.ReauthSecureTunnelAfterInterruption
                                             'Disallow Enhanced Security Mode' = $GlobalSettings.SecurityData.DisallowEnhancedSecurityMode
@@ -103,11 +102,10 @@ function Get-AbrHRZGlobalSetting {
                                             'Message Security Status' = $GlobalSettings.SecurityData.MessageSecurityStatus
                                             'Enable IP Sec for Security Server Pairing' = $GlobalSettings.SecurityData.EnableIPSecForSecurityServerPairing
                                         }
-                                        $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
-                                    }
+                                        $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
 
                                     $TableParams = @{
-                                        Name = "Security Settings - $($HVEnvironment)"
+                                        Name = "Security Settings - $($HVEnvironment.toUpper())"
                                         List = $true
                                         ColumnWidths = 50, 50
                                     }
@@ -140,7 +138,7 @@ function Get-AbrHRZGlobalSetting {
                                     }
 
                                     $TableParams = @{
-                                        Name = "Client Restriction Settings - $($HVEnvironment)"
+                                        Name = "Client Restriction Settings - $($HVEnvironment.toUpper())"
                                         List = $false
                                         ColumnWidths = 25, 25, 25, 25
                                     }

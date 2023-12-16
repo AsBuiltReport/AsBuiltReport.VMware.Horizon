@@ -32,7 +32,7 @@ function Get-AbrHRZCloudPod {
             if ($CloudPodFederation) {
                 if ($InfoLevel.Settings.CloudPodArch.CloudPodArch -ge 1) {
                     section -Style Heading2 "Cloud Pod Architecture" {
-                        Paragraph "The following section details on the cloud pod architecture information for $($HVEnvironment)."
+                        Paragraph "The following section details on the cloud pod architecture information for $($HVEnvironment.toUpper())."
                         BlankLine
                         $OutObj = @()
                         foreach ($CloudPodList in $CloudPodLists) {
@@ -81,7 +81,7 @@ function Get-AbrHRZCloudPod {
                         }
 
                         $TableParams = @{
-                            Name = "Cloud Pod Architecture - $($HVEnvironment)"
+                            Name = "Cloud Pod Architecture - $($HVEnvironment.toUpper())"
                             List = $true
                             ColumnWidths = 50, 50
                         }
@@ -91,8 +91,6 @@ function Get-AbrHRZCloudPod {
                         }
                         $OutObj | Table @TableParams
                     }
-                    
-
                 }
             }
         }

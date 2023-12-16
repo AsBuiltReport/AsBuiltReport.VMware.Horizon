@@ -32,7 +32,7 @@ function Get-AbrHRZRolePrivilege {
             if ($Roles) {
                 if ($InfoLevel.Settings.Administrators.RolePrivileges -ge 1) {
                     section -Style Heading3 "Role Privileges" {
-                        Paragraph "The following section details the Role Privileges information for $($HVEnvironment) server."
+                        Paragraph "The following section details the Role Privileges information for $($HVEnvironment.toUpper()) server."
                         BlankLine
                         $OutObj = @()
                         foreach ($Role in $Roles) {
@@ -46,7 +46,7 @@ function Get-AbrHRZRolePrivilege {
                         }
 
                         $TableParams = @{
-                            Name = "Role Privileges - $($HVEnvironment)"
+                            Name = "Role Privileges - $($HVEnvironment.toUpper())"
                             List = $false
                             ColumnWidths = 50, 50
                         }
@@ -60,11 +60,11 @@ function Get-AbrHRZRolePrivilege {
                     if ($InfoLevel.Settings.Administrators.RolePrivileges -ge 2) {   
                         section -Style Heading4 "Role Privileges Details" {
                             
-                            Paragraph "The following section details the Role Privilege details for information for $($HVEnvironment) server."
+                            Paragraph "The following section details the Role Privilege details for information for $($HVEnvironment.toUpper()) server."
                             BlankLine
                             $OutObj = @()
                             foreach ($Role in $Roles) {
-                                Write-PscriboMessage "Discovered Role Provilege Detailed Information for $($HVEnvironment) server."
+                                Write-PscriboMessage "Discovered Role Provilege Detailed Information for $($HVEnvironment.toUpper()) server."
                                 $inObj = [ordered] @{
                                     'Name' = $Role.base.Name
                                     'Description' = [string]::join("`n", $($Role.base.Privileges))

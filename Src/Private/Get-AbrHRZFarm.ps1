@@ -238,9 +238,6 @@ function Get-AbrHRZFarm {
                                                             $null {'Golden Image network selected'}
                                                             default {$Farm.AutomatedFarmData.VirtualCenterNamesData.NetworkLabelNames}
                                                         }
-                                                        #'Guest Customization' = $Farm.AutomatedFarmData.CustomizationSettings.CustomizationType
-                                                        #'Guest Customization Domain and Account' = ($InstantCloneDomainAdmins | Where-Object {$_.Id.id -eq $Farm.AutomatedFarmData.CustomizationSettings.InstantCloneEngineDomainAdministrator.id}).Base.UserName
-                                                        #'Allow Reuse of Existing Computer Accounts' = $Farm.AutomatedFarmData.CustomizationSettings.ReusePreExistingAccounts
                                                     }
 
                                                     $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)

@@ -32,7 +32,7 @@ function Get-AbrHRZESXi {
             if ($vCenterHealth) {
                 if ($InfoLevel.Settings.Servers.vCenterServers.ESXiHosts -ge 1) {
                     section -Style Heading5 "ESXi Hosts" {
-                        Paragraph "The following section details the hardware information of ESXi Hosts for $($HVEnvironment) server."
+                        Paragraph "The following section details the hardware information of ESXi Hosts for $($HVEnvironment.toUpper()) server."
                         BlankLine
                         $ESXHosts = $vCenterHealth.hostdata
                         foreach ($ESXCLUSTER in ($ESXHosts.ClusterName | Select-Object -Unique)) {

@@ -32,7 +32,7 @@ function Get-AbrHRZDesktopPool {
             if ($Pools) {
                 if ($InfoLevel.Inventory.Desktop -ge 1) {
                     section -Style Heading3 "Desktop Pools" {
-                        Paragraph "The following section details the Desktop Pools configuration for $($HVEnvironment) server."
+                        Paragraph "The following section details the Desktop Pools configuration for $($HVEnvironment.toUpper()) server."
                         BlankLine
                         $OutObj = @()
                         foreach ($Pool in $Pools) {
@@ -58,7 +58,7 @@ function Get-AbrHRZDesktopPool {
                         }
 
                         $TableParams = @{
-                            Name = "Desktop Pools - $($HVEnvironment.toUpper()[0])"
+                            Name = "Desktop Pools - $($HVEnvironment.toUpper())"
                             List = $false
                             ColumnWidths = 25, 25, 25, 25
                         }
@@ -71,23 +71,16 @@ function Get-AbrHRZDesktopPool {
                             if ($InfoLevel.Inventory.Desktop -ge 2) {
                                 section -Style Heading4 "Desktop Pools Details" {
                                     foreach ($Pool in $Pools) {
-                                        # Find out Access Group for Desktop Pool
-                                        $AccessgroupMatch = $false
-                                        $Accessgroups = $hzServices.AccessGroup.AccessGroup_List()
-                                        $AccessgroupsJoined = @()
-                                        $AccessgroupsJoined += $Accessgroups
-                                        $AccessgroupsJoined += $Accessgroups.Children
-                                        $AccessGroupName = ''
-                                        foreach ($Accessgroup in $AccessgroupsJoined) {
-                                            if ($Accessgroup.Id.id -eq $Pool.base.accessgroup.id) {
-                                                $AccessGroupName = $Accessgroup.base.name
-                                                $AccessgroupMatch = $true
-                                            }
-                                            if ($AccessgroupMatch) {
-                                                break
-                                            }
-                                        }
+                                        # Find Access Group for Desktop Pool
+                                        $AccessgroupsJoined = $hzServices.AccessGroup.AccessGroup_List() + $hzServices.AccessGroup.AccessGroup_List().Children
+                                        $AccessGroupMatch = $AccessgroupsJoined | Where-Object { $_.Id.id -eq $Pool.base.accessgroup.id }
 
+                                        if ($AccessGroupMatch) {
+                                            $AccessGroupName = $AccessGroupMatch.base.name
+                                        } else {
+                                            $AccessGroupName = ''  # Set to a default value if no match is found
+                                        }
+                                        <#
                                         # Find out Global Entitlement Group for Applications
                                         $InstantCloneDomainAdminGroupMatch = $false
                                         foreach ($InstantCloneDomainAdminGroup in $InstantCloneDomainAdminGroups) {
@@ -122,7 +115,7 @@ function Get-AbrHRZDesktopPool {
                                                 break
                                             }
                                         }
-
+                                        #>
                                         # Desktop OS Data
                                         $DesktopAssignmentViewResultsDataMatch = $false
                                         foreach ($DesktopAssignmentViewResult in $DesktopAssignmentViewResultsData.DesktopAssignmentData) {
@@ -231,11 +224,13 @@ function Get-AbrHRZDesktopPool {
                                             $VMResourcePool = $VMResourcePoolPath -replace '^(.*[\\\/])'
                                         }
 
+                                        <#
                                         # VM Persistent Disk DataStores
                                         if ($Pool.automateddesktopdata.VirtualCenterNamesData.PersistentDiskDatastorePaths){
                                             $VMPersistentDiskDatastorePath = $Pool.automateddesktopdata.VirtualCenterNamesData.PersistentDiskDatastorePaths
                                             $VMPersistentDiskDatastore = $VMPersistentDiskDatastorePath -replace '^(.*[\\\/])'
                                         }
+                                        #>
 
                                         # VM Network Card
                                         if ($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterNetworkingSettings.nics.nic.id) {
@@ -308,7 +303,7 @@ function Get-AbrHRZDesktopPool {
                                                 $Datastorename = $Datastore -replace '^(.*[\\\/])'
                                                 $DatastoreFinal += $DatastoreName -join "`r`n" | Out-String
                                                 }
-                                                $DatastorePathsresult = $DatastorePaths -join ', '
+                                                #$DatastorePathsresult = $DatastorePaths -join ', '
                                                 try {
                                                     section -ExcludeFromTOC -Style NOTOCHeading5 "General Summary - $($Pool.Base.name)" {
                                                         $OutObj = @()
@@ -673,12 +668,7 @@ function Get-AbrHRZDesktopPool {
                                         catch {
                                             Write-PscriboMessage -IsWarning $_.Exception.Message
                                         } 
-                                        
-                                        
-                                        
                                     }
-
-                                    
                                 }
                             }
                         }

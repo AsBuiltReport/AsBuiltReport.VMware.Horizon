@@ -32,7 +32,7 @@ function Get-AbrHRZApplicationPool {
             if ($Apps) {
                 if ($InfoLevel.Inventory.Applications -ge 1) {
                     section -Style Heading3 "Application Pool" {
-                        Paragraph "The following section details the configuration of Application Pool for $($HVEnvironment) server."
+                        Paragraph "The following section details the configuration of Application Pool for $($HVEnvironment.toUpper()) server."
                         BlankLine
                         $OutObj = @()
                         foreach ($App in $Apps) {
@@ -47,7 +47,7 @@ function Get-AbrHRZApplicationPool {
                         }
 
                         $TableParams = @{
-                            Name = "Applications - $($HVEnvironment)"
+                            Name = "Applications - $($HVEnvironment.toUpper())"
                             List = $false
                             ColumnWidths = 34, 33, 33
                         }

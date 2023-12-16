@@ -33,7 +33,7 @@ function Get-AbrHRZDomains {
                 if ($InstantCloneDomainAdmins) {
                     if ($InfoLevel.Settings.InstantClone.InstantCloneDomainAccounts -ge 1) {
                         section -Style Heading3 "Domain Accounts" {
-                            Paragraph "The following section details the Domain Accounts configuration for $($HVEnvironment) server."
+                            Paragraph "The following section details the Domain Accounts configuration for $($HVEnvironment.toUpper()) server."
                             BlankLine
                             $OutObj = @()
                             foreach ($InstantCloneDomainAdmin in $InstantCloneDomainAdmins) {
@@ -52,7 +52,7 @@ function Get-AbrHRZDomains {
                             }
 
                             $TableParams = @{
-                                Name = "Domain Accounts - $($HVEnvironment)"
+                                Name = "Domain Accounts - $($HVEnvironment.toUpper())"
                                 List = $false
                                 ColumnWidths = 50, 50
                             }
@@ -67,7 +67,7 @@ function Get-AbrHRZDomains {
                 if ($Domains) {
                     if ($InfoLevel.Settings.Servers.vCenterServers.ADDomains -ge 1) {
                         section -Style Heading3 "Connection Server" {
-                            Paragraph "The following section shows connection servers domains for $($HVEnvironment) envirnoment."
+                            Paragraph "The following section shows connection servers domains for $($HVEnvironment.toUpper()) environment."
                             BlankLine
                             $OutObj = @()
                             foreach ($Domain in $Domains) {
@@ -93,7 +93,7 @@ function Get-AbrHRZDomains {
                             }
 
                             $TableParams = @{
-                                Name = "Connection Server- $($HVEnvironment)"
+                                Name = "Connection Server- $($HVEnvironment.toUpper())"
                                 List = $false
                                 ColumnWidths = 25, 25, 25, 25
                             }

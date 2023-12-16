@@ -32,7 +32,7 @@ function Get-AbrHRZUAG {
             if ($GatewayServers) {
                 if ($InfoLevel.Settings.Servers.UAG.UAGServers -ge 1) {
                     section -Style Heading3 "Gateway Servers" {
-                        Paragraph "The following section details the Gateway Servers information for $($HVEnvironment)."
+                        Paragraph "The following section details the Gateway Servers information for $($HVEnvironment.toUpper())."
                         BlankLine
                         $OutObj = @()
                         foreach ($GatewayServer in $GatewayServers.GeneralData) {
@@ -58,7 +58,7 @@ function Get-AbrHRZUAG {
                         }
 
                         $TableParams = @{
-                            Name = "Gateway Servers - $($HVEnvironment)"
+                            Name = "Gateway Servers - $($HVEnvironment.toUpper())"
                             List = $false
                             ColumnWidths = 35, 20, 15, 15, 15
                         }

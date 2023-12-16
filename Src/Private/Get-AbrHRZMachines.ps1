@@ -32,10 +32,10 @@ function Get-AbrHRZMachines {
             if ($Machines) {
                 if ($InfoLevel.Inventory.Machines -ge 1) {
                     section -Style Heading3 "Machines" {
-                        Paragraph "The following section details on all of the machine information for $($HVEnvironment)."
+                        Paragraph "The following section details on all of the machine information for $($HVEnvironment.toUpper())."
                         BlankLine
                                                                        
-                        Write-PscriboMessage "Working on Machines Information for $($HVEnvironment)."
+                        Write-PscriboMessage "Working on Machines Information for $($HVEnvironment.toUpper())."
                         
                         section -Style Heading4 "vCenter Machine Summary" {
                             $OutObj = @()
@@ -53,7 +53,7 @@ function Get-AbrHRZMachines {
                             }
                         
                             $TableParams = @{ 
-                                Name         = "vCenter Machine Summary - $($HVEnvironment)" 
+                                Name         = "vCenter Machine Summary - $($HVEnvironment.toUpper())" 
                                 List         = $false 
                                 ColumnWidths = 15, 10, 20, 25, 15, 15 
                             } 
@@ -66,7 +66,7 @@ function Get-AbrHRZMachines {
                         if ($InfoLevel.Inventory.Machines -ge 1) {
 
                             $OutObj = @()
-                            #section -Style Heading4 "vCenter Machine Details" {
+                            section -Style Heading4 "vCenter Machine Details" {
                                 foreach ($Machine in $Machines) {
                                     $inObj = [ordered] @{
                                         'Machine Name' = $machine.base.Name
@@ -92,7 +92,7 @@ function Get-AbrHRZMachines {
                                 }
                             
                                 $TableParams = @{ 
-                                    Name         = "vCenter Machine Details - $($HVEnvironment)" 
+                                    Name         = "vCenter Machine Details - $($HVEnvironment.toUpper())" 
                                     List         = $true 
                                     ColumnWidths =  60, 40
                                 } 
@@ -100,8 +100,7 @@ function Get-AbrHRZMachines {
                                     $TableParams['Caption'] = "- $($TableParams.Name)" 
                                 } 
                                 $OutObj | Table @TableParams
-                            #}
-    
+                            }
                         }
                         #>
     

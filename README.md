@@ -130,7 +130,7 @@ The **Report** schema provides configuration of the VMware Horizon report inform
 | Sub-Schema          | Setting      | Default                        | Description                                                  |
 |---------------------|--------------|--------------------------------|--------------------------------------------------------------|
 | Name                | User defined | VMware Horizon As Built Report | The name of the As Built Report                              |
-| Version             | User defined | 1.0                            | The report version                                           |
+| Version             | User defined | 1.1                            | The report version                                           |
 | Status              | User defined | Released                       | The report release status                                    |
 | ShowCoverPageImage  | true / false | true                           | Toggle to enable/disable the display of the cover page image |
 | ShowTableOfContents | true / false | true                           | Toggle to enable/disable table of contents                   |
@@ -166,7 +166,7 @@ The table below outlines the default and maximum InfoLevel settings for each Inv
 
 | Sub-Schema   | Default Setting | Maximum Setting |
 |--------------|:---------------:|:---------------:|
-| Desktop      |        1        |        2        |
+| Desktop      |        1        |        3        |
 | Applications    |        1        |        2        |
 | Farms     |        1        |        2        |
 | Machines     |        1        |        1        |
@@ -190,6 +190,8 @@ The table below outlines the default and maximum InfoLevel settings for each Set
 | RolePrivileges      |        1        |        1     |
 | RolePermissions      |        1        |        1     |
 | AccessGroup      |        1        |        2     |
+| Cloud Pod      |        1        |        2     |
+| Sites      |        1        |        2     |
 | EventDatabase      |        1        |        1     |
 | Syslog      |        1        |        1     |
 | EventstoFileSystem      |        1        |        1     |

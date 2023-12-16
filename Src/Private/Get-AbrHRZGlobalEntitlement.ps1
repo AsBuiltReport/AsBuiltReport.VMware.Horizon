@@ -33,9 +33,9 @@ function Get-AbrHRZGlobalEntitlement {
 
                 if ($InfoLevel.Inventory.GlobalEntitlements -ge 1) {
                     section -Style Heading3 "Global Entitlements" {
-                        Paragraph "The following section details the Global Entitlements configuration for $($HVEnvironment) server."
+                        Paragraph "The following section details the Global Entitlements configuration for $($HVEnvironment.toUpper()) server."
                         BlankLine
-                       
+
                         $GlobalEntitlements | ForEach-Object{ $_ | Add-Member -MemberType NoteProperty -Name "GE_Type" -Value "Desktop"}
                         $GlobalApplicationEntitlementGroups | ForEach-Object{ $_ | Add-Member -MemberType NoteProperty -Name "GE_Type" -Value "Application"}
                         $GlobalEntitlementJoined = @()
@@ -62,7 +62,7 @@ function Get-AbrHRZGlobalEntitlement {
                         }
 
                         $TableParams = @{
-                            Name = "Global Entitlements - $($HVEnvironment)"
+                            Name = "Global Entitlements - $($HVEnvironment.toUpper())"
                             List = $false
                             ColumnWidths = 34, 33, 33
                         }
@@ -75,12 +75,12 @@ function Get-AbrHRZGlobalEntitlement {
 
                         section -Style Heading4 "Global Entitlement Summary Details" {
                             foreach ($GlobalEntitlement in $GlobalEntitlementJoined) {
-                                
+
                                 Write-PscriboMessage "Discovered Global Entitlements Detailed Information for $($GlobalEntitlement.base.DisplayName)."
                                 try {
                                     if ($InfoLevel.Inventory.GlobalEntitlements -ge 2) {
                                         section -Style Heading5 "Summary - $($GlobalEntitlement.base.DisplayName)" {
-                                            
+
                                             $SupportedDisplayProtocolsresult = ''
                                             $SupportedDisplayProtocols = $GlobalEntitlement.base | ForEach-Object { $_.SupportedDisplayProtocols}
                                             $SupportedDisplayProtocolsresult = $SupportedDisplayProtocols -join ', '
@@ -94,7 +94,6 @@ function Get-AbrHRZGlobalEntitlement {
 
                                             $GlobalAccessGroupID = $($hzServices.GlobalAccessGroup.GlobalAccessGroup_Get($GlobalEntitlement.base.GlobalAccessGroupId).base.Name)
 
-                                            
                                             $OutObj = @()
                                             Write-PscriboMessage "Discovered Global Entitlement Data for $HVEnvironment"
                                             $inObj = [ordered] @{
@@ -122,18 +121,18 @@ function Get-AbrHRZGlobalEntitlement {
                                                 'Multisession Mode' = $GlobalEntitlement.base.MultiSessionMode
                                                 'Backup GAE' = $GlobalEntitlement.base.BackupGAE
                                                 'Display Assigned Machine Name' = $GlobalEntitlement.base.DisplayAssignedMachineName
-                                                'Display Machine Alias' = $GlobalEntitlement.base.DisplayMachineAlias 
+                                                'Display Machine Alias' = $GlobalEntitlement.base.DisplayMachineAlias
                                                 'Global Access Group ID' = $GlobalAccessGroupID
                                             }
-                    
+
                                             $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
 
                                             if ($Type -eq 'Desktop') {
                                                 $inObj.Remove('Enable Pre-Launch')
                                                 $inObj.Remove('Multi Session Mode')
                                             }
-                                            
-                                            
+
+
                                             if ($Type -eq 'Application') {
                                                 $inObj.Remove('Allow User to Reset Machines')
                                                 $inObj.Remove('Allow Multiple Sessions Per User')
@@ -141,46 +140,42 @@ function Get-AbrHRZGlobalEntitlement {
                                                 $inObj.Remove('Display Assigned Machine Name')
                                                 $inObj.Remove('Display Machine Alias')
                                             }
-                                            
+
 
                                             $TableParams = @{
                                                 Name = "Detailed Information - $($GlobalEntitlement.base.DisplayName)"
                                                 List = $true
                                                 ColumnWidths = 50, 50
                                             }
-                    
+
                                             if ($Report.ShowTableCaptions) {
                                                 $TableParams['Caption'] = "- $($TableParams.Name)"
                                             }
                                             $OutObj | Table @TableParams
-                    
                                         }
 
                                         try {
                                             $OutObj = @()
                                             section -Style Heading6 "Local Pools - $($GlobalEntitlement.base.DisplayName)" {
                                                 try {
-                                                    Write-PscriboMessage "Discovered Local Pools Information for $($HVEnvironment)."
-                                                    
+                                                    Write-PscriboMessage "Discovered Local Pools Information for $($HVEnvironment.toUpper())."
+
                                                     $GEPodMembers = $GlobalEntitlement.data.MemberPods.id
                                                     $PodSiteID = ('')
-
 
                                                     Foreach($GEPodMember in $GEPodMembers){
                                                         Foreach($CPSite in $CloudPodLists){
                                                            If($CPSite.id.id -eq $GEPodMember){
-                                                                Write-Host "They Match" -ForegroundColor Green
                                                                 $PodSiteID += $CPSite.DisplayName
                                                            }
                                                         }
                                                     }
-                                                    
+
                                                     $PodMembers = ''
                                                     $PodMembers = ForEach-Object {$PodSiteID}
                                                     $PodMemberList = $PodMembers -join ', '
-                                                    
 
-                                                    $inObj = [ordered] @{ 
+                                                    $inObj = [ordered] @{
                                                         'Local Desktop Count'       = $GlobalEntitlement.data.LocalDesktopCount
                                                         'Local Application Count'   = $GlobalEntitlement.data.LocalApplicationCount
                                                         'Remote Desktop Count' = $GlobalEntitlement.data.RemoteDesktopCount
@@ -188,9 +183,9 @@ function Get-AbrHRZGlobalEntitlement {
                                                         'User Count'     = $GlobalEntitlement.data.UserCount
                                                         'User or Group Count'      = $GlobalEntitlement.data.UserGroupCount
                                                         'User or Group Site Override Count' = $GlobalEntitlement.data.UserGroupSiteOverrideCount
-                                                        'Member Pods'  = $PodMemberList #$GlobalEntitlement.data.MemberPods 
-                                                    } 
-                                                    $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj) 
+                                                        'Member Pods'  = $PodMemberList 
+                                                    }
+                                                    $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
 
                                                     if ($Type -eq 'Application'){
                                                         $inObj.Remove('Local Desktop Count')
@@ -202,14 +197,14 @@ function Get-AbrHRZGlobalEntitlement {
                                                         $inObj.Remove('Remote Application Count')
                                                     }
 
-                                                    $TableParams = @{ 
-                                                        Name         = "Local Pools - $($HVEnvironment)" 
-                                                        List         = $true 
-                                                        ColumnWidths = 30, 70 
-                                                    } 
-                                                    if ($Report.ShowTableCaptions) { 
-                                                        $TableParams['Caption'] = "- $($TableParams.Name)" 
-                                                    } 
+                                                    $TableParams = @{
+                                                        Name         = "Local Pools - $($HVEnvironment.toUpper())"
+                                                        List         = $true
+                                                        ColumnWidths = 30, 70
+                                                    }
+                                                    if ($Report.ShowTableCaptions) {
+                                                        $TableParams['Caption'] = "- $($TableParams.Name)"
+                                                    }
                                                     $OutObj | Table @TableParams
                                                 }
                                                 catch {
@@ -223,20 +218,20 @@ function Get-AbrHRZGlobalEntitlement {
 
                                         # Users and Groups
                                         try {
-                                            
+
                                             section -Style Heading6 "Users and Groups - $($GlobalEntitlement.base.DisplayName)" {
                                                 $OutObj = @()
                                                 try {
                                                     Write-PscriboMessage "Discovered Users and Groups - $($GlobalEntitlement.base.DisplayName)."
-                                          
+
                                                     foreach ($EntitledUserOrGroupGlobal in $EntitledUserOrGroupGlobals) {
                                                         Switch ($EntitledUserOrGroupGlobal.base.Group) {
                                                             'True'  { $GlobalEntitledGroup = 'Group' }
                                                             'False' { $GlobalEntitledGroup = 'User' }
                                                         }
                                                         $EntitledDefined = @()
-                                    
-        
+
+
                                                         foreach ($GE in $($EntitledUserOrGroupGlobal.GlobalData.GlobalEntitlements.id -split [Environment]::NewLine)) {
                                                             if ($GlobalEntitlement.Id.id -eq $GE) {
                                                                 $EntitledDefined += $EntitledUserOrGroupGlobal
@@ -247,57 +242,45 @@ function Get-AbrHRZGlobalEntitlement {
                                                                 $EntitledDefined += $EntitledUserOrGroupGlobal
                                                             }
                                                         }
-                                                                                    
+
                                                         foreach ($ED in $EntitledDefined){
-                                                            $inObj = [ordered] @{ 
+                                                            $inObj = [ordered] @{
                                                                 'Name' = $ED.Base.Name
                                                                 'User or Group' = $GlobalEntitledGroup
                                                                 'Domain' = $ED.Base.Domain
-                                                            } 
-                                                            $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
+                                                            }
+                                                            $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                                                         }
-                                        
-                                                    } # End If Group or User
 
-                                        
-                                                    
+                                                    } # End If Group or User
                                                 }
                                                 catch {
                                                     Write-PscriboMessage -IsWarning $_.Exception.Message
                                                 }
 
-                                                $TableParams = @{ 
-                                                    Name         = "Users and Groups - $($GlobalEntitlement.base.DisplayName)" 
-                                                    List         = $false 
-                                                    ColumnWidths = 40, 30, 30 
-                                                } 
-                                                if ($Report.ShowTableCaptions) { 
-                                                    $TableParams['Caption'] = "- $($TableParams.Name)" 
-                                                } 
+                                                $TableParams = @{
+                                                    Name         = "Users and Groups - $($GlobalEntitlement.base.DisplayName)"
+                                                    List         = $false
+                                                    ColumnWidths = 40, 30, 30
+                                                }
+                                                if ($Report.ShowTableCaptions) {
+                                                    $TableParams['Caption'] = "- $($TableParams.Name)"
+                                                }
                                                 $OutObj | Table @TableParams
                                             }
-
-                                            
                                         }
                                         catch {
                                             Write-PscriboMessage -IsWarning $_.Exception.Message
                                         }
-                                        
-
-                                        
-
                                     }
                                 }
                                 catch {
                                     Write-PscriboMessage -IsWarning $_.Exception.Message
-                                }                               
-                            
+                                }
                             }
                         }
                     }
-
                 }
-
             }
         }
         catch {

@@ -32,7 +32,7 @@ function Get-AbrHRZSites {
             if ($CloudPodSites) {
                 if ($InfoLevel.Settings.Sites.Sites -ge 1) {
                     section -Style Heading2 "Site" {
-                        Paragraph "The following section details on the Cloud Pod Site information for $($HVEnvironment)."
+                        Paragraph "The following section details on the Cloud Pod Site information for $($HVEnvironment.toUpper())."
                         BlankLine
                         $OutObj = @()
                         foreach($CloudPodSite in $CloudPodSites) {
@@ -57,7 +57,7 @@ function Get-AbrHRZSites {
                         }
 
                         $TableParams = @{
-                            Name = "Site - $($HVEnvironment)"
+                            Name = "Site - $($HVEnvironment.toUpper())"
                             List = $true
                             ColumnWidths = 50, 50
                         }

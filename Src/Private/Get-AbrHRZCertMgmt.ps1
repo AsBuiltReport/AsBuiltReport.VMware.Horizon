@@ -36,7 +36,7 @@ function Get-AbrHRZCertMgmt {
                     $ConnectionServerHealthData = $ConnectionServersHealth | Select-Object -First 1
 
                     section -Style Heading2 "Certificate Management" {
-                        Paragraph "The following section details on the certificate management information for $($HVEnvironment)."
+                        Paragraph "The following section details on the certificate management information for $($HVEnvironment.toUpper())."
                         BlankLine
                         $OutObj = @()                            
 
@@ -60,18 +60,15 @@ function Get-AbrHRZCertMgmt {
                             $OutObj | Where-Object { $_.'Enabled' -eq 'No' } | Set-Style -Style Warning -Property 'Enabled' 
                         } 
                         $TableParams = @{ 
-                            Name         = "Certificate Management - $($HVEnvironment)" 
+                            Name         = "Certificate Management - $($HVEnvironment.toUpper())" 
                             List         = $true 
                             ColumnWidths = 30, 70 
                         } 
                         if ($Report.ShowTableCaptions) { 
                             $TableParams['Caption'] = "- $($TableParams.Name)" 
                         } 
-                        $OutObj | Table @TableParams
-                        
+                        $OutObj | Table @TableParams                      
                     }
-                    
-
                 }
             }
         }

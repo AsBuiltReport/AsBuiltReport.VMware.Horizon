@@ -32,7 +32,7 @@ function Get-AbrHRZGlobalPolicies {
             if ($GlobalPolicies) {
                 if ($InfoLevel.Settings.GlobalPolicies.GlobalPolicies -ge 1) {
                     section -Style Heading2 "Global Policies" {
-                        Paragraph "The following section details on the Global Policies information for $($HVEnvironment)."
+                        Paragraph "The following section details on the Global Policies information for $($HVEnvironment.toUpper())."
                         BlankLine
                         $OutObj = @()
 
@@ -49,7 +49,7 @@ function Get-AbrHRZGlobalPolicies {
                         
 
                         $TableParams = @{
-                            Name = "Global Policies - $($HVEnvironment)"
+                            Name = "Global Policies - $($HVEnvironment.toUpper())"
                             List = $true
                             ColumnWidths = 50, 50
                         }
@@ -59,8 +59,6 @@ function Get-AbrHRZGlobalPolicies {
                         }
                         $OutObj | Table @TableParams
                     }
-                    
-
                 }
             }
         }

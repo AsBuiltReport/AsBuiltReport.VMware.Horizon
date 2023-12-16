@@ -32,7 +32,7 @@ function Get-AbrHRZEventConf {
             if ($EventDataBases -or $Syslog) {
                 if ($InfoLevel.Settings.EventConfiguration.PSObject.Properties.Value -ne 0) {
                     section -Style Heading2 "Event Configuration" {
-                        Paragraph "The following section details on the events configuration information for $($HVEnvironment)."
+                        Paragraph "The following section details on the events configuration information for $($HVEnvironment.toUpper())."
                         BlankLine
                         if ($InfoLevel.Settings.EventConfiguration.EventDatabase -ge 1) {
                             try {

@@ -32,7 +32,7 @@ function Get-AbrHRZRolePermission {
             if ($Permissions) {
                 if ($InfoLevel.Settings.Administrators.RolePermissions -ge 1) {
                     section -Style Heading3 "Role Permissions" {
-                        Paragraph "The following section details the Role Permissions information for $($HVEnvironment) server."
+                        Paragraph "The following section details the Role Permissions information for $($HVEnvironment.toUpper()) server."
                         BlankLine
                         $OutObj = @()
 
@@ -114,7 +114,7 @@ function Get-AbrHRZRolePermission {
                         }
 
                         $TableParams = @{
-                            Name = "Role Permissions - $($HVEnvironment)"
+                            Name = "Role Permissions - $($HVEnvironment.toUpper())"
                             List = $false
                             ColumnWidths = 33, 33, 34
                         }

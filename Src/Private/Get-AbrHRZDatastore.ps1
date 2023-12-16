@@ -56,7 +56,7 @@ function Get-AbrHRZDatastore {
                         }
 
                         $TableParams = @{
-                            Name = "Datastores - $($HVEnvironment)"
+                            Name = "Datastores - $($HVEnvironment.toUpper())"
                             List = $false
                             ColumnWidths = 50, 50
                         }
