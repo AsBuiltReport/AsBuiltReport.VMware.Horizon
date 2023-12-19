@@ -245,44 +245,59 @@ function Get-AbrHRZConnectionServer {
                                     }
                                             
                                     try {
-                                                $OutObj = @()
-                                                section -Style Heading5 "Certificate Details for $($ConnectionServer.General.Name) Details" {
-                                                    try {
-                                                        Write-PscriboMessage "Working on Certificate Information for $($ConnectionServerHealthData.Name)."
+                                        $OutObj = @()
+                                        section -Style Heading5 "Certificate Details for $($ConnectionServer.General.Name) Details" {
+                                            try {
 
-                                                        $Cert = $ConnectionServerHealthData.CertificateHealth.ConnectionServerCertificate 
-                                                        $Bytes = [System.Text.Encoding]::UTF8.GetBytes($Cert) 
-                                                        $PodCert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($Bytes)
-
-                                                        $inObj = [ordered] @{ 
-                                                            'Connection Server'       = $ConnectionServerHealthData.Name 
-                                                            'Self-Signed Certificate' = $ConnectionServerHealthData.DefaultCertificate 
-                                                            'Certificate Subject'     = $PodCert.Subject 
-                                                            'Certificate Issuer'      = $PodCert.Issuer 
-                                                            'Certificate Not Before'  = $PodCert.NotBefore 
-                                                            'Certificate Not After'   = $PodCert.NotAfter 
-                                                            'Certificate SANs'        = $PodCert.DnsNameList 
-                                                            'Certificate Thumbprint'  = $PodCert.Thumbprint 
-                                                        } 
-                                                        $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj) 
-                                                        if ($HealthCheck.ConnectionServers.Status) { 
-                                                            $OutObj | Where-Object { $_.'Enabled' -eq 'No' } | Set-Style -Style Warning -Property 'Enabled' 
-                                                        } 
-                                                        $TableParams = @{ 
-                                                            Name         = "Connection Servers - $($ConnectionServerHealthData.Name)" 
-                                                            List         = $true 
-                                                            ColumnWidths = 30, 70 
-                                                        } 
-                                                        if ($Report.ShowTableCaptions) { 
-                                                            $TableParams['Caption'] = "- $($TableParams.Name)" 
-                                                        } 
-                                                        $OutObj | Table @TableParams
+                                                # Connection Server Health Data
+                                                $ConnectionServerHealthMatch = $false
+                                                foreach ($ConnectionServerHealth in $ConnectionServersHealth) {
+                                                    if ($ConnectionServerHealth.id.id -eq $ConnectionServer.id.id) {
+                                                        $ConnectionServerHealthData = $ConnectionServerHealth 
+                                                        $ConnectionServerHealthMatch = $true
                                                     }
-                                                    catch {
-                                                        Write-PscriboMessage -IsWarning $_.Exception.Message
+                                                    if ($ConnectionServerHealthMatch) {
+                                                        break
                                                     }
                                                 }
+
+                                                Write-PscriboMessage "Working on Certificate Information for $($ConnectionServerHealthData.Name)."
+
+                                                if(![string]::IsNullOrEmpty($ConnectionServerHealthData.CertificateHealth.ConnectionServerCertificate)){  
+                                                    $Cert = $ConnectionServerHealthData.CertificateHealth.ConnectionServerCertificate 
+                                                    $Bytes = [System.Text.Encoding]::UTF8.GetBytes($Cert) 
+                                                    $PodCert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($Bytes)
+                                                }
+                                                
+                                                $inObj = [ordered] @{ 
+                                                    'Connection Server'       = $ConnectionServerHealthData.Name 
+                                                    'Self-Signed Certificate' = $ConnectionServerHealthData.DefaultCertificate 
+                                                    'Certificate Subject'     = $PodCert.Subject 
+                                                    'Certificate Issuer'      = $PodCert.Issuer 
+                                                    'Certificate Not Before'  = $PodCert.NotBefore 
+                                                    'Certificate Not After'   = $PodCert.NotAfter 
+                                                    'Certificate SANs'        = $(($PodCert.DnsNameList | ForEach-Object { $_.Punycode }) -join ', ')
+                                                    'Certificate Thumbprint'  = $PodCert.Thumbprint 
+                                                } 
+                                                $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj) 
+                                                if ($HealthCheck.ConnectionServers.Status) { 
+                                                    $OutObj | Where-Object { $_.'Enabled' -eq 'No' } | Set-Style -Style Warning -Property 'Enabled' 
+                                                } 
+                                                $TableParams = @{ 
+                                                    Name         = "Certificate Details for - $($ConnectionServerHealthData.Name)" 
+                                                    List         = $true 
+                                                    ColumnWidths = 30, 70 
+                                                } 
+                                                if ($Report.ShowTableCaptions) { 
+                                                    $TableParams['Caption'] = "- $($TableParams.Name)" 
+                                                } 
+                                                $OutObj | Table @TableParams
                                             }
+                                            catch {
+                                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                                            }
+                                        }
+                                    }
                                     catch {
                                         Write-PscriboMessage -IsWarning $_.Exception.Message
                                     }

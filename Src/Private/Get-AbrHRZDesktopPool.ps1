@@ -420,8 +420,8 @@ function Get-AbrHRZDesktopPool {
                                                             'vRam Size MB' = $Pool.DesktopSettings.DisplayProtocolSettings.PcoipDisplaySettings.VRamSizeMB
                                                             'Max Number of Monitors' = $Pool.DesktopSettings.DisplayProtocolSettings.PcoipDisplaySettings.MaxNumberOfMonitors
                                                             'Max Resolution of Any One Monitor' = $Pool.DesktopSettings.DisplayProtocolSettings.PcoipDisplaySettings.MaxResolutionOfAnyOneMonitor
-                                                            'Use View Storage Accelerator' =  $pools.ManualDesktopData.ViewStorageAcceleratorSettings.UseViewStorageAccelerator
-                                                            'Regenerate View Storage Accelerator Days' = $pools.ManualDesktopData.ViewStorageAcceleratorSettings.RegenerateViewStorageAcceleratorDays
+                                                            'Use View Storage Accelerator' =  $pool.ManualDesktopData.ViewStorageAcceleratorSettings.UseViewStorageAccelerator
+                                                            'Regenerate View Storage Accelerator Days' = $pool.ManualDesktopData.ViewStorageAcceleratorSettings.RegenerateViewStorageAcceleratorDays
                                                             'Black Out Times' = $BlackOutDateString
                                                             'Transparent Page Sharing Scope' = $Pool.ManualDesktopData.VirtualCenterManagedCommonSettings.TransparentPageSharingScope
                                                         }
@@ -510,8 +510,8 @@ function Get-AbrHRZDesktopPool {
                                                             }
                                                             'Datastores' = $DatastoreFinal
                                                             'Datastores Storage Over-Commit' = $StorageOvercommitsresult
-                                                            'Use VSan' = $pools.AutomatedDesktopData.VirtualCenterProvisioningSettings.VirtualCenterStorageSettings.usevsan
-                                                            'Storage Cluster Path' = $pools.AutomatedDesktopData.VirtualCenterNamesData.SdrsClusterPath
+                                                            'Use VSAN' = $pool.AutomatedDesktopData.VirtualCenterProvisioningSettings.VirtualCenterStorageSettings.usevsan
+                                                            'Storage Cluster Path' = $pool.AutomatedDesktopData.VirtualCenterNamesData.SdrsClusterPath
                                                             'View Storage Accelerator' = Switch ($Pool.Type) {
                                                                 'MANUAL' {$Pool.ManualDesktopData.ViewStorageAcceleratorSettings.UseViewStorageAccelerator}
                                                                 'AUTOMATED' {$Pool.AutomatedDesktopData.VirtualCenterProvisioningSettings.VirtualCenterStorageSettings.ViewStorageAcceleratorSettings.UseViewStorageAccelerator}
@@ -535,13 +535,13 @@ function Get-AbrHRZDesktopPool {
                                                             'Network Max Label' = $pool.AutomatedDesktopData.VirtualCenterProvisioningSettings.VirtualCenterNetworkingSettings.nics.NetworkLabelAssignmentSpecs.MaxLabel
                                                             'Customization Type' = $Pool.automateddesktopdata.CustomizationSettings.CustomizationType
                                                             'Customization Spec Name' = $Pool.automateddesktopdata.CustomizationSettings.CustomizationSpecName
-                                                            'Power off Script Name' = $pools.AutomatedDesktopData.CustomizationSettings.CloneprepCustomizationSettings.PowerOffScriptName
-                                                            'Power off Script Parameters' = $pools.AutomatedDesktopData.CustomizationSettings.CloneprepCustomizationSettings.PowerOffScriptParameters
-                                                            'Post Synchronization Script Name' = $pools.AutomatedDesktopData.CustomizationSettings.CloneprepCustomizationSettings.PostSynchronizationScriptName
-                                                            'Post Synchronization Script Parameters' = $pools.AutomatedDesktopData.CustomizationSettings.CloneprepCustomizationSettings.PostSynchronizationScriptParameters
-                                                            'Priming Computer Account' = $pools.AutomatedDesktopData.CustomizationSettings.CloneprepCustomizationSettings.PrimingComputerAccount
+                                                            'Power off Script Name' = $pool.AutomatedDesktopData.CustomizationSettings.CloneprepCustomizationSettings.PowerOffScriptName
+                                                            'Power off Script Parameters' = $pool.AutomatedDesktopData.CustomizationSettings.CloneprepCustomizationSettings.PowerOffScriptParameters
+                                                            'Post Synchronization Script Name' = $pool.AutomatedDesktopData.CustomizationSettings.CloneprepCustomizationSettings.PostSynchronizationScriptName
+                                                            'Post Synchronization Script Parameters' = $pool.AutomatedDesktopData.CustomizationSettings.CloneprepCustomizationSettings.PostSynchronizationScriptParameters
+                                                            'Priming Computer Account' = $pool.AutomatedDesktopData.CustomizationSettings.CloneprepCustomizationSettings.PrimingComputerAccount
                                                             'Guest Customization Account' = ($InstantCloneDomainAdmins | Where-Object {$_.id.id -eq $Pool.automateddesktopdata.CustomizationSettings.InstantCloneEngineDomainAdministrator.id}).Base.Username
-                                                            'No Customization Settings' = $pools.AutomatedDesktopData.CustomizationSettings.NoCustomizationSettings
+                                                            'No Customization Settings' = $pool.AutomatedDesktopData.CustomizationSettings.NoCustomizationSettings
                                                             'Sysprep Customization Settings' = $PoolCustomization
                                                             'Quick Prep Customization Settings' = $pool.AutomatedDesktopData.CustomizationSettings.QuickprepCustomizationSettings
                                                             'Ad Container' = $PoolContainerName
@@ -601,7 +601,7 @@ function Get-AbrHRZDesktopPool {
 
                                                         }
 
-                                                        if ([string]::IsNullOrEmpty($pools.AutomatedDesktopData.CustomizationSettings.CloneprepCustomizationSettings)) {
+                                                        if ([string]::IsNullOrEmpty($pool.AutomatedDesktopData.CustomizationSettings.CloneprepCustomizationSettings)) {
                                                             $inObj.Remove('Power off Script Name')
                                                             $inObj.Remove('Power Off Script Parameters')
                                                             $inObj.Remove('Post Synchronization Script Name')
@@ -667,7 +667,56 @@ function Get-AbrHRZDesktopPool {
                                         }
                                         catch {
                                             Write-PscriboMessage -IsWarning $_.Exception.Message
-                                        } 
+                                        }
+
+
+                                        try {
+                                            $OutObj = @()
+                                            section -ExcludeFromToC -Style NOTOCHeading4 "Desktop Pools Entitlements - $($Pool.Base.Name)" {
+                                                try {
+                                                    Write-PscriboMessage "Discovered Desktop Pool Entitlements Information for - $($Pool.Base.Name)."
+                                        
+                                                    foreach ($Principal in ($EntitledUserOrGrouplocalMachines | Where-Object {$_.localData.Desktops.id -eq $Pool.Id.id})) {
+                                                        Write-PscriboMessage "Discovered Desktop Pool Entitlements Name for - $($Principal.Base.LoginName)." 
+                                                        $inObj = [ordered] @{
+                                                            'Name' = $Principal.Base.LoginName
+                                                            'Domain' = $Principal.Base.Domain
+                                                            'Is Group?' = $Principal.Base.Group
+                                                        }
+                                                        $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
+                                                    }
+                                        
+                                                    $TableParams += @{
+                                                        Name = "Desktop Pools Entitlements - $($Pool.Base.Name)"
+                                                        List = $false
+                                                        ColumnWidths = 34, 33, 33
+                                                    }
+                                        
+                                                    if ($Report.ShowTableCaptions) {
+                                                        $TableParams['Caption'] = "- $($TableParams.Name)"
+                                                    }
+                                                    $OutObj | Sort-Object -Property 'Name' | Table @TableParams
+                                                }
+                                                catch {
+                                                    Write-PscriboMessage -IsWarning $_.Exception.Message
+                                                }
+                                            }
+                                        }
+                                        catch {
+                                            Write-PscriboMessage -IsWarning $_.Exception.Message
+                                        }
+                                        
+
+
+
+
+
+
+
+
+
+
+
                                     }
                                 }
                             }
@@ -675,13 +724,16 @@ function Get-AbrHRZDesktopPool {
                         catch {
                             Write-PscriboMessage -IsWarning $_.Exception.Message
                         }
+
+                        <#
                         try {
                             section -Style Heading3 "Desktop Pool Entitlements" {
                                 foreach ($Pool in $Pools) {
-                                    section -ExcludeFromToC -Style NOTOCHeading5 $Pool.Base.Name {
-                                        $OutObj = @()
-                                        Write-PscriboMessage "Discovered Desktop Pool Entitlements Information."
+                                    section -ExcludeFromToC -Style NOTOCHeading4 "Desktop Pools Entitlements - $($Pool.Base.Name)" {
+                                        #$OutObj = @()
+                                        Write-PscriboMessage "Discovered Desktop Pool Entitlements Information for - $($Pool.Base.Name)."
                                         foreach ($Principal in ($EntitledUserOrGrouplocalMachines | Where-Object {$_.localData.Desktops.id -eq $Pool.Id.id})) {
+                                            Write-PscriboMessage "Discovered Desktop Pool Entitlements Name for - $($Principal.Base.LoginName)." 
                                             $inObj = [ordered] @{
                                                 'Name' = $Principal.Base.LoginName
                                                 'Domain' = $Principal.Base.Domain
@@ -707,6 +759,7 @@ function Get-AbrHRZDesktopPool {
                         catch {
                             Write-PscriboMessage -IsWarning $_.Exception.Message
                         }
+                        #>
                     }
                 }
             }
