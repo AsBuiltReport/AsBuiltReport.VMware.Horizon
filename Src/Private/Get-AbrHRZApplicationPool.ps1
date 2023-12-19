@@ -71,7 +71,6 @@ function Get-AbrHRZApplicationPool {
                                                 break
                                             }
                                         }
-
                                         # Find out Access Group for Applications
                                         $AccessgroupMatch = $false
                                         foreach ($Accessgroup in $Accessgroups) {
@@ -83,7 +82,6 @@ function Get-AbrHRZApplicationPool {
                                                 break
                                             }
                                         }
-
                                         # Find out Global Application Entitlement Group for Applications
                                         $GlobalApplicationEntitlementGroupDisplayName = ('')
                                         $GlobalApplicationEntitlementGroupMatch = $false
@@ -98,7 +96,6 @@ function Get-AbrHRZApplicationPool {
                                             break
                                             }
                                         }
-
                                         If([string]::IsNullOrEmpty($App.Data.AvApplicationPackageGuid)){
 
                                             $AppVolumesApp = "False"
@@ -106,10 +103,8 @@ function Get-AbrHRZApplicationPool {
                                         else {
                                             $AppVolumesApp = "True"
                                         }
-
                                         $ApplicationFileTypes = $App.ExecutionData.FileTypes | ForEach-Object { $_.FileType}
                                         $ApplicationFileTypesresult = $ApplicationFileTypes -join ', '
-
                                         $OtherApplicationFileTypes = $App.ExecutionData.OtherFileTypes | ForEach-Object { $_.FileType}
                                         $OtherApplicationFileTypesresult = $OtherApplicationFileTypes -join ', '
 

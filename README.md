@@ -68,7 +68,6 @@ PowerShell 5.1 or PowerShell 7, and the following PowerShell modules are require
 - [VMware PowerCLI Module](https://www.powershellgallery.com/packages/VMware.PowerCLI/)
 - [AsBuiltReport.VMware.Horizon Module](https://www.powershellgallery.com/packages/AsBuiltReport.VMware.Horizon/)
 
-### Linux & macOS
 
 * .NET Core is required for cover page image support on Linux and macOS operating systems.
     * [Installing .NET Core for macOS](https://docs.microsoft.com/en-us/dotnet/core/install/macos)

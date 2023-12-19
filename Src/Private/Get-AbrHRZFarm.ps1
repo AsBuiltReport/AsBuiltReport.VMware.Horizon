@@ -107,7 +107,6 @@ function Get-AbrHRZFarm {
                                                             $FarmCustomization = $($Customization.CustomizationSpecData.Name)
                                                         }
                                                     }
-                                                                                
                                                 }
                                             }
 
@@ -127,7 +126,6 @@ function Get-AbrHRZFarm {
                                                         'Deleting' = $Farm.Data.Deleting
                                                         'Desktop' = $Farm.Data.Desktop
                                                         'App Volumes Server' = $Farm.Data.AppVolumesManagerGuid
-                                                        
                                                         'Default Display Protocol' = $Farm.Data.DisplayProtocolSettings.DefaultDisplayProtocol
                                                         'Allow Users to Choose Protocol' = $Farm.Data.DisplayProtocolSettings.AllowDisplayProtocolOverride
                                                         'HTML Access' = $Farm.Data.DisplayProtocolSettings.EnableHTMLAccess

@@ -121,7 +121,6 @@ function Get-AbrHRZGlobalSetting {
                             Write-PscriboMessage -IsWarning $_.Exception.Message
                         }
 
-                        
                         try {
                             if ($InfoLevel.Settings.GlobalSettings.GlobalSettings -ge 2) {
                                 section -Style Heading3 "Client Restriction Settings" {

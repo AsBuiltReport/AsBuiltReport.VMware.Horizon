@@ -183,7 +183,7 @@ function Get-AbrHRZGlobalEntitlement {
                                                         'User Count'     = $GlobalEntitlement.data.UserCount
                                                         'User or Group Count'      = $GlobalEntitlement.data.UserGroupCount
                                                         'User or Group Site Override Count' = $GlobalEntitlement.data.UserGroupSiteOverrideCount
-                                                        'Member Pods'  = $PodMemberList 
+                                                        'Member Pods'  = $PodMemberList
                                                     }
                                                     $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
 

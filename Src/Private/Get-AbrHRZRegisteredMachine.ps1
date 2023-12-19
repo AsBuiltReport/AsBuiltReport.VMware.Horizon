@@ -112,37 +112,34 @@ function Get-AbrHRZRegisteredMachine {
                                 Write-PscriboMessage -IsWarning $_.Exception.Message
                             }
 
-                            section -Style Heading3 'Others' {
-                                Paragraph "The following section details the RDS Hosts configuration for $($HVEnvironment.toUpper()) server."
-                                BlankLine
-                                $OutObj = @()
-                                foreach ($RegisteredPhysicalMachine in $RegisteredPhysicalMachines) {
-                                    Write-PscriboMessage "Other Registerd Machines"
-                                    $inObj = [ordered] @{
-                                        'Name' = $RegisteredPhysicalMachines.MachineBase.name
-                                        'DNS Name' = $RegisteredPhysicalMachines.MachineBase.DnsName
-                                        'Description' = $RegisteredPhysicalMachines.MachineBase.Description
-                                        'OperatingSystem' = $RegisteredPhysicalMachines.MachineBase.Description
+                            if($RegisteredPhysicalMachines){
+                                section -Style Heading3 'Others' {
+                                    Paragraph "The following section details the RDS Hosts configuration for $($HVEnvironment.toUpper()) server."
+                                    BlankLine
+                                    $OutObj = @()
+                                    foreach ($RegisteredPhysicalMachine in $RegisteredPhysicalMachines) {
+                                        Write-PscriboMessage "Other Registerd Machines"
+                                        $inObj = [ordered] @{
+                                            'Name' = $RegisteredPhysicalMachines.MachineBase.name
+                                            'DNS Name' = $RegisteredPhysicalMachines.MachineBase.DnsName
+                                            'Description' = $RegisteredPhysicalMachines.MachineBase.Description
+                                            'OperatingSystem' = $RegisteredPhysicalMachines.MachineBase.Description
+                                        }
+                                        $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                                     }
-    
-                                    $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
-                                }
-    
-                                if ($HealthCheck.RegisteredMachines.Status) {
-                                    $OutObj | Where-Object { $_.'Status' -ne 'AVAILABLE'} | Set-Style -Style Warning
-                                }
-    
-                                $TableParams = @{
-                                    Name = "Other Registered Machines - $($HVEnvironment.toUpper())"
-                                    List = $false
-                                    ColumnWidths = 20, 20, 30, 30
-                                }
-    
-                                if ($Report.ShowTableCaptions) {
-                                    $TableParams['Caption'] = "- $($TableParams.Name)"
+                                    if ($HealthCheck.RegisteredMachines.Status) {
+                                        $OutObj | Where-Object { $_.'Status' -ne 'AVAILABLE'} | Set-Style -Style Warning
+                                    }
+                                    $TableParams = @{
+                                        Name = "Other Registered Machines - $($HVEnvironment.toUpper())"
+                                        List = $false
+                                        ColumnWidths = 20, 20, 30, 30
+                                    }
+                                    if ($Report.ShowTableCaptions) {
+                                        $TableParams['Caption'] = "- $($TableParams.Name)"
+                                    }
                                 }
                             }
-    
                         }
                     }
                 }

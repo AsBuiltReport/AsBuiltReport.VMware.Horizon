@@ -46,7 +46,6 @@ function Get-AbrHRZGlobalPolicies {
                         }
 
                         $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
-                        
 
                         $TableParams = @{
                             Name = "Global Policies - $($HVEnvironment.toUpper())"

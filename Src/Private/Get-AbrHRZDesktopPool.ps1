@@ -258,7 +258,6 @@ function Get-AbrHRZDesktopPool {
                                         $BlackOutDates = $pool.ManualDesktopData.ViewStorageAcceleratorSettings.BlackoutTimes
                                         $BlackOutDateString = $BlackOutDates | Format-Table | Out-String
 
-                                        
                                         # Pool Customization Type
                                         $Customizations = ('')
                                         If($pool.AutomatedDesktopData.CustomizationSettings.CustomizationType -eq "SYS_PREP"){
@@ -269,10 +268,8 @@ function Get-AbrHRZDesktopPool {
                                                         $PoolCustomization = $($Customization.CustomizationSpecData.Name)
                                                     }
                                                 }
-                                    
                                             }
                                         }
-                                    
                                         # VM Template
                                         $PoolTemplateName = ''
                                         if ($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.Template.id){
@@ -645,13 +642,11 @@ function Get-AbrHRZDesktopPool {
                                                                 $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                                                             }
                                                         }
-                                
                                                         $TableParams = @{
-                                                            Name         = "Pool Machine Summary - $($Pool.Base.Name)" 
-                                                            List         = $false 
+                                                            Name         = "Pool Machine Summary - $($Pool.Base.Name)"
+                                                            List         = $false
                                                             ColumnWidths = 15, 10, 20, 25, 15, 15
                                                         }
-                            
                                                         if ($Report.ShowTableCaptions) {
                                                             $TableParams['Caption'] = "- $($TableParams.Name)"
                                                         }
@@ -668,16 +663,13 @@ function Get-AbrHRZDesktopPool {
                                         catch {
                                             Write-PscriboMessage -IsWarning $_.Exception.Message
                                         }
-
-
                                         try {
                                             $OutObj = @()
-                                            section -ExcludeFromToC -Style NOTOCHeading4 "Desktop Pools Entitlements - $($Pool.Base.Name)" {
+                                            section -ExcludeFromToC -Style NOTOCHeading6 "Desktop Pools Entitlements - $($Pool.Base.Name)" {
                                                 try {
                                                     Write-PscriboMessage "Discovered Desktop Pool Entitlements Information for - $($Pool.Base.Name)."
-                                        
                                                     foreach ($Principal in ($EntitledUserOrGrouplocalMachines | Where-Object {$_.localData.Desktops.id -eq $Pool.Id.id})) {
-                                                        Write-PscriboMessage "Discovered Desktop Pool Entitlements Name for - $($Principal.Base.LoginName)." 
+                                                        Write-PscriboMessage "Discovered Desktop Pool Entitlements Name for - $($Principal.Base.LoginName)."
                                                         $inObj = [ordered] @{
                                                             'Name' = $Principal.Base.LoginName
                                                             'Domain' = $Principal.Base.Domain
@@ -685,13 +677,11 @@ function Get-AbrHRZDesktopPool {
                                                         }
                                                         $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                                                     }
-                                        
                                                     $TableParams += @{
                                                         Name = "Desktop Pools Entitlements - $($Pool.Base.Name)"
                                                         List = $false
                                                         ColumnWidths = 34, 33, 33
                                                     }
-                                        
                                                     if ($Report.ShowTableCaptions) {
                                                         $TableParams['Caption'] = "- $($TableParams.Name)"
                                                     }
@@ -705,18 +695,6 @@ function Get-AbrHRZDesktopPool {
                                         catch {
                                             Write-PscriboMessage -IsWarning $_.Exception.Message
                                         }
-                                        
-
-
-
-
-
-
-
-
-
-
-
                                     }
                                 }
                             }
@@ -724,42 +702,6 @@ function Get-AbrHRZDesktopPool {
                         catch {
                             Write-PscriboMessage -IsWarning $_.Exception.Message
                         }
-
-                        <#
-                        try {
-                            section -Style Heading3 "Desktop Pool Entitlements" {
-                                foreach ($Pool in $Pools) {
-                                    section -ExcludeFromToC -Style NOTOCHeading4 "Desktop Pools Entitlements - $($Pool.Base.Name)" {
-                                        #$OutObj = @()
-                                        Write-PscriboMessage "Discovered Desktop Pool Entitlements Information for - $($Pool.Base.Name)."
-                                        foreach ($Principal in ($EntitledUserOrGrouplocalMachines | Where-Object {$_.localData.Desktops.id -eq $Pool.Id.id})) {
-                                            Write-PscriboMessage "Discovered Desktop Pool Entitlements Name for - $($Principal.Base.LoginName)." 
-                                            $inObj = [ordered] @{
-                                                'Name' = $Principal.Base.LoginName
-                                                'Domain' = $Principal.Base.Domain
-                                                'Is Group?' = $Principal.Base.Group
-                                            }
-                                            $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
-                                        }
-
-                                        $TableParams = @{
-                                            Name = "Desktop Pools Entitlements - $($Pool.Base.Name)"
-                                            List = $false
-                                            ColumnWidths = 34, 33, 33
-                                        }
-
-                                        if ($Report.ShowTableCaptions) {
-                                            $TableParams['Caption'] = "- $($TableParams.Name)"
-                                        }
-                                        $OutObj | Sort-Object -Property 'Name' | Table @TableParams
-                                    }
-                                }
-                            }
-                        }
-                        catch {
-                            Write-PscriboMessage -IsWarning $_.Exception.Message
-                        }
-                        #>
                     }
                 }
             }

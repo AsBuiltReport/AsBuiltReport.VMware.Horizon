@@ -56,10 +56,8 @@ function Get-AbrHRZRolePrivilege {
                         }
                         $OutObj | Sort-Object -Property 'Name' | Table @TableParams
                     }
-                    
-                    if ($InfoLevel.Settings.Administrators.RolePrivileges -ge 2) {   
+                    if ($InfoLevel.Settings.Administrators.RolePrivileges -ge 2) {
                         section -Style Heading4 "Role Privileges Details" {
-                            
                             Paragraph "The following section details the Role Privilege details for information for $($HVEnvironment.toUpper()) server."
                             BlankLine
                             $OutObj = @()

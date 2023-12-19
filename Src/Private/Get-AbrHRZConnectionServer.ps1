@@ -298,48 +298,45 @@ function Get-AbrHRZConnectionServer {
                                     catch {
                                         Write-PscriboMessage -IsWarning $_.Exception.Message
                                     }
+                                    if ($ConnectionServersHealth.replicationstatus){
+                                        if ($InfoLevel.settings.servers.ConnectionServers.ConnectionServers -ge 2) {
+                                            try {
+                                                $OutObj = @()
+                                                section -Style Heading5 "Replication Status for Connection Server $($connectionserver.General.Name)" {
+                                                    try {
+                                                        Write-PscriboMessage "Working on Replication Information for $($connectionserver.General.Name)."
 
-
-                                    if ($InfoLevel.settings.servers.ConnectionServers.ConnectionServers -ge 2) {
-                                        try {
-                                            $OutObj = @()
-                                            section -Style Heading5 "Replication Status for Connection Server $($connectionserver.General.Name)" {
-                                                try {
-                                                    Write-PscriboMessage "Working on Replication Information for $($connectionserver.General.Name)."
-
-                                                   foreach($CSHealth in ($ConnectionServersHealth | Where-Object {$_.Name -EQ $connectionserver.General.Name})){
-                                                        $inObj = [ordered] @{
-                                                            'Connection Server' = $CSHealth.Name
-                                                            'Replication Partner' = $CSHealth.ReplicationStatus.Servername
-                                                            'Status' = $CSHealth.ReplicationStatus.Status
-                                                            'Message' = $CSHealth.ReplicationStatus.Message
+                                                    foreach($CSHealth in ($ConnectionServersHealth | Where-Object {$_.Name -EQ $connectionserver.General.Name})){
+                                                            $inObj = [ordered] @{
+                                                                'Connection Server' = $CSHealth.Name
+                                                                'Replication Partner' = $CSHealth.ReplicationStatus.Servername
+                                                                'Status' = $CSHealth.ReplicationStatus.Status
+                                                                'Message' = $CSHealth.ReplicationStatus.Message
+                                                            }
+                                                            $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
                                                         }
-                                                        $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
-                                                    }
 
-                                                    $TableParams = @{
-                                                        Name = "Connection Servers Replication- $($connectionserver.General.Name)"
-                                                        List = $true
-                                                        ColumnWidths = 30, 70
+                                                        $TableParams = @{
+                                                            Name = "Connection Servers Replication- $($connectionserver.General.Name)"
+                                                            List = $true
+                                                            ColumnWidths = 30, 70
+                                                        }
+                                                        if ($Report.ShowTableCaptions) {
+                                                            $TableParams['Caption'] = "- $($TableParams.Name)"
+                                                        }
+                                                        $OutObj | Table @TableParams
                                                     }
-                                                    if ($Report.ShowTableCaptions) {
-                                                        $TableParams['Caption'] = "- $($TableParams.Name)"
+                                                    catch {
+                                                        Write-PscriboMessage -IsWarning $_.Exception.Message
                                                     }
-                                                    $OutObj | Table @TableParams
-                                                }
-                                                catch {
-                                                    Write-PscriboMessage -IsWarning $_.Exception.Message
                                                 }
                                             }
-                                        }
-                                        catch {
-                                            Write-PscriboMessage -IsWarning $_.Exception.Message
-                                        }
+                                            catch {
+                                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                                            }
 
+                                        }
                                     }
-
-
-
                                 }
                             }
                             catch {
@@ -349,43 +346,6 @@ function Get-AbrHRZConnectionServer {
 
                     }
                 }
-
-                <#
-                if ($InfoLevel.settings.servers.ConnectionServers.ConnectionServers -ge 1) {
-                    try {
-                        $OutObj = @()
-                        section -Style Heading4 "Replication Status for Connection Servers" {
-                            try {
-                                Write-PscriboMessage "Working on Replication Information for $($ConnectionServersHealth.Namee)."
-
-                                #$ConnectionServersHealth.ReplicationStatus | Where-Object { $_.ServerName -and $_.Status -and $_.Message}
-                                $ConnectionServersHealth.ReplicationStatus | Table -Columns ServerName,Status,Message -Headers 'Connection Server','Replication Partner','Status','Message'
-
-                                $TableParams = @{
-                                    Name = "Connection Servers Replication- $($ConnectionServerHealthData.Name)"
-                                    List = $true
-                                    ColumnWidths = 25, 25, 25, 25
-                                }
-                                if ($Report.ShowTableCaptions) {
-                                    $TableParams['Caption'] = "- $($TableParams.Name)"
-                                }
-                                $OutObj | Table @TableParams
-                            }
-                            catch {
-                                Write-PscriboMessage -IsWarning $_.Exception.Message
-                            }
-                        }
-                    }
-                    catch {
-                        Write-PscriboMessage -IsWarning $_.Exception.Message
-                    }
-                }
-                #>
-
-
-
-
-
             }
         }
         catch {

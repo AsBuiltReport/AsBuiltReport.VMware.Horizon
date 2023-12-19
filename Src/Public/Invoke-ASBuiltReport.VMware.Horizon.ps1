@@ -5,7 +5,7 @@
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        0.2.0
+        Version:        1.1.0
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -349,7 +349,6 @@
             catch {
                 Write-PscriboMessage -IsWarning $_.Exception.Message
             }
-            
             try {
                 # Certificate Management
                 $CertificateManagement = $hzServices.GlobalSettings.GlobalSettings_ListGatewayCertificates()
@@ -374,7 +373,6 @@
             catch {
                 Write-PscriboMessage -IsWarning $_.Exception.Message
             }
-            
             section -Style Heading1 "$($HVEnvironment.toUpper())" {
                 Get-AbrHRZInfrastructure
             }
@@ -426,7 +424,6 @@
                         Get-AbrHRZRolePermission
                         Get-AbrHRZAccessGroup
                         Get-AbrHRZFederationAccessGroups
-                                               
                     }
                 }
 
@@ -435,7 +432,6 @@
                 Get-AbrHRZEventConf
                 Get-AbrHRZGlobalPolicies
             }
-            
         }
     }
 }

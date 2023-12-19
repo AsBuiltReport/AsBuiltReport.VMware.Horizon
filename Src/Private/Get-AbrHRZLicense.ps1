@@ -73,7 +73,6 @@ function Get-AbrHRZLicense {
                                     Write-PscriboMessage -IsWarning $_.Exception.Message
                                 }
                             }
-                        
                             $TableParams = @{
                                 Name = "Licensing - $($HVEnvironment.toUpper())"
                                 List = $true
@@ -85,7 +84,6 @@ function Get-AbrHRZLicense {
                             }
                             $OutObj | Table @TableParams
                         }
-                        
                         try {
                             $UsageStatisticsInfo = try {$hzServices.UsageStatistics.UsageStatistics_GetLicensingCounters()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
                             if ($UsageStatisticsInfo) {

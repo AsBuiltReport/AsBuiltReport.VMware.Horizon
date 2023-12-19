@@ -97,7 +97,7 @@ function Get-AbrHRZFederationAccessGroups {
                                     $GlobalAccessGroupIDName = $GlobalAccessGroupIDName.TrimStart('/')
 
                                 }
-                            }   
+                            }
                             $inObj = [ordered] @{
                                 'User or Group Name' = $AdministratorIDName
                                 'Role' = $RoleIDName
@@ -106,8 +106,6 @@ function Get-AbrHRZFederationAccessGroups {
 
                             $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                         }
-
-
                         $TableParams = @{
                             Name = "Role Permissions - $($HVEnvironment.toUpper())"
                             List = $false

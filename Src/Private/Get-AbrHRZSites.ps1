@@ -63,11 +63,11 @@ function Get-AbrHRZSites {
                         }
 
                         if ($Report.ShowTableCaptions) {
-                            #$TableParams['Caption'] = "- $($TableParams.Name)"
+                            $TableParams['Caption'] = "- $($TableParams.Name)"
                         }
                         $OutObj | Table @TableParams
                     }
-                    
+
 
                 }
             }

@@ -72,7 +72,6 @@ function Get-AbrHRZHomeSite {
                                     $HomeSiteGlobalApplicationEntitlementID = $hzServices.GlobalApplicationEntitlement.GlobalApplicationEntitlement_Get($homesite.Base.GlobalApplicationEntitlement)
                                     $HomeSiteGlobalApplicationEntitlementIDName = $HomeSiteGlobalApplicationEntitlementID.base.DisplayName
                                 }
-                                
                                 $inObj = [ordered] @{
                                     'User or Group Name' = $HomeSiteUserIDName
                                     'Domain' = $HomeSiteUserIDDomain
