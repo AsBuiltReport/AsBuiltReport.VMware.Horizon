@@ -82,7 +82,7 @@ function Get-AbrHRZConnectionServer {
                                             $ConnectionServerHealthMatch = $false
                                             foreach ($ConnectionServerHealth in $ConnectionServersHealth) {
                                                 if ($ConnectionServerHealth.id.id -eq $ConnectionServer.id.id) {
-                                                    $ConnectionServerHealthData = $ConnectionServerHealth 
+                                                    $ConnectionServerHealthData = $ConnectionServerHealth
                                                     $ConnectionServerHealthMatch = $true
                                                 }
                                                 if ($ConnectionServerHealthMatch) {
@@ -142,13 +142,13 @@ function Get-AbrHRZConnectionServer {
                                         section -Style Heading5 "Authentication $($ConnectionServer.General.Name) Details" {
                                             try {
                                                 Write-PscriboMessage "Discovered Connection Servers Authentication Information $($ConnectionServer.General.Name)."
-                                    
+
                                                 if($connectionserver.authentication.samlconfig.SamlAuthenticators) {
                                                     $SAMLAuth = $hzServices.SAMLAuthenticator.SAMLAuthenticator_Get($connectionserver.authentication.samlconfig.SamlAuthenticator)
                                                     #$SAMLAuthList = $hzServices.SAMLAuthenticator.SAMLAuthenticator_list()
                                                 }
-                                    
-                                                $inObj = [ordered] @{ 
+
+                                                $inObj = [ordered] @{
                                                     'Smart Card Support' = $ConnectionServer.Authentication.SmartCardSupport
                                                     'Log off When Smart Card Removed' = $ConnectionServer.Authentication.LogoffWhenRemoveSmartCard
                                                     'RSA Secure ID Enabled' = $ConnectionServer.Authentication.RsaSecureIdConfig.SecureIdEnabled
@@ -173,16 +173,16 @@ function Get-AbrHRZConnectionServer {
                                                     'Unauthenticated Access Default User' = $ConnectionServer.Authentication.UnauthenticatedAccessConfig.DefaultUser
                                                     'Unauthenticated Access User Idle Timeout' = $ConnectionServer.Authentication.UnauthenticatedAccessConfig.UserIdleTimeout
                                                     'Unauthenticated Access Client Puzzle Difficulty' = $ConnectionServer.Authentication.UnauthenticatedAccessConfig.ClientPuzzleDifficulty
-                                                    'Block Unsupported Clients' = $ConnectionServer.Authentication.UnauthenticatedAccessConfig.BlockUnsupportedClients                                                } 
-                                                $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj) 
-                                                $TableParams = @{ 
-                                                    Name         = "Authentication - $($ConnectionServer.General.Name)" 
-                                                    List         = $true 
-                                                    ColumnWidths = 40, 60 
-                                                } 
-                                                if ($Report.ShowTableCaptions) { 
-                                                    $TableParams['Caption'] = "- $($TableParams.Name)" 
-                                                } 
+                                                    'Block Unsupported Clients' = $ConnectionServer.Authentication.UnauthenticatedAccessConfig.BlockUnsupportedClients                                                }
+                                                $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
+                                                $TableParams = @{
+                                                    Name         = "Authentication - $($ConnectionServer.General.Name)"
+                                                    List         = $true
+                                                    ColumnWidths = 40, 60
+                                                }
+                                                if ($Report.ShowTableCaptions) {
+                                                    $TableParams['Caption'] = "- $($TableParams.Name)"
+                                                }
                                                 $OutObj | Table @TableParams
                                             }
                                             catch {
@@ -193,8 +193,6 @@ function Get-AbrHRZConnectionServer {
                                     catch {
                                         Write-PscriboMessage -IsWarning $_.Exception.Message
                                     }
-                                    
-
                                     try {
                                                 $OutObj = @()
                                                 section -Style Heading5 "Backup $($ConnectionServer.General.Name) Details" {
@@ -243,7 +241,6 @@ function Get-AbrHRZConnectionServer {
                                     catch {
                                         Write-PscriboMessage -IsWarning $_.Exception.Message
                                     }
-                                            
                                     try {
                                         $OutObj = @()
                                         section -Style Heading5 "Certificate Details for $($ConnectionServer.General.Name) Details" {
@@ -253,7 +250,7 @@ function Get-AbrHRZConnectionServer {
                                                 $ConnectionServerHealthMatch = $false
                                                 foreach ($ConnectionServerHealth in $ConnectionServersHealth) {
                                                     if ($ConnectionServerHealth.id.id -eq $ConnectionServer.id.id) {
-                                                        $ConnectionServerHealthData = $ConnectionServerHealth 
+                                                        $ConnectionServerHealthData = $ConnectionServerHealth
                                                         $ConnectionServerHealthMatch = $true
                                                     }
                                                     if ($ConnectionServerHealthMatch) {
@@ -263,34 +260,34 @@ function Get-AbrHRZConnectionServer {
 
                                                 Write-PscriboMessage "Working on Certificate Information for $($ConnectionServerHealthData.Name)."
 
-                                                if(![string]::IsNullOrEmpty($ConnectionServerHealthData.CertificateHealth.ConnectionServerCertificate)){  
-                                                    $Cert = $ConnectionServerHealthData.CertificateHealth.ConnectionServerCertificate 
-                                                    $Bytes = [System.Text.Encoding]::UTF8.GetBytes($Cert) 
+                                                if(![string]::IsNullOrEmpty($ConnectionServerHealthData.CertificateHealth.ConnectionServerCertificate)){
+                                                    $Cert = $ConnectionServerHealthData.CertificateHealth.ConnectionServerCertificate
+                                                    $Bytes = [System.Text.Encoding]::UTF8.GetBytes($Cert)
                                                     $PodCert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($Bytes)
                                                 }
-                                                
-                                                $inObj = [ordered] @{ 
-                                                    'Connection Server'       = $ConnectionServerHealthData.Name 
-                                                    'Self-Signed Certificate' = $ConnectionServerHealthData.DefaultCertificate 
-                                                    'Certificate Subject'     = $PodCert.Subject 
-                                                    'Certificate Issuer'      = $PodCert.Issuer 
-                                                    'Certificate Not Before'  = $PodCert.NotBefore 
-                                                    'Certificate Not After'   = $PodCert.NotAfter 
+
+                                                $inObj = [ordered] @{
+                                                    'Connection Server'       = $ConnectionServerHealthData.Name
+                                                    'Self-Signed Certificate' = $ConnectionServerHealthData.DefaultCertificate
+                                                    'Certificate Subject'     = $PodCert.Subject
+                                                    'Certificate Issuer'      = $PodCert.Issuer
+                                                    'Certificate Not Before'  = $PodCert.NotBefore
+                                                    'Certificate Not After'   = $PodCert.NotAfter
                                                     'Certificate SANs'        = $(($PodCert.DnsNameList | ForEach-Object { $_.Punycode }) -join ', ')
-                                                    'Certificate Thumbprint'  = $PodCert.Thumbprint 
-                                                } 
-                                                $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj) 
-                                                if ($HealthCheck.ConnectionServers.Status) { 
-                                                    $OutObj | Where-Object { $_.'Enabled' -eq 'No' } | Set-Style -Style Warning -Property 'Enabled' 
-                                                } 
-                                                $TableParams = @{ 
-                                                    Name         = "Certificate Details for - $($ConnectionServerHealthData.Name)" 
-                                                    List         = $true 
-                                                    ColumnWidths = 30, 70 
-                                                } 
-                                                if ($Report.ShowTableCaptions) { 
-                                                    $TableParams['Caption'] = "- $($TableParams.Name)" 
-                                                } 
+                                                    'Certificate Thumbprint'  = $PodCert.Thumbprint
+                                                }
+                                                $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
+                                                if ($HealthCheck.ConnectionServers.Status) {
+                                                    $OutObj | Where-Object { $_.'Enabled' -eq 'No' } | Set-Style -Style Warning -Property 'Enabled'
+                                                }
+                                                $TableParams = @{
+                                                    Name         = "Certificate Details for - $($ConnectionServerHealthData.Name)"
+                                                    List         = $true
+                                                    ColumnWidths = 30, 70
+                                                }
+                                                if ($Report.ShowTableCaptions) {
+                                                    $TableParams['Caption'] = "- $($TableParams.Name)"
+                                                }
                                                 $OutObj | Table @TableParams
                                             }
                                             catch {
@@ -301,7 +298,48 @@ function Get-AbrHRZConnectionServer {
                                     catch {
                                         Write-PscriboMessage -IsWarning $_.Exception.Message
                                     }
-                                            
+
+
+                                    if ($InfoLevel.settings.servers.ConnectionServers.ConnectionServers -ge 2) {
+                                        try {
+                                            $OutObj = @()
+                                            section -Style Heading5 "Replication Status for Connection Server $($connectionserver.General.Name)" {
+                                                try {
+                                                    Write-PscriboMessage "Working on Replication Information for $($connectionserver.General.Name)."
+
+                                                   foreach($CSHealth in ($ConnectionServersHealth | Where-Object {$_.Name -EQ $connectionserver.General.Name})){
+                                                        $inObj = [ordered] @{
+                                                            'Connection Server' = $CSHealth.Name
+                                                            'Replication Partner' = $CSHealth.ReplicationStatus.Servername
+                                                            'Status' = $CSHealth.ReplicationStatus.Status
+                                                            'Message' = $CSHealth.ReplicationStatus.Message
+                                                        }
+                                                        $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
+                                                    }
+
+                                                    $TableParams = @{
+                                                        Name = "Connection Servers Replication- $($connectionserver.General.Name)"
+                                                        List = $true
+                                                        ColumnWidths = 30, 70
+                                                    }
+                                                    if ($Report.ShowTableCaptions) {
+                                                        $TableParams['Caption'] = "- $($TableParams.Name)"
+                                                    }
+                                                    $OutObj | Table @TableParams
+                                                }
+                                                catch {
+                                                    Write-PscriboMessage -IsWarning $_.Exception.Message
+                                                }
+                                            }
+                                        }
+                                        catch {
+                                            Write-PscriboMessage -IsWarning $_.Exception.Message
+                                        }
+
+                                    }
+
+
+
                                 }
                             }
                             catch {
@@ -312,6 +350,7 @@ function Get-AbrHRZConnectionServer {
                     }
                 }
 
+                <#
                 if ($InfoLevel.settings.servers.ConnectionServers.ConnectionServers -ge 1) {
                     try {
                         $OutObj = @()
@@ -319,13 +358,13 @@ function Get-AbrHRZConnectionServer {
                             try {
                                 Write-PscriboMessage "Working on Replication Information for $($ConnectionServersHealth.Namee)."
 
-                                $ConnectionServersHealth.ReplicationStatus | Where-Object { $_.ServerName -and $_.Status -and $_.Message}
-                                $ConnectionServersHealth.ReplicationStatus | Table -Columns ServerName,Status,Message -Headers 'Replication Partner','Status','Message'
+                                #$ConnectionServersHealth.ReplicationStatus | Where-Object { $_.ServerName -and $_.Status -and $_.Message}
+                                $ConnectionServersHealth.ReplicationStatus | Table -Columns ServerName,Status,Message -Headers 'Connection Server','Replication Partner','Status','Message'
 
                                 $TableParams = @{
                                     Name = "Connection Servers Replication- $($ConnectionServerHealthData.Name)"
                                     List = $true
-                                    ColumnWidths = 33, 33, 34
+                                    ColumnWidths = 25, 25, 25, 25
                                 }
                                 if ($Report.ShowTableCaptions) {
                                     $TableParams['Caption'] = "- $($TableParams.Name)"
@@ -340,8 +379,13 @@ function Get-AbrHRZConnectionServer {
                     catch {
                         Write-PscriboMessage -IsWarning $_.Exception.Message
                     }
-
                 }
+                #>
+
+
+
+
+
             }
         }
         catch {
