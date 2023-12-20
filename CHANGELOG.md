@@ -8,7 +8,6 @@
 - Added Features for Certificates and Replication status
 - Improved functionaliy and layout.
 
-
 ## [0.2.0] - 2022-08-17
 
 ### Added
