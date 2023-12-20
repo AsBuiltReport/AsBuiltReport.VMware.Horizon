@@ -5,7 +5,7 @@ function Get-AbrHRZLicense {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        0.2.0
+        Version:        1.1.0
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -31,49 +31,64 @@ function Get-AbrHRZLicense {
         try {
             if ($ProductLicenseingInfo) {
                 if ($InfoLevel.Settings.ProductLicensing.ProductLicensingandUsage -ge 1) {
-                    section -Style Heading3 "Product Licenses" {
-                        Paragraph "The following section details the Product License information for $($HVEnvironment.split('.')[0]) server."
+                    section -Style Heading2 "Product Licensing and Usage" {
+                        Paragraph "The following section details the product license and usage information for $($HVEnvironment.toUpper()) server."
                         BlankLine
-                        $OutObj = @()
-                        foreach ($ProductLic in $ProductLicenseingInfo) {
-                            try {
-                                Write-PscriboMessage "Discovered Product Licensing Information."
-                                $inObj = [ordered] @{
-                                    'License Edition' = $ProductLic.LicenseEdition
-                                    'Is Licensed' = $ProductLic.Licensed
-                                    'License Key' = $ProductLic.LicenseKey
-                                    'License Expiration' = $ProductLic.ExpirationTime.ToShortDateString()
-                                    'Composer enabled' = $ProductLic.ViewComposerEnabled
-                                    'Desktop Launching enabled' = $ProductLic.DesktopLaunchingEnabled
-                                    'Application Launching enabled' = $ProductLic.ApplicationLaunchingEnabled
-                                    'Instant Clone enabled' = $ProductLic.InstantCloneEnabled
-                                    'HelpDesk enabled' = $ProductLic.HelpDeskEnabled
-                                    'Collaboration enabled' = $ProductLic.CollaborationEnabled
-                                    'License Usage Model' = $ProductLic.UsageModel
+
+                        section -Style Heading3 "Licensing" {
+                            $OutObj = @()
+                            foreach ($ProductLic in $ProductLicenseingInfo) {
+                                try {
+                                    Write-PscriboMessage "Discovered Product Licensing Information."
+
+                                    # If $ProductLic.ExpirationTime is null, then the license is perpetual
+                                    $ProductLicExpirationTime = ""
+                                    if ($null -eq $ProductLic.ExpirationTime) {
+                                        $ProductLicExpirationTime = "Perpetual"
+                                    }else {
+                                        $ProductLicExpirationTime = $ProductLic.ExpirationTime.ToShortDateString()
+                                    }
+
+                                    $inObj = [ordered] @{
+                                                'Is Licensed' = $ProductLic.Licensed
+                                                'License Key' = $ProductLic.LicenseKey
+                                                'License Expiration' = $ProductLicExpirationTime
+                                                'Composer enabled' = $ProductLic.ViewComposerEnabled
+                                                'Desktop Launching enabled' = $ProductLic.DesktopLaunchingEnabled
+                                                'Application Launching enabled' = $ProductLic.ApplicationLaunchingEnabled
+                                                'Instant Clone enabled' = $ProductLic.InstantCloneEnabled
+                                                'Helpdesk enabled' = $ProductLic.HelpDeskEnabled
+                                                'Collaboration enabled' = $ProductLic.CollaborationEnabled
+                                                'License Edition' = $ProductLic.LicenseEdition
+                                                'License Usage Model' = $ProductLic.UsageModel
+                                                'License Mode' = $ProductLic.LicenseMode
+                                                'Grace Period Days' = $ProductLic.GracePeriodDays
+                                                'Subscription Slice Expiry' = $ProductLic.SubscriptionSliceExpiry
+                                                'License Health' = $ProductLic.LicenseHealth
+                                    }
+
+                                    $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
                                 }
-
-                                $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
+                                Catch{
+                                    Write-PscriboMessage -IsWarning $_.Exception.Message
+                                }
                             }
-                            catch {
-                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                            $TableParams = @{
+                                Name = "Licensing - $($HVEnvironment.toUpper())"
+                                List = $true
+                                ColumnWidths = 50, 50
                             }
-                        }
 
-                        $TableParams = @{
-                            Name = "Product Licenses - $($HVEnvironment.split(".").toUpper()[0])"
-                            List = $true
-                            ColumnWidths = 50, 50
+                            if ($Report.ShowTableCaptions) {
+                                $TableParams['Caption'] = "- $($TableParams.Name)"
+                            }
+                            $OutObj | Table @TableParams
                         }
-
-                        if ($Report.ShowTableCaptions) {
-                            $TableParams['Caption'] = "- $($TableParams.Name)"
-                        }
-                        $OutObj | Table @TableParams
                         try {
                             $UsageStatisticsInfo = try {$hzServices.UsageStatistics.UsageStatistics_GetLicensingCounters()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
                             if ($UsageStatisticsInfo) {
                                 if ($InfoLevel.Settings.ProductLicensing.ProductLicensingandUsage -ge 2) {
-                                    section -Style Heading4 "Product License Usage" {
+                                    section -Style Heading3 "Usage" {
                                         $OutObj = @()
                                         foreach ($ProductUsage in $UsageStatisticsInfo.HighestUsage.PSObject.Properties.Name) {
                                             try {
@@ -92,9 +107,47 @@ function Get-AbrHRZLicense {
                                         }
 
                                         $TableParams = @{
-                                            Name = "Product Licenses Usage - $($HVEnvironment.split(".").toUpper()[0])"
+                                            Name = "Usage - $($HVEnvironment.toUpper())"
                                             List = $false
                                             ColumnWidths = 60, 20, 20
+                                        }
+
+                                        if ($Report.ShowTableCaptions) {
+                                            $TableParams['Caption'] = "- $($TableParams.Name)"
+                                        }
+                                        $OutObj | Table @TableParams
+                                    }
+                                }
+                            }
+                        }
+                        catch {
+                            Write-PscriboMessage -IsWarning $_.Exception.Message
+                        }
+
+                        try {
+                            if ($CEIP) {
+                                if ($InfoLevel.Settings.ProductLicensing.ProductLicensingandUsage -ge 2) {
+                                    section -Style Heading3 "Customer Experience Program" {
+                                        $OutObj = @()
+                                        try {
+                                            Write-PscriboMessage "Discovered Customer Experience Program Information."
+                                            $inObj = [ordered] @{
+                                                'CEIP Enabled' = $CEIP.Enabled
+                                                'Company Size' = $CEIP.CompanySize
+                                                'Geolocation' = $CEIP.Geolocation
+                                                'Vertical' = $CEIP.Vertical
+                                            }
+
+                                            $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
+                                        }
+                                        catch {
+                                            Write-PscriboMessage -IsWarning $_.Exception.Message
+                                        }
+
+                                        $TableParams = @{
+                                            Name = "Customer Experience Program - $($HVEnvironment.toUpper())"
+                                            List = $true
+                                            ColumnWidths = 40, 60
                                         }
 
                                         if ($Report.ShowTableCaptions) {

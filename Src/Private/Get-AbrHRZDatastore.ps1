@@ -5,7 +5,7 @@ function Get-AbrHRZDatastore {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        0.2.0
+        Version:        1.1.0
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -31,7 +31,7 @@ function Get-AbrHRZDatastore {
         try {
             if ($vCenterHealth) {
                 if ($InfoLevel.Settings.Servers.vCenterServers.DataStores -ge 1) {
-                    section -Style Heading4 "Datastores" {
+                    section -Style Heading5 "Datastores" {
                         $OutObj = @()
                         $Datastores = $vCenterHealth.datastoredata
                         foreach ($DataStore in $Datastores) {
@@ -56,7 +56,7 @@ function Get-AbrHRZDatastore {
                         }
 
                         $TableParams = @{
-                            Name = "Datastores - $($HVEnvironment.split(".").toUpper()[0])"
+                            Name = "Datastores - $($HVEnvironment.toUpper())"
                             List = $false
                             ColumnWidths = 50, 50
                         }
@@ -67,7 +67,7 @@ function Get-AbrHRZDatastore {
                         $OutObj | Sort-Object -Property 'Name' | Table @TableParams
                         try {
                             if ($InfoLevel.Settings.Servers.vCenterServers.DataStores -ge 2) {
-                                section -Style Heading5 "Datastores Detailed" {
+                                section -Style Heading6 "Datastores Detailed" {
                                     foreach ($DataStore in $Datastores) {
                                         if ($DataStore) {
                                             try {

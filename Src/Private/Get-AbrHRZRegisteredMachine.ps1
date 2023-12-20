@@ -5,7 +5,7 @@ function Get-AbrHRZRegisteredMachine {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        0.2.0
+        Version:        1.1.0
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -31,11 +31,11 @@ function Get-AbrHRZRegisteredMachine {
         try {
             if ($RDSServers) {
                 if ($InfoLevel.Settings.RegisteredMachines.RDSHosts -ge 1) {
-                    section -Style Heading3 "Registered Machines" {
-                        Paragraph "The following section provides information of Registered Machines for $($HVEnvironment.split('.')[0]) server."
+                    section -Style Heading2 "Registered Machines" {
+                        Paragraph "The following section provides information of Registered Machines for $($HVEnvironment.toUpper()) server."
                         BlankLine
-                        section -Style Heading4 'RDS Hosts' {
-                            Paragraph "The following section details the RDS Hosts configuration for $($HVEnvironment.split('.')[0]) server."
+                        section -Style Heading3 'RDS Hosts' {
+                            Paragraph "The following section details the RDS Hosts configuration for $($HVEnvironment.toUpper()) server."
                             BlankLine
                             $OutObj = @()
                             foreach ($RDSServer in $RDSServers) {
@@ -54,7 +54,7 @@ function Get-AbrHRZRegisteredMachine {
                             }
 
                             $TableParams = @{
-                                Name = "RDS Hosts - $($HVEnvironment.split(".").toUpper()[0])"
+                                Name = "RDS Hosts - $($HVEnvironment.toUpper())"
                                 List = $false
                                 ColumnWidths = 34, 33, 33
                             }
@@ -65,7 +65,7 @@ function Get-AbrHRZRegisteredMachine {
                             $OutObj | Table @TableParams
                             try {
                                 if ($InfoLevel.Settings.RegisteredMachines.RDSHosts -ge 2) {
-                                    section -Style Heading5 'RDS Hosts Details' {
+                                    section -Style Heading4 'RDS Hosts Details' {
                                         foreach ($RDSServer in $RDSServers) {
                                             Write-PscriboMessage "Discovered RDS Host $($RDSServer.base.name) Information."
                                             $OutObj = @()
@@ -110,6 +110,35 @@ function Get-AbrHRZRegisteredMachine {
                             }
                             catch {
                                 Write-PscriboMessage -IsWarning $_.Exception.Message
+                            }
+
+                            if($RegisteredPhysicalMachines){
+                                section -Style Heading3 'Others' {
+                                    Paragraph "The following section details the RDS Hosts configuration for $($HVEnvironment.toUpper()) server."
+                                    BlankLine
+                                    $OutObj = @()
+                                    foreach ($RegisteredPhysicalMachine in $RegisteredPhysicalMachines) {
+                                        Write-PscriboMessage "Other Registerd Machines"
+                                        $inObj = [ordered] @{
+                                            'Name' = $RegisteredPhysicalMachines.MachineBase.name
+                                            'DNS Name' = $RegisteredPhysicalMachines.MachineBase.DnsName
+                                            'Description' = $RegisteredPhysicalMachines.MachineBase.Description
+                                            'OperatingSystem' = $RegisteredPhysicalMachines.MachineBase.Description
+                                        }
+                                        $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
+                                    }
+                                    if ($HealthCheck.RegisteredMachines.Status) {
+                                        $OutObj | Where-Object { $_.'Status' -ne 'AVAILABLE'} | Set-Style -Style Warning
+                                    }
+                                    $TableParams = @{
+                                        Name = "Other Registered Machines - $($HVEnvironment.toUpper())"
+                                        List = $false
+                                        ColumnWidths = 20, 20, 30, 30
+                                    }
+                                    if ($Report.ShowTableCaptions) {
+                                        $TableParams['Caption'] = "- $($TableParams.Name)"
+                                    }
+                                }
                             }
                         }
                     }

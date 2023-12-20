@@ -5,7 +5,7 @@ function Get-AbrHRZUAG {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        0.2.0
+        Version:        1.1.0
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -24,15 +24,15 @@ function Get-AbrHRZUAG {
 
     begin {
         Write-PScriboMessage "SecurityServers InfoLevel set at $($InfoLevel.Settings.Servers.vCenterServers.ADDomains)."
-        Write-PscriboMessage "Collecting Security Servers information."
+        Write-PscriboMessage "Collecting Gateway Servers information."
     }
 
     process {
         try {
             if ($GatewayServers) {
                 if ($InfoLevel.Settings.Servers.UAG.UAGServers -ge 1) {
-                    section -Style Heading4 "UAG Servers" {
-                        Paragraph "The following section details the UAG Servers information for $($HVEnvironment.split('.')[0]) server."
+                    section -Style Heading3 "Gateway Servers" {
+                        Paragraph "The following section details the Gateway Servers information for $($HVEnvironment.toUpper())."
                         BlankLine
                         $OutObj = @()
                         foreach ($GatewayServer in $GatewayServers.GeneralData) {
@@ -58,7 +58,7 @@ function Get-AbrHRZUAG {
                         }
 
                         $TableParams = @{
-                            Name = "UAG Servers - $($HVEnvironment.split(".").toUpper()[0])"
+                            Name = "Gateway Servers - $($HVEnvironment.toUpper())"
                             List = $false
                             ColumnWidths = 35, 20, 15, 15, 15
                         }
