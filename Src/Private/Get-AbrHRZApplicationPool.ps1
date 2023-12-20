@@ -5,7 +5,7 @@ function Get-AbrHRZApplicationPool {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        0.2.0
+        Version:        1.1.0
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -32,11 +32,11 @@ function Get-AbrHRZApplicationPool {
             if ($Apps) {
                 if ($InfoLevel.Inventory.Applications -ge 1) {
                     section -Style Heading3 "Application Pool" {
-                        Paragraph "The following section details the configuration of Application Pool for $($HVEnvironment.split('.')[0]) server."
+                        Paragraph "The following section details the configuration of Application Pool for $($HVEnvironment.toUpper()) server."
                         BlankLine
                         $OutObj = @()
                         foreach ($App in $Apps) {
-                            Write-PscriboMessage "Discovered Applications Information."
+                            Write-PscriboMessage "Discovered Applications Information for $($App.Data.DisplayName)."
                             $inObj = [ordered] @{
                                 'Name' = $App.Data.DisplayName
                                 'Version' = $App.ExecutionData.Version
@@ -47,7 +47,7 @@ function Get-AbrHRZApplicationPool {
                         }
 
                         $TableParams = @{
-                            Name = "Applications - $($HVEnvironment.split(".").toUpper()[0])"
+                            Name = "Applications - $($HVEnvironment.toUpper())"
                             List = $false
                             ColumnWidths = 34, 33, 33
                         }
@@ -71,7 +71,6 @@ function Get-AbrHRZApplicationPool {
                                                 break
                                             }
                                         }
-
                                         # Find out Access Group for Applications
                                         $AccessgroupMatch = $false
                                         foreach ($Accessgroup in $Accessgroups) {
@@ -83,26 +82,33 @@ function Get-AbrHRZApplicationPool {
                                                 break
                                             }
                                         }
-
                                         # Find out Global Application Entitlement Group for Applications
+                                        $GlobalApplicationEntitlementGroupDisplayName = ('')
                                         $GlobalApplicationEntitlementGroupMatch = $false
                                         foreach ($GlobalApplicationEntitlementGroup in $GlobalApplicationEntitlementGroups) {
                                             if ($GlobalApplicationEntitlementGroup.Id.id -eq $app.data.GlobalApplicationEntitlement.id) {
                                                 $GlobalApplicationEntitlementGroupDisplayName = $GlobalApplicationEntitlementGroup.base.DisplayName
                                                 $GlobalApplicationEntitlementGroupMatch = $true
+                                            } else {
+                                                $GlobalApplicationEntitlementGroupDisplayName = "No Global Application Entitlement"
                                             }
                                         if ($GlobalApplicationEntitlementGroupMatch) {
                                             break
                                             }
                                         }
+                                        If([string]::IsNullOrEmpty($App.Data.AvApplicationPackageGuid)){
 
+                                            $AppVolumesApp = "False"
+                                        }
+                                        else {
+                                            $AppVolumesApp = "True"
+                                        }
                                         $ApplicationFileTypes = $App.ExecutionData.FileTypes | ForEach-Object { $_.FileType}
                                         $ApplicationFileTypesresult = $ApplicationFileTypes -join ', '
-
                                         $OtherApplicationFileTypes = $App.ExecutionData.OtherFileTypes | ForEach-Object { $_.FileType}
                                         $OtherApplicationFileTypesresult = $OtherApplicationFileTypes -join ', '
 
-                                        section -ExcludeFromTOC -Style NOTOCHeading5 $App.Data.DisplayName {
+                                        section -Style Heading5 "Application Summary - $($App.Data.DisplayName)" {
                                             $OutObj = @()
                                             Write-PscriboMessage "Discovered $($App.Data.DisplayName) Applications Information."
                                             $inObj = [ordered] @{
@@ -111,8 +117,18 @@ function Get-AbrHRZApplicationPool {
                                                 'Enabled' = $App.Data.Enabled
                                                 'Global Application Entitlement' = $GlobalApplicationEntitlementGroupDisplayName
                                                 'Enable Anti Affinity Rules' = $App.Data.EnableAntiAffinityRules
-                                                'Anti Affinity Patterns' = $App.Data.AntiAffinityPatterns
-                                                'Anti Affinity Count' = $App.Data.AntiAffinityCount
+                                                'Anti-Affinity Patterns' = $App.Data.AntiAffinityPatterns
+                                                'Anti-Affinity Count' = $App.Data.AntiAffinityCount
+                                                'Enable Pre-Launch' = $App.Data.EnablePreLaunch
+                                                'Connection Server Restrictions' = $App.Data.ConnectionServerRestrictions
+                                                'Category Folder' = $App.Data.CategoryFolder
+                                                'Client Restrictions' = $App.Data.ClientRestrictions
+                                                'Shortcut Location' = $App.Data.ShortcutLocation
+                                                'Multi Session Mode' = $App.Data.MultiSessionMode
+                                                'Max Multi Sessions' = $App.Data.MaxMultiSessions
+                                                'Cloud Brokered' = $App.Data.CloudBrokered
+                                                'App Volumes App' = $AppVolumesApp
+                                                'App Volumes Package' = $App.Data.AvApplicationPackageGuid
                                                 'Executable Path' = $App.ExecutionData.ExecutablePath
                                                 'Version' = $App.ExecutionData.Version
                                                 'Publisher' = $App.ExecutionData.Publisher
@@ -129,7 +145,7 @@ function Get-AbrHRZApplicationPool {
                                             $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
 
                                             $TableParams = @{
-                                                Name = "Application - $($App.Data.Name)"
+                                                Name = "Application Summary - $($App.Data.DisplayName)"
                                                 List = $true
                                                 ColumnWidths = 50, 50
                                             }

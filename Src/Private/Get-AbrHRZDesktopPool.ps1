@@ -5,7 +5,7 @@ function Get-AbrHRZDesktopPool {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        0.2.0
+        Version:        1.1.0
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -32,11 +32,11 @@ function Get-AbrHRZDesktopPool {
             if ($Pools) {
                 if ($InfoLevel.Inventory.Desktop -ge 1) {
                     section -Style Heading3 "Desktop Pools" {
-                        Paragraph "The following section details the Desktop Pools configuration for $($HVEnvironment.split('.')[0]) server."
+                        Paragraph "The following section details the Desktop Pools configuration for $($HVEnvironment.toUpper()) server."
                         BlankLine
                         $OutObj = @()
                         foreach ($Pool in $Pools) {
-                            Write-PscriboMessage "Discovered Desktop Pool Information."
+                            Write-PscriboMessage "Discovered Desktop Pool Information for Pool $($Pool.Base.Name)."
                             Switch ($Pool.Automateddesktopdata.ProvisioningType)
                             {
                                 'INSTANT_CLONE_ENGINE' {$ProvisioningType = 'Instant Clone' }
@@ -58,7 +58,7 @@ function Get-AbrHRZDesktopPool {
                         }
 
                         $TableParams = @{
-                            Name = "Desktop Pools - $($HVEnvironment.split(".").toUpper()[0])"
+                            Name = "Desktop Pools - $($HVEnvironment.toUpper())"
                             List = $false
                             ColumnWidths = 25, 25, 25, 25
                         }
@@ -71,23 +71,16 @@ function Get-AbrHRZDesktopPool {
                             if ($InfoLevel.Inventory.Desktop -ge 2) {
                                 section -Style Heading4 "Desktop Pools Details" {
                                     foreach ($Pool in $Pools) {
-                                        # Find out Access Group for Desktop Pool
-                                        $AccessgroupMatch = $false
-                                        $Accessgroups = $hzServices.AccessGroup.AccessGroup_List()
-                                        $AccessgroupsJoined = @()
-                                        $AccessgroupsJoined += $Accessgroups
-                                        $AccessgroupsJoined += $Accessgroups.Children
-                                        $AccessGroupName = ''
-                                        foreach ($Accessgroup in $AccessgroupsJoined) {
-                                            if ($Accessgroup.Id.id -eq $Pool.base.accessgroup.id) {
-                                                $AccessGroupName = $Accessgroup.base.name
-                                                $AccessgroupMatch = $true
-                                            }
-                                            if ($AccessgroupMatch) {
-                                                break
-                                            }
-                                        }
+                                        # Find Access Group for Desktop Pool
+                                        $AccessgroupsJoined = $hzServices.AccessGroup.AccessGroup_List() + $hzServices.AccessGroup.AccessGroup_List().Children
+                                        $AccessGroupMatch = $AccessgroupsJoined | Where-Object { $_.Id.id -eq $Pool.base.accessgroup.id }
 
+                                        if ($AccessGroupMatch) {
+                                            $AccessGroupName = $AccessGroupMatch.base.name
+                                        } else {
+                                            $AccessGroupName = ''  # Set to a default value if no match is found
+                                        }
+                                        <#
                                         # Find out Global Entitlement Group for Applications
                                         $InstantCloneDomainAdminGroupMatch = $false
                                         foreach ($InstantCloneDomainAdminGroup in $InstantCloneDomainAdminGroups) {
@@ -114,12 +107,26 @@ function Get-AbrHRZDesktopPool {
 
                                         $farmMatch = $false
                                         foreach ($farm in $farms) {
-                                            if ($farm.Id.id -eq $pool.rdsdesktopdata.farm.id) {
+                                            if ($farm.Id.id -eq $Pool.rdsdesktopdata.farm.id) {
                                                 $FarmIDName = $farm.data.name
                                                 $farmMatch = $true
                                             }
                                             if ($farmMatch) {
                                                 break
+                                            }
+                                        }
+                                        #>
+                                        # Desktop OS Data
+                                        $DesktopAssignmentViewResultsDataMatch = $false
+                                        foreach ($DesktopAssignmentViewResult in $DesktopAssignmentViewResultsData.DesktopAssignmentData) {
+                                            if ($DesktopAssignmentViewResult.name -eq $Pool.Base.Name) {
+                                                $NumberofPoolMachines = $DesktopAssignmentViewResult.Name
+                                                $PooLOpperatingSystem = $DesktopAssignmentViewResult.OperatingSystem
+                                                $PoolOpperatingSystemArch = $DesktopAssignmentViewResult.OperatingSystemArchitecture
+                                                $DesktopAssignmentViewResultsDataMatch = $true
+                                            }
+                                        if ($DesktopAssignmentViewResultsDataMatch) {
+                                            break
                                             }
                                         }
 
@@ -217,11 +224,13 @@ function Get-AbrHRZDesktopPool {
                                             $VMResourcePool = $VMResourcePoolPath -replace '^(.*[\\\/])'
                                         }
 
+                                        <#
                                         # VM Persistent Disk DataStores
                                         if ($Pool.automateddesktopdata.VirtualCenterNamesData.PersistentDiskDatastorePaths){
                                             $VMPersistentDiskDatastorePath = $Pool.automateddesktopdata.VirtualCenterNamesData.PersistentDiskDatastorePaths
                                             $VMPersistentDiskDatastore = $VMPersistentDiskDatastorePath -replace '^(.*[\\\/])'
                                         }
+                                        #>
 
                                         # VM Network Card
                                         if ($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterNetworkingSettings.nics.nic.id) {
@@ -245,6 +254,22 @@ function Get-AbrHRZDesktopPool {
                                             }
                                         }
 
+                                        # Black out Times
+                                        $BlackOutDates = $pool.ManualDesktopData.ViewStorageAcceleratorSettings.BlackoutTimes
+                                        $BlackOutDateString = $BlackOutDates | Format-Table | Out-String
+
+                                        # Pool Customization Type
+                                        $Customizations = ('')
+                                        If($pool.AutomatedDesktopData.CustomizationSettings.CustomizationType -eq "SYS_PREP"){
+                                            Foreach ($vCenterServer in $vCenterServers){
+                                                $Customizations = $hzServices.CustomizationSpec.CustomizationSpec_List($vCenterServer.id)
+                                                Foreach ($Customization in $Customizations){
+                                                    if($pool.AutomatedDesktopData.CustomizationSettings.SysprepCustomizationSettings.CustomizationSpec.id -eq $Customization.id.id){
+                                                        $PoolCustomization = $($Customization.CustomizationSpecData.Name)
+                                                    }
+                                                }
+                                            }
+                                        }
                                         # VM Template
                                         $PoolTemplateName = ''
                                         if ($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.Template.id){
@@ -256,7 +281,7 @@ function Get-AbrHRZDesktopPool {
                                             }
                                         }
                                         try {
-                                            section -Style Heading5 $($Pool.Base.name) {
+                                            section -Style Heading5 "Pool - $($Pool.Base.name)" {
                                                 $SupportedDisplayProtocolsresult = ''
                                                 $SupportedDisplayProtocols = $Pool.DesktopSettings.DisplayProtocolSettings | ForEach-Object { $_.SupportedDisplayProtocols}
                                                 $SupportedDisplayProtocolsresult = $SupportedDisplayProtocols -join ', '
@@ -275,9 +300,9 @@ function Get-AbrHRZDesktopPool {
                                                 $Datastorename = $Datastore -replace '^(.*[\\\/])'
                                                 $DatastoreFinal += $DatastoreName -join "`r`n" | Out-String
                                                 }
-                                                $DatastorePathsresult = $DatastorePaths -join ', '
+                                                #$DatastorePathsresult = $DatastorePaths -join ', '
                                                 try {
-                                                    section -ExcludeFromTOC -Style NOTOCHeading5 "General" {
+                                                    section -ExcludeFromTOC -Style NOTOCHeading5 "General Summary - $($Pool.Base.name)" {
                                                         $OutObj = @()
                                                         Write-PscriboMessage "Discovered $($Pool.Base.name) General Information."
                                                         $inObj = [ordered] @{
@@ -324,15 +349,36 @@ function Get-AbrHRZDesktopPool {
                                                     Write-PscriboMessage -IsWarning $_.Exception.Message
                                                 }
                                                 try {
-                                                    section -ExcludeFromTOC -Style NOTOCHeading5 "Settings" {
+                                                    section -ExcludeFromTOC -Style NOTOCHeading5 "Detailed Settings - $($Pool.Base.name)" {
                                                         $OutObj = @()
-                                                        Write-PscriboMessage "Discovered $($Pool.Base.name) Pool Settings Information."
+                                                        Write-PscriboMessage "Discovered $($Pool.Base.name) Pool Setting Information."
                                                         $inObj = [ordered] @{
+                                                            'Name' = $Pool.Base.name
+                                                            'Display Name' = $Pool.base.displayName
+                                                            'Description' = $Pool.base.description
+                                                            'Access Group' = $AccessGroupName
+                                                            'Enabled' = $Pool.DesktopSettings.Enabled
+                                                            'Type' = $Pool.Type
+                                                            'Machine Source' = Switch ($pool.Source) {
+                                                                'INSTANT_CLONE_ENGINE' {'vCenter(Instant Clone)' }
+                                                                'VIRTUAL_CENTER' {'vCenter' }
+                                                                default {$pool.Source}
+                                                            }
+                                                            'Provisioning Type' = Switch ($Pool.Automateddesktopdata.ProvisioningType) {
+                                                                'INSTANT_CLONE_ENGINE' {'Instant Clone' }
+                                                                'VIRTUAL_CENTER' {'Full Virtual Machines' }
+                                                                default {$Pool.Automateddesktopdata.ProvisioningType}
+                                                            }
+                                                            'Enabled for Provisioning' = $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.EnableProvisioning
+                                                            'Client Restrictions Enabled' = $Pool.DesktopSettings.ClientRestrictions
+
                                                             'Max Number of Machines' = $pool.automateddesktopdata.vmnamingsettings.patternnamingsettings.MaxNumberOfMachines
                                                             'Min number of Machines' = $pool.automateddesktopdata.vmnamingsettings.patternnamingsettings.MinNumberOfMachines
                                                             'Number of Spare Machines' = $pool.automateddesktopdata.vmnamingsettings.patternnamingsettings.NumberOfSpareMachines
                                                             'Connection Server Restrictions' = [string]($Pool.DesktopSettings.ConnectionServerRestrictions -join ",")
                                                             'Stop Provisioning on Error' = $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.StopProvisioningOnError
+                                                            'Add Virtual TPM' = $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.AddVirtualTPM
+                                                            'Minimum Number of Machines Ready' = $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.MinReadyVMsOnVComposerMaintenance
                                                             'Naming Method' = $Pool.automateddesktopdata.VmNamingSettings.NamingMethod
                                                             'Naming Pattern' = $pool.automateddesktopdata.vmnamingsettings.patternnamingsettings.namingpattern
                                                             'Power Policy' = $Pool.DesktopSettings.LogoffSettings.PowerPolicy
@@ -345,16 +391,42 @@ function Get-AbrHRZDesktopPool {
                                                             'Refresh OS Disk After Logoff' = $Pool.DesktopSettings.LogoffSettings.RefreshOsDiskAfterLogoff
                                                             'Refresh Period Days for Replica OS Disk' = $Pool.DesktopSettings.LogoffSettings.RefreshPeriodDaysForReplicaOsDisk
                                                             'Refresh Threshold Percentage For Replica OS Disk' = $Pool.DesktopSettings.LogoffSettings.RefreshThresholdPercentageForReplicaOsDisk
+                                                            'Empty Session Timeout Policy' = $Pool.DesktopSettings.LogoffSettings.EmptySessionTimeoutPolicy
+                                                            'Empty Session Timeout Minutes' = $Pool.DesktopSettings.LogoffSettings.EmptySessionTimeoutMinutes
+                                                            'Log off After Timeout' = $Pool.DesktopSettings.LogoffSettings.LogoffAfterTimeout
+                                                            'Prelaunch Session Timeout Policy' = $Pool.DesktopSettings.LogoffSettings.PreLaunchSessionTimeoutPolicy
+                                                            'Prelaunch Session Timeout Minutes' = $Pool.DesktopSettings.LogoffSettings.PreLaunchSessionTimeoutMinutes
+                                                            'Session Timeout Policy' = $Pool.DesktopSettings.LogoffSettings.SessionTimeoutPolicy
+                                                            'Category Folder Name' = $pool.DesktopSettings.CategoryFolderName
+                                                            'Client Restrictions' = $Pool.DesktopSettings.ClientRestrictions
+                                                            'Shortcut Locations' = $Pool.DesktopSettings.ShortcutLocations
+                                                            'Allow Users to use Multiple Sessions Per User' = $Pool.DesktopSettings.LogoffSettings.AllowMultipleSessionsPerUser
+                                                            'Supported Session Types' = $Pool.DesktopSettings.SupportedSessionTypes
+                                                            'Cloud Managed' = $Pool.DesktopSettings.CloudManaged
+                                                            'Cloud Assigned' = $Pool.DesktopSettings.CloudAssigned
+                                                            'Display Assigned Machine Name' = $Pool.DesktopSettings.DisplayAssignedMachineName
+                                                            'Display Machine Alias' = $Pool.DesktopSettings.DisplayMachineAlias
                                                             'Supported Display Protocols' = $SupportedDisplayProtocolsresult
                                                             'Default Display Protocol' = $Pool.DesktopSettings.DisplayProtocolSettings.DefaultDisplayProtocol
                                                             'Allow Users to Choose Protocol' = $Pool.DesktopSettings.DisplayProtocolSettings.AllowUsersToChooseProtocol
                                                             'Enable HTML Access' = $Pool.DesktopSettings.DisplayProtocolSettings.EnableHTMLAccess
+                                                            'Enable Collaboration' = $Pool.DesktopSettings.DisplayProtocolSettings.EnableCollaboration
                                                             'Renderer 3D' = $Pool.DesktopSettings.DisplayProtocolSettings.PcoipDisplaySettings.Renderer3D
                                                             'Enable GRID vGPUs' = $Pool.DesktopSettings.DisplayProtocolSettings.PcoipDisplaySettings.EnableGRIDvGPUs
                                                             'vGPU Grid Profile' = $Pool.DesktopSettings.DisplayProtocolSettings.PcoipDisplaySettings.VGPUGridProfile
                                                             'vRam Size MB' = $Pool.DesktopSettings.DisplayProtocolSettings.PcoipDisplaySettings.VRamSizeMB
                                                             'Max Number of Monitors' = $Pool.DesktopSettings.DisplayProtocolSettings.PcoipDisplaySettings.MaxNumberOfMonitors
                                                             'Max Resolution of Any One Monitor' = $Pool.DesktopSettings.DisplayProtocolSettings.PcoipDisplaySettings.MaxResolutionOfAnyOneMonitor
+                                                            'Use View Storage Accelerator' =  $pool.ManualDesktopData.ViewStorageAcceleratorSettings.UseViewStorageAccelerator
+                                                            'Regenerate View Storage Accelerator Days' = $pool.ManualDesktopData.ViewStorageAcceleratorSettings.RegenerateViewStorageAcceleratorDays
+                                                            'Black Out Times' = $BlackOutDateString
+                                                            'Transparent Page Sharing Scope' = $Pool.ManualDesktopData.VirtualCenterManagedCommonSettings.TransparentPageSharingScope
+                                                        }
+                                                        if ($Pool.Type -eq 'AUTOMATED') {
+                                                            $inObj.Remove('Use View Storage Accelerator')
+                                                            $inObj.Remove('Regenerate View Storage Accelerator Days')
+                                                            $inObj.Remove('Black Out Times')
+                                                            $inObj.Remove('Transparent Page Sharing Scope')
                                                         }
 
                                                         if ($Pool.Type -eq 'MANUAL') {
@@ -400,7 +472,7 @@ function Get-AbrHRZDesktopPool {
                                                     Write-PscriboMessage -IsWarning $_.Exception.Message
                                                 }
                                                 try {
-                                                    section -ExcludeFromTOC -Style NOTOCHeading5 "vCenter Server" {
+                                                    section -ExcludeFromTOC -Style NOTOCHeading5 "vCenter Server Settings - $($Pool.Base.name)" {
                                                         $OutObj = @()
                                                         Write-PscriboMessage "Discovered $($Pool.Base.name) vCenter Server Information."
                                                         $inObj = [ordered] @{
@@ -411,6 +483,9 @@ function Get-AbrHRZDesktopPool {
                                                             'Template' = $PoolTemplateName
                                                             'Parent VM' = $PoolBaseImage
                                                             'Parent VM Path' = $PoolBaseImagePath
+                                                            'Current Number of Machines' = $NumberofPoolMachines
+                                                            'Parent Operating System' = $PooLOpperatingSystem
+                                                            'Parent Operating System Architecture' = $PoolOpperatingSystemArch
                                                             'Snapshot' = $BaseImageSnapshotListLast.name
                                                             'Snapshot Path' = $BaseImageSnapshotListLast.path
                                                             'Datacenter' = $PoolDataCenterName
@@ -432,6 +507,8 @@ function Get-AbrHRZDesktopPool {
                                                             }
                                                             'Datastores' = $DatastoreFinal
                                                             'Datastores Storage Over-Commit' = $StorageOvercommitsresult
+                                                            'Use VSAN' = $pool.AutomatedDesktopData.VirtualCenterProvisioningSettings.VirtualCenterStorageSettings.usevsan
+                                                            'Storage Cluster Path' = $pool.AutomatedDesktopData.VirtualCenterNamesData.SdrsClusterPath
                                                             'View Storage Accelerator' = Switch ($Pool.Type) {
                                                                 'MANUAL' {$Pool.ManualDesktopData.ViewStorageAcceleratorSettings.UseViewStorageAccelerator}
                                                                 'AUTOMATED' {$Pool.AutomatedDesktopData.VirtualCenterProvisioningSettings.VirtualCenterStorageSettings.ViewStorageAcceleratorSettings.UseViewStorageAccelerator}
@@ -447,10 +524,28 @@ function Get-AbrHRZDesktopPool {
                                                                 $null {'Golden Image network selected'}
                                                                 default {$Pool.AutomatedDesktopData.VirtualCenterNamesData.NetworkLabelNames}
                                                             }
+                                                            'Network Card' = $NetworkInterfaceCardList.data.name
+                                                            'Network Label Enabled' = $pool.AutomatedDesktopData.VirtualCenterProvisioningSettings.VirtualCenterNetworkingSettings.nics.NetworkLabelAssignmentSpecs.Enabled
+                                                            'Network Nic Name' = $pool.AutomatedDesktopData.VirtualCenterProvisioningSettings.VirtualCenterNetworkingSettings.nics.NicName
+                                                            'Network Label Names' = [string]($Pool.DesktopSettings.ConnectionServerRestrictions -join ",")
+                                                            'Network Max Label Type' = $pool.AutomatedDesktopData.VirtualCenterProvisioningSettings.VirtualCenterNetworkingSettings.nics.NetworkLabelAssignmentSpecs.MaxLabelType
+                                                            'Network Max Label' = $pool.AutomatedDesktopData.VirtualCenterProvisioningSettings.VirtualCenterNetworkingSettings.nics.NetworkLabelAssignmentSpecs.MaxLabel
                                                             'Customization Type' = $Pool.automateddesktopdata.CustomizationSettings.CustomizationType
-                                                            'Guest Customization Account' = ($InstantCloneDomainAdmins | Where-Object {$_.id.id -eq $Pools.automateddesktopdata.CustomizationSettings.InstantCloneEngineDomainAdministrator.id}).Base.Username
+                                                            'Customization Spec Name' = $Pool.automateddesktopdata.CustomizationSettings.CustomizationSpecName
+                                                            'Power off Script Name' = $pool.AutomatedDesktopData.CustomizationSettings.CloneprepCustomizationSettings.PowerOffScriptName
+                                                            'Power off Script Parameters' = $pool.AutomatedDesktopData.CustomizationSettings.CloneprepCustomizationSettings.PowerOffScriptParameters
+                                                            'Post Synchronization Script Name' = $pool.AutomatedDesktopData.CustomizationSettings.CloneprepCustomizationSettings.PostSynchronizationScriptName
+                                                            'Post Synchronization Script Parameters' = $pool.AutomatedDesktopData.CustomizationSettings.CloneprepCustomizationSettings.PostSynchronizationScriptParameters
+                                                            'Priming Computer Account' = $pool.AutomatedDesktopData.CustomizationSettings.CloneprepCustomizationSettings.PrimingComputerAccount
+                                                            'Guest Customization Account' = ($InstantCloneDomainAdmins | Where-Object {$_.id.id -eq $Pool.automateddesktopdata.CustomizationSettings.InstantCloneEngineDomainAdministrator.id}).Base.Username
+                                                            'No Customization Settings' = $pool.AutomatedDesktopData.CustomizationSettings.NoCustomizationSettings
+                                                            'Sysprep Customization Settings' = $PoolCustomization
+                                                            'Quick Prep Customization Settings' = $pool.AutomatedDesktopData.CustomizationSettings.QuickprepCustomizationSettings
                                                             'Ad Container' = $PoolContainerName
                                                             'Reuse Pre-Existing Accounts' = $Pool.automateddesktopdata.CustomizationSettings.ReusePreExistingAccounts
+                                                            'Image Management Stream' = $pool.AutomatedDesktopData.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.ImageManagementStream
+                                                            'Image Management Tag' = $pool.AutomatedDesktopData.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.ImageManagementTag
+                                                            'Compute Profile' = $pool.AutomatedDesktopData.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.ComputeProfile
                                                         }
 
                                                         if ($Pool.Automateddesktopdata.ProvisioningType -eq 'VIRTUAL_CENTER') {
@@ -503,12 +598,20 @@ function Get-AbrHRZDesktopPool {
 
                                                         }
 
+                                                        if ([string]::IsNullOrEmpty($pool.AutomatedDesktopData.CustomizationSettings.CloneprepCustomizationSettings)) {
+                                                            $inObj.Remove('Power off Script Name')
+                                                            $inObj.Remove('Power Off Script Parameters')
+                                                            $inObj.Remove('Post Synchronization Script Name')
+                                                            $inObj.Remove('Post Synchronization Script Parameters')
+                                                            $inObj.Remove('Priming Computer Account')
+                                                        }
+
                                                         $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
 
                                                         $TableParams = @{
-                                                            Name = "vCenter Server - $($Pool.Base.name)"
+                                                            Name = "vCenter Server Settings - $($Pool.Base.name)"
                                                             List = $true
-                                                            ColumnWidths = 50, 50
+                                                            ColumnWidths = 40, 60
                                                         }
 
                                                         if ($Report.ShowTableCaptions) {
@@ -521,42 +624,77 @@ function Get-AbrHRZDesktopPool {
                                                     Write-PscriboMessage -IsWarning $_.Exception.Message
                                                 }
                                             }
+
+                                            if ($InfoLevel.Inventory.Desktop -ge 3) {
+                                                try {
+                                                    section -ExcludeFromTOC -Style NOTOCHeading6 "Pool Machine Summary - $($Pool.Base.name)" {
+                                                        $OutObj = @()
+                                                        foreach ($Machine in $Machines) {
+                                                            If($Machine.Base.DesktopName -like $Pool.base.Name){
+                                                                $inObj = [ordered] @{
+                                                                    'Machine Name' = $Machine.Base.Name
+                                                                    'Agent Version' = $Machine.Base.AgentVersion
+                                                                    'User' = $Machine.Base.User
+                                                                    'Host' = $Machine.ManagedMachineData.VirtualCenterData.Hostname
+                                                                    'Data Store' = $Machine.ManagedMachineData.VirtualCenterData.VirtualDisks.DatastorePath
+                                                                    'Basic State' = $Machine.Base.BasicState
+                                                                }
+                                                                $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
+                                                            }
+                                                        }
+                                                        $TableParams = @{
+                                                            Name         = "Pool Machine Summary - $($Pool.Base.Name)"
+                                                            List         = $false
+                                                            ColumnWidths = 15, 10, 20, 25, 15, 15
+                                                        }
+                                                        if ($Report.ShowTableCaptions) {
+                                                            $TableParams['Caption'] = "- $($TableParams.Name)"
+                                                        }
+                                                        $OutObj | Sort-Object -Property 'Name' | Table @TableParams
+                                                    }
+                                                }
+                                                catch {
+                                                    Write-PscriboMessage -IsWarning $_.Exception.Message
+                                                }
+
+                                            }
+
                                         }
                                         catch {
                                             Write-PscriboMessage -IsWarning $_.Exception.Message
                                         }
-                                    }
-                                }
-                            }
-                        }
-                        catch {
-                            Write-PscriboMessage -IsWarning $_.Exception.Message
-                        }
-                        try {
-                            section -Style Heading3 "Desktop Pool Entitlements" {
-                                foreach ($Pool in $Pools) {
-                                    section -ExcludeFromToC -Style NOTOCHeading5 $Pool.Base.Name {
-                                        $OutObj = @()
-                                        Write-PscriboMessage "Discovered Desktop Pool Entitlements Information."
-                                        foreach ($Principal in ($EntitledUserOrGrouplocalMachines | Where-Object {$_.localData.Desktops.id -eq $Pool.Id.id})) {
-                                            $inObj = [ordered] @{
-                                                'Name' = $Principal.Base.LoginName
-                                                'Domain' = $Principal.Base.Domain
-                                                'Is Group?' = $Principal.Base.Group
+                                        try {
+                                            $OutObj = @()
+                                            section -ExcludeFromToC -Style NOTOCHeading6 "Desktop Pools Entitlements - $($Pool.Base.Name)" {
+                                                try {
+                                                    Write-PscriboMessage "Discovered Desktop Pool Entitlements Information for - $($Pool.Base.Name)."
+                                                    foreach ($Principal in ($EntitledUserOrGrouplocalMachines | Where-Object {$_.localData.Desktops.id -eq $Pool.Id.id})) {
+                                                        Write-PscriboMessage "Discovered Desktop Pool Entitlements Name for - $($Principal.Base.LoginName)."
+                                                        $inObj = [ordered] @{
+                                                            'Name' = $Principal.Base.LoginName
+                                                            'Domain' = $Principal.Base.Domain
+                                                            'Is Group?' = $Principal.Base.Group
+                                                        }
+                                                        $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
+                                                    }
+                                                    $TableParams += @{
+                                                        Name = "Desktop Pools Entitlements - $($Pool.Base.Name)"
+                                                        List = $false
+                                                        ColumnWidths = 34, 33, 33
+                                                    }
+                                                    if ($Report.ShowTableCaptions) {
+                                                        $TableParams['Caption'] = "- $($TableParams.Name)"
+                                                    }
+                                                    $OutObj | Sort-Object -Property 'Name' | Table @TableParams
+                                                }
+                                                catch {
+                                                    Write-PscriboMessage -IsWarning $_.Exception.Message
+                                                }
                                             }
-                                            $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                                         }
-
-                                        $TableParams = @{
-                                            Name = "Desktop Pools Entitlements - $($Pool.Base.Name)"
-                                            List = $false
-                                            ColumnWidths = 34, 33, 33
+                                        catch {
+                                            Write-PscriboMessage -IsWarning $_.Exception.Message
                                         }
-
-                                        if ($Report.ShowTableCaptions) {
-                                            $TableParams['Caption'] = "- $($TableParams.Name)"
-                                        }
-                                        $OutObj | Sort-Object -Property 'Name' | Table @TableParams
                                     }
                                 }
                             }

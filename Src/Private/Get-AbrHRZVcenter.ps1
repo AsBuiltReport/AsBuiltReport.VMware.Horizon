@@ -5,7 +5,7 @@ function Get-AbrHRZVcenter {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        0.2.0
+        Version:        1.1.0
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -31,8 +31,8 @@ function Get-AbrHRZVcenter {
         try {
             if ($vCenterServers) {
                 if ($InfoLevel.Settings.Servers.vCenterServers.vCenter -ge 1) {
-                    section -Style Heading4 "vCenter Servers" {
-                        Paragraph "The following section details the vCenter Servers configuration for $($HVEnvironment.split('.')[0]) server."
+                    section -Style Heading3 "vCenter Servers" {
+                        Paragraph "The following section details the vCenter Servers configuration for $($HVEnvironment.toUpper()) server."
                         BlankLine
                         $vCenterHealthData = $vCenterHealth.data
                         $OutObj = @()
@@ -68,7 +68,7 @@ function Get-AbrHRZVcenter {
                             if ($InfoLevel.Settings.Servers.vCenterServers.vCenter -ge 2) {
                                 foreach ($vCenterServer in $vCenterServers) {
                                     try {
-                                        section -Style Heading5 "$($vCenterServer.serverspec.ServerName)" {
+                                        section -Style Heading4 "$($vCenterServer.serverspec.ServerName)" {
                                             $OutObj = @()
                                             Write-PscriboMessage "Discovered Virtual Centers Information $($vCenterServer.serverspec.ServerName)."
                                             $inObj = [ordered] @{

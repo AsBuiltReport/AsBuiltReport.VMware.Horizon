@@ -75,7 +75,7 @@ function Get-AbrHRZUnauthenticatedACL {
                         }
 
                         $TableParams = @{
-                            Name = "Unauthenticated Access - $($HVEnvironment.split(".").toUpper()[0])"
+                            Name = "Unauthenticated Access - $($HVEnvironment.toUpper())"
                             List = $false
                             ColumnWidths = 20, 20, 20, 20, 20
                         }

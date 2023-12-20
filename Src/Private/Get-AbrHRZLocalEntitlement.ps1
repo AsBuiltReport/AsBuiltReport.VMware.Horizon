@@ -61,7 +61,7 @@ function Get-AbrHRZLocalEntitlement {
                     }
 
                     $TableParams = @{
-                        Name = "Local Entitlements - $($HVEnvironment)"
+                        Name = "Local Entitlements - $($HVEnvironment.toUpper())"
                         List = $false
                         ColumnWidths = 55, 15, 15, 15
                     }
@@ -141,14 +141,13 @@ function Get-AbrHRZLocalEntitlement {
                                             'True' {$EntitledUserOrGroupLocalMachinegroup = 'Group' }
                                             'False' {$EntitledUserOrGroupLocalMachinegroup = 'User' }
                                         }
-                                        Section -ExcludeFromTOC -Style NOTOCHeading5 "$($EntitledUserOrGroupLocalMachine.base.Name)" {
+                                        Section -ExcludeFromTOC -Style NOTOCHeading5 "Local Entitlement Details - $($EntitledUserOrGroupLocalMachine.base.Name)" {
                                             $OutObj = @()
                                             try {
                                                 Write-PscriboMessage "Local Entitlements Details for $($EntitledUserOrGroupLocalMachine.base.Name)."
                                                 $inObj = [ordered] @{
                                                     'Name' = $EntitledUserOrGroupLocalMachine.base.Name
                                                     'Group or User' = $EntitledUserOrGroupLocalMachinegroup
-                                                    'SID' = $EntitledUserOrGroupLocalMachine.base.Sid
                                                     'Domain' = $EntitledUserOrGroupLocalMachine.base.Domain
                                                     'Ad Distinguished Name' = $EntitledUserOrGroupLocalMachine.base.AdDistinguishedName
                                                     'First Name' = $EntitledUserOrGroupLocalMachine.base.FirstName
@@ -160,7 +159,7 @@ function Get-AbrHRZLocalEntitlement {
                                                     'Kiosk User' = $EntitledUserOrGroupLocalMachine.base.KioskUser
                                                     'Phone' = $EntitledUserOrGroupLocalMachine.base.Phone
                                                     'Description' = $EntitledUserOrGroupLocalMachine.base.Description
-                                                    'in Folder' = $EntitledUserOrGroupLocalMachine.base.InFolder
+                                                    'In Folder' = $EntitledUserOrGroupLocalMachine.base.InFolder
                                                     'User Principal Name' = $EntitledUserOrGroupLocalMachine.base.UserPrincipalName
                                                     'Local Machines' = $MachineIDName
                                                     'Local User Persistent Disks' = $EntitledUserOrGroupLocalMachine.LocalData.PersistentDisks

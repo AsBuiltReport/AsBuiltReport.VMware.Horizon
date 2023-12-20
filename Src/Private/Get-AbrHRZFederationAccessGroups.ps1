@@ -1,4 +1,4 @@
-function Get-AbrHRZRolePermission {
+function Get-AbrHRZFederationAccessGroups {
     <#
     .SYNOPSIS
         PowerShell script which documents the configuration of VMware Horizon in Word/HTML/XML/Text formats
@@ -24,23 +24,23 @@ function Get-AbrHRZRolePermission {
 
     begin {
         Write-PScriboMessage "Role Permissions InfoLevel set at $($InfoLevel.Settings.Administrators.RolePermissions)."
-        Write-PscriboMessage "Collecting Role Permissions information."
+        Write-PscriboMessage "Collecting Role Federation Access Groups information."
     }
 
     process {
         try {
             if ($Permissions) {
-                if ($InfoLevel.Settings.Administrators.RolePermissions -ge 1) {
-                    section -Style Heading3 "Role Permissions" {
-                        Paragraph "The following section details the Role Permissions information for $($HVEnvironment.toUpper()) server."
+                if ($InfoLevel.Settings.Administrators.FederationAccessGroup -ge 1) {
+                    section -Style Heading3 "Federation Access Groups" {
+                        Paragraph "The following section details the Federation Access Group information for $($HVEnvironment.toUpper()) server."
                         BlankLine
                         $OutObj = @()
 
                         $FilteredPermissions = ''
-                        $FilteredPermissions = $Permissions | Where-Object{$null -eq $_.base.GlobalAccessGroup}
+                        $FilteredPermissions = $Permissions | Where-Object{$null -ne $_.base.GlobalAccessGroup}
 
                         foreach ($Permission in $FilteredPermissions) {
-                            Write-PscriboMessage "Discovered Role Permissions Information."
+
                             $AdministratorIDNameResults = ''
                             # Find Administrator ID Name
                             $AdministratorIDName = ''
@@ -84,35 +84,28 @@ function Get-AbrHRZRolePermission {
                             }
 
                             # Find AccessGroup ID Name
-                            $AccessGroupIDNameResults = ''
-                            $AccessGroupIDName = ''
-                            $PermissionGroups = $Permission.base.AccessGroup.id
+                            $GlobalAccessGroupIDName = ''
+                            $PermissionGroups = $Permission.base.GlobalAccessGroup.id
                             foreach ($PermissionGroup in $PermissionGroups) {
-                                foreach ($AccessGroup in $AccessGroups) {
-                                    if ($AccessGroup.Id.id -eq $PermissionGroup) {
-                                        $AccessGroupIDName = "/$($AccessGroup.base.name)"
+                                foreach ($GlobalAccessGroup in $GlobalAccessGroups) {
+                                    if ($GlobalAccessGroup.Id.id -eq $PermissionGroup) {
+                                        $GlobalAccessGroupIDName = "/$($GlobalAccessGroup.base.name)"
                                     }
-                                    elseif ($AccessGroup.Children.id.id -eq $PermissionGroup) {
-                                        $AccessGroupIDName = "/Root/$(($AccessGroup.Children | Where-Object {$_.id.id -eq $PermissionGroup}).Base.Name)"
-                                    } else {
-                                        $AccessGroupIDName = "Federation Access Group"
+                                    elseif ($GlobalAccessGroup.Children.id.id -eq $PermissionGroup) {
+                                        $GlobalAccessGroupIDName = "/Root/$(($AccessGroup.Children | Where-Object {$_.id.id -eq $PermissionGroup}).Base.Name)"
                                     }
-                                }
-                                if ($PermissionGroups.count -gt 1){
-                                    $AccessGroupIDNameResults += "$AccessGroupIDName, "
-                                    $AccessGroupIDName = $AccessGroupIDNameResults.TrimEnd(', ')
+                                    $GlobalAccessGroupIDName = $GlobalAccessGroupIDName.TrimStart('/')
+
                                 }
                             }
-
                             $inObj = [ordered] @{
                                 'User or Group Name' = $AdministratorIDName
                                 'Role' = $RoleIDName
-                                'Access Group' = $AccessGroupIDName
+                                'Global Access Group' = $GlobalAccessGroupIDName
                             }
 
                             $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                         }
-
                         $TableParams = @{
                             Name = "Role Permissions - $($HVEnvironment.toUpper())"
                             List = $false
@@ -123,6 +116,9 @@ function Get-AbrHRZRolePermission {
                             $TableParams['Caption'] = "- $($TableParams.Name)"
                         }
                         $OutObj | Sort-Object -Property 'User or Group Name' | Table @TableParams
+
+
+
                     }
                 }
             }
