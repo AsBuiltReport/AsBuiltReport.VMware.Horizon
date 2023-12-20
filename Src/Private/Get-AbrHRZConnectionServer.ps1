@@ -307,11 +307,17 @@ function Get-AbrHRZConnectionServer {
                                                         Write-PscriboMessage "Working on Replication Information for $($connectionserver.General.Name)."
 
                                                     foreach($CSHealth in ($ConnectionServersHealth | Where-Object {$_.Name -EQ $connectionserver.General.Name})){
+                                                        $Messages = $($CSHealth.ReplicationStatus | ForEach-Object { $_.Message }) -join ','
+                                                            if($Messages -eq ',' -or $Messages -eq ''){
+                                                                $Message = 'No Message'
+                                                            }else {
+                                                                $Message = $Messages
+                                                            }
                                                             $inObj = [ordered] @{
                                                                 'Connection Server' = $CSHealth.Name
-                                                                'Replication Partner' = $CSHealth.ReplicationStatus.Servername
-                                                                'Status' = $CSHealth.ReplicationStatus.Status
-                                                                'Message' = $CSHealth.ReplicationStatus.Message
+                                                                'Replication Partner' = $($CSHealth.ReplicationStatus | ForEach-Object { $_.ServerName }) -join ','
+                                                                'Status' = $($CSHealth.ReplicationStatus | ForEach-Object { $_.Status }) -join ','
+                                                                'Message' = $Message
                                                             }
                                                             $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
                                                         }
