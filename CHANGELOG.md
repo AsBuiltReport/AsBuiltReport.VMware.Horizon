@@ -1,13 +1,12 @@
 # :arrows_clockwise: VMware Horizon As Built Report Changelog
 
-## [0.2.0] - 2023-12-19
+## [1.1.0] - 2023-12-19
 
 ### Added
 
 - Updated Report to work with Horizon 2309
 - Added Features for Certificates and Replication status
 - Improved functionaliy and layout.
-
 
 ## [0.2.0] - 2022-08-17
 
