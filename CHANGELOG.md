@@ -1,6 +1,6 @@
 # :arrows_clockwise: VMware Horizon As Built Report Changelog
 
-## [0.2.0] - 2023-12-19
+## [1.1.0] - 2023-12-19
 
 ### Added
 
