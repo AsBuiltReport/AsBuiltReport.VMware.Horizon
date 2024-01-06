@@ -122,7 +122,7 @@ The **Report** schema provides configuration of the VMware Horizon report inform
 | Sub-Schema          | Setting      | Default                        | Description                                                  |
 |---------------------|--------------|--------------------------------|--------------------------------------------------------------|
 | Name                | User defined | VMware Horizon As Built Report | The name of the As Built Report                              |
-| Version             | User defined | 1.1                            | The report version                                           |
+| Version             | User defined | 1.0                            | The report version                                           |
 | Status              | User defined | Released                       | The report release status                                    |
 | ShowCoverPageImage  | true / false | true                           | Toggle to enable/disable the display of the cover page image |
 | ShowTableOfContents | true / false | true                           | Toggle to enable/disable table of contents                   |
