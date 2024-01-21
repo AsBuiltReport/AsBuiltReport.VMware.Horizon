@@ -368,7 +368,7 @@
 
             try {
                 # Gateway Certificates
-                $GatewayCerts = $hzServices.GlobalSettings.GlobalSettings_ListGatewayCertificates()
+                $script:GatewayCerts = $hzServices.GlobalSettings.GlobalSettings_ListGatewayCertificates()
             }
             catch {
                 Write-PscriboMessage -IsWarning $_.Exception.Message
