@@ -5,7 +5,7 @@ function Get-AbrHRZVcenter {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.0
+        Version:        1.1.1
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -24,33 +24,32 @@ function Get-AbrHRZVcenter {
 
     begin {
         Write-PScriboMessage "vCenterServers InfoLevel set at $($InfoLevel.Settings.Servers.vCenterServers.vCenter)."
-        Write-PscriboMessage "Collecting vCenterServers information."
+        Write-PScriboMessage "Collecting vCenterServers information."
     }
 
     process {
         try {
             if ($vCenterServers) {
                 if ($InfoLevel.Settings.Servers.vCenterServers.vCenter -ge 1) {
-                    section -Style Heading3 "vCenter Servers" {
+                    Section -Style Heading3 "vCenter Servers" {
                         Paragraph "The following section details the vCenter Servers configuration for $($HVEnvironment.toUpper()) server."
                         BlankLine
                         $vCenterHealthData = $vCenterHealth.data
                         $OutObj = @()
                         foreach ($vCenterServer in $vCenterServers) {
                             try {
-                                Write-PscriboMessage "Discovered Virtual Centers Information $($vCenterServer.serverspec.ServerName)."
+                                Write-PScriboMessage "Discovered Virtual Centers Information $($vCenterServer.serverspec.ServerName)."
                                 $inObj = [ordered] @{
                                     'Name' = $vCenterServer.serverspec.ServerName
-                                    'Version' = ($vCenterHealthData | Where-Object {$_.InstanceUuid -eq $vCenterServer.InstanceUuid}).Version
-                                    'Build Number' = ($vCenterHealthData | Where-Object {$_.InstanceUuid -eq $vCenterServer.InstanceUuid}).Build
-                                    'API Version' = ($vCenterHealthData | Where-Object {$_.InstanceUuid -eq $vCenterServer.InstanceUuid}).ApiVersion
+                                    'Version' = ($vCenterHealthData | Where-Object { $_.InstanceUuid -eq $vCenterServer.InstanceUuid }).Version
+                                    'Build Number' = ($vCenterHealthData | Where-Object { $_.InstanceUuid -eq $vCenterServer.InstanceUuid }).Build
+                                    'API Version' = ($vCenterHealthData | Where-Object { $_.InstanceUuid -eq $vCenterServer.InstanceUuid }).ApiVersion
                                     'Provisioning Enabled' = ConvertTo-TextYN $vCenterServer.Enabled
                                 }
 
                                 $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
-                            }
-                            catch {
-                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                            } catch {
+                                Write-PScriboMessage -IsWarning $_.Exception.Message
                             }
                         }
 
@@ -68,9 +67,9 @@ function Get-AbrHRZVcenter {
                             if ($InfoLevel.Settings.Servers.vCenterServers.vCenter -ge 2) {
                                 foreach ($vCenterServer in $vCenterServers) {
                                     try {
-                                        section -Style Heading4 "$($vCenterServer.serverspec.ServerName)" {
+                                        Section -Style Heading4 "$($vCenterServer.serverspec.ServerName)" {
                                             $OutObj = @()
-                                            Write-PscriboMessage "Discovered Virtual Centers Information $($vCenterServer.serverspec.ServerName)."
+                                            Write-PScriboMessage "Discovered Virtual Centers Information $($vCenterServer.serverspec.ServerName)."
                                             $inObj = [ordered] @{
                                                 'Name' = $vCenterServer.serverspec.ServerName
                                                 'Description' = $vCenterServer.Description
@@ -106,11 +105,11 @@ function Get-AbrHRZVcenter {
                                             try {
                                                 $HorizonVirtualCenterStorageAcceleratorHostOverrides = $vCenterServer.StorageAcceleratorData.HostOverrides
                                                 if ($HorizonVirtualCenterStorageAcceleratorHostOverrides) {
-                                                    section -ExcludeFromTOC -Style NOTOCHeading6 "Storage Accelerator Overrides" {
+                                                    Section -ExcludeFromTOC -Style NOTOCHeading6 "Storage Accelerator Overrides" {
                                                         $OutObj = @()
                                                         foreach ($HorizonVirtualCenterStorageAcceleratorHostOverride in $HorizonVirtualCenterStorageAcceleratorHostOverrides) {
                                                             try {
-                                                                Write-PscriboMessage "Discovered Storage Accelerator Overrides Information $($vCenterServer.serverspec.ServerName)."
+                                                                Write-PScriboMessage "Discovered Storage Accelerator Overrides Information $($vCenterServer.serverspec.ServerName)."
                                                                 $DATACENTER = $HorizonVirtualCenterStorageAcceleratorHostOverride.Path.Split('/')[1]
                                                                 $Cluster = $HorizonVirtualCenterStorageAcceleratorHostOverride.Path.Split('/')[3]
                                                                 $VMHost = $HorizonVirtualCenterStorageAcceleratorHostOverride.Path.Split('/')[4]
@@ -122,9 +121,8 @@ function Get-AbrHRZVcenter {
                                                                 }
 
                                                                 $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
-                                                            }
-                                                            catch {
-                                                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                                                            } catch {
+                                                                Write-PScriboMessage -IsWarning $_.Exception.Message
                                                             }
                                                         }
 
@@ -140,27 +138,23 @@ function Get-AbrHRZVcenter {
                                                         $OutObj | Sort-Object -Property 'Cluster' | Table @TableParams
                                                     }
                                                 }
-                                            }
-                                            catch {
-                                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                                            } catch {
+                                                Write-PScriboMessage -IsWarning $_.Exception.Message
                                             }
                                         }
-                                    }
-                                    catch {
-                                        Write-PscriboMessage -IsWarning $_.Exception.Message
+                                    } catch {
+                                        Write-PScriboMessage -IsWarning $_.Exception.Message
                                     }
                                 }
                             }
-                        }
-                        catch {
-                            Write-PscriboMessage -IsWarning $_.Exception.Message
+                        } catch {
+                            Write-PScriboMessage -IsWarning $_.Exception.Message
                         }
                     }
                 }
             }
-        }
-        catch {
-            Write-PscriboMessage -IsWarning $_.Exception.Message
+        } catch {
+            Write-PScriboMessage -IsWarning $_.Exception.Message
         }
     }
     end {}

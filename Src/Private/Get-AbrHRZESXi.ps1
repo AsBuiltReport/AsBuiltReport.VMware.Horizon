@@ -5,7 +5,7 @@ function Get-AbrHRZESXi {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.0
+        Version:        1.1.1
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -24,23 +24,23 @@ function Get-AbrHRZESXi {
 
     begin {
         Write-PScriboMessage "Esxi Servers InfoLevel set at $($InfoLevel.Settings.Servers.vCenterServers.ESXiHosts)."
-        Write-PscriboMessage "Collecting Esxi Servers information."
+        Write-PScriboMessage "Collecting Esxi Servers information."
     }
 
     process {
         try {
             if ($vCenterHealth) {
                 if ($InfoLevel.Settings.Servers.vCenterServers.ESXiHosts -ge 1) {
-                    section -Style Heading5 "ESXi Hosts" {
+                    Section -Style Heading5 "ESXi Hosts" {
                         Paragraph "The following section details the hardware information of ESXi Hosts for $($HVEnvironment.toUpper()) server."
                         BlankLine
                         $ESXHosts = $vCenterHealth.hostdata
                         foreach ($ESXCLUSTER in ($ESXHosts.ClusterName | Select-Object -Unique)) {
-                            section -Style Heading5 "$($ESXCLUSTER) Cluster" {
+                            Section -Style Heading5 "$($ESXCLUSTER) Cluster" {
                                 $OutObj = @()
                                 try {
-                                    foreach ($ESXHost in ($ESXHosts | Where-Object {$_.ClusterName -eq $ESXCLUSTER})) {
-                                        Write-PscriboMessage "Discovered ESXI Server Information from $($ESXCLUSTER)."
+                                    foreach ($ESXHost in ($ESXHosts | Where-Object { $_.ClusterName -eq $ESXCLUSTER })) {
+                                        Write-PScriboMessage "Discovered ESXI Server Information from $($ESXCLUSTER)."
                                         $inObj = [ordered] @{
                                             'Name' = $ESXHost.Name
                                             'Version' = $ESXHost.Version
@@ -51,11 +51,10 @@ function Get-AbrHRZESXi {
                                         $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                                     }
                                     if ($HealthCheck.ESXiHosts.Status) {
-                                        $OutObj | Where-Object { $_.'Status' -ne 'CONNECTED'} | Set-Style -Style Warning
+                                        $OutObj | Where-Object { $_.'Status' -ne 'CONNECTED' } | Set-Style -Style Warning
                                     }
-                                }
-                                catch {
-                                    Write-PscriboMessage -IsWarning $_.Exception.Message
+                                } catch {
+                                    Write-PScriboMessage -IsWarning $_.Exception.Message
                                 }
 
                                 $TableParams = @{
@@ -70,11 +69,11 @@ function Get-AbrHRZESXi {
                                 $OutObj | Sort-Object -Property 'Name' | Table @TableParams
                                 try {
                                     if ($InfoLevel.Settings.Servers.vCenterServers.ESXiHosts -ge 2) {
-                                        foreach ($ESXHost in ($ESXHosts | Where-Object {$_.ClusterName -eq $ESXCLUSTER})) {
+                                        foreach ($ESXHost in ($ESXHosts | Where-Object { $_.ClusterName -eq $ESXCLUSTER })) {
                                             if ($ESXHost.Name) {
                                                 try {
-                                                    section -ExcludeFromTOC -Style NOTOCHeading6 "$($ESXHost.Name) Details" {
-                                                        Write-PscriboMessage "Discovered ESXI Server Information from $($ESXHost.Name)."
+                                                    Section -ExcludeFromTOC -Style NOTOCHeading6 "$($ESXHost.Name) Details" {
+                                                        Write-PScriboMessage "Discovered ESXI Server Information from $($ESXHost.Name)."
                                                         $inObj = [ordered] @{
                                                             'CPU Cores' = $ESXHost.NumCpuCores
                                                             'CPU in Mhz' = $ESXHost.CpuMhz
@@ -96,25 +95,22 @@ function Get-AbrHRZESXi {
                                                         }
                                                         $OutObj | Table @TableParams
                                                     }
-                                                }
-                                                catch {
-                                                    Write-PscriboMessage -IsWarning $_.Exception.Message
+                                                } catch {
+                                                    Write-PScriboMessage -IsWarning $_.Exception.Message
                                                 }
                                             }
                                         }
                                     }
-                                }
-                                catch {
-                                    Write-PscriboMessage -IsWarning $_.Exception.Message
+                                } catch {
+                                    Write-PScriboMessage -IsWarning $_.Exception.Message
                                 }
                             }
                         }
                     }
                 }
             }
-        }
-        catch {
-            Write-PscriboMessage -IsWarning $_.Exception.Message
+        } catch {
+            Write-PScriboMessage -IsWarning $_.Exception.Message
         }
     }
     end {}

@@ -5,7 +5,7 @@ function Get-AbrHRZCertMgmt {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.0
+        Version:        1.1.1
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -24,7 +24,7 @@ function Get-AbrHRZCertMgmt {
 
     begin {
         Write-PScriboMessage "Certificate Management InfoLevel set at $($InfoLevel.Settings.Servers.ConnectionServers.ConnectionServers)."
-        Write-PscriboMessage "Collecting Certificate Management information."
+        Write-PScriboMessage "Collecting Certificate Management information."
     }
 
     process {
@@ -34,11 +34,11 @@ function Get-AbrHRZCertMgmt {
                     # Connection Server Health Data
                     $ConnectionServerHealthData = $ConnectionServersHealth | Select-Object -First 1
 
-                    section -Style Heading2 "Certificate Management" {
+                    Section -Style Heading2 "Certificate Management" {
                         Paragraph "The following section details on the certificate management information for $($HVEnvironment.toUpper())."
                         BlankLine
                         $OutObj = @()
-                        Write-PscriboMessage "Working on Certificate Information for $($ConnectionServerHealthData.Name)."
+                        Write-PScriboMessage "Working on Certificate Information for $($ConnectionServerHealthData.Name)."
 
                         $Cert = $ConnectionServerHealthData.CertificateHealth.ConnectionServerCertificate
                         $Bytes = [System.Text.Encoding]::UTF8.GetBytes($Cert)
@@ -46,20 +46,20 @@ function Get-AbrHRZCertMgmt {
 
                         $inObj = [ordered] @{
                             'Self-Signed Certificate' = $ConnectionServerHealthData.DefaultCertificate
-                            'Certificate Subject'     = $PodCert.Subject
-                            'Certificate Issuer'      = $PodCert.Issuer
-                            'Certificate Not Before'  = $PodCert.NotBefore
-                            'Certificate Not After'   = $PodCert.NotAfter
-                            'Certificate SANs'        = $PodCert.DnsNameList
-                            'Certificate Thumbprint'  = $PodCert.Thumbprint
+                            'Certificate Subject' = $PodCert.Subject
+                            'Certificate Issuer' = $PodCert.Issuer
+                            'Certificate Not Before' = $PodCert.NotBefore
+                            'Certificate Not After' = $PodCert.NotAfter
+                            'Certificate SANs' = $PodCert.DnsNameList
+                            'Certificate Thumbprint' = $PodCert.Thumbprint
                         }
                         $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
                         if ($HealthCheck.ConnectionServers.Status) {
                             $OutObj | Where-Object { $_.'Enabled' -eq 'No' } | Set-Style -Style Warning -Property 'Enabled'
                         }
                         $TableParams = @{
-                            Name         = "Certificate Management - $($HVEnvironment.toUpper())"
-                            List         = $true
+                            Name = "Certificate Management - $($HVEnvironment.toUpper())"
+                            List = $true
                             ColumnWidths = 30, 70
                         }
                         if ($Report.ShowTableCaptions) {
@@ -69,9 +69,8 @@ function Get-AbrHRZCertMgmt {
                     }
                 }
             }
-        }
-        catch {
-            Write-PscriboMessage -IsWarning $_.Exception.Message
+        } catch {
+            Write-PScriboMessage -IsWarning $_.Exception.Message
         }
     }
     end {}

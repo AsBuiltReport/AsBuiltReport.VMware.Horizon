@@ -5,7 +5,7 @@ function Get-AbrHRZADDomain {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.0
+        Version:        1.1.1
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -23,19 +23,19 @@ function Get-AbrHRZADDomain {
     )
     begin {
         Write-PScriboMessage "ADDomains InfoLevel set at $($InfoLevel.Settings.Servers.vCenterServers.ADDomains)."
-        Write-PscriboMessage "Collecting Active Directory Domain information."
+        Write-PScriboMessage "Collecting Active Directory Domain information."
     }
     process {
         try {
             if ($Domains) {
                 if ($InfoLevel.Settings.Servers.vCenterServers.ADDomains -ge 1) {
-                    section -Style Heading4 "Active Directory Domains" {
+                    Section -Style Heading4 "Active Directory Domains" {
                         Paragraph "The following section summarizes the configuration of Active Directory Domains for $($HVEnvironment.split('.')[0]) server."
                         BlankLine
                         $OutObj = @()
                         foreach ($Domain in $Domains) {
                             try {
-                                Write-PscriboMessage "Discovered Domain Information $($Domain.DNSName)."
+                                Write-PScriboMessage "Discovered Domain Information $($Domain.DNSName)."
                                 $inObj = [ordered] @{
                                     'Domain DNS Name' = $Domain.DNSName
                                     'Status' = $Domain.ConnectionServerState[0].Status
@@ -43,13 +43,12 @@ function Get-AbrHRZADDomain {
                                     'Connection Status' = $Domain.ConnectionServerState[0].Contactable
                                 }
                                 $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
-                            }
-                            catch {
-                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                            } catch {
+                                Write-PScriboMessage -IsWarning $_.Exception.Message
                             }
                         }
                         if ($HealthCheck.DataStores.Status) {
-                            $OutObj | Where-Object { $_.'Status' -eq 'ERROR'} | Set-Style -Style Warning
+                            $OutObj | Where-Object { $_.'Status' -eq 'ERROR' } | Set-Style -Style Warning
                         }
                         $TableParams = @{
                             Name = "Active Directory Domains - $($HVEnvironment.split(".").toUpper()[0])"
@@ -63,9 +62,8 @@ function Get-AbrHRZADDomain {
                     }
                 }
             }
-        }
-        catch {
-            Write-PscriboMessage -IsWarning $_.Exception.Message
+        } catch {
+            Write-PScriboMessage -IsWarning $_.Exception.Message
         }
     }
     end {}

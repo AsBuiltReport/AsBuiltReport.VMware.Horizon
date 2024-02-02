@@ -5,7 +5,7 @@ function Get-AbrHRZRolePermission {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.0
+        Version:        1.1.1
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -24,23 +24,23 @@ function Get-AbrHRZRolePermission {
 
     begin {
         Write-PScriboMessage "Role Permissions InfoLevel set at $($InfoLevel.Settings.Administrators.RolePermissions)."
-        Write-PscriboMessage "Collecting Role Permissions information."
+        Write-PScriboMessage "Collecting Role Permissions information."
     }
 
     process {
         try {
             if ($Permissions) {
                 if ($InfoLevel.Settings.Administrators.RolePermissions -ge 1) {
-                    section -Style Heading3 "Role Permissions" {
+                    Section -Style Heading3 "Role Permissions" {
                         Paragraph "The following section details the Role Permissions information for $($HVEnvironment.toUpper()) server."
                         BlankLine
                         $OutObj = @()
 
                         $FilteredPermissions = ''
-                        $FilteredPermissions = $Permissions | Where-Object{$null -eq $_.base.GlobalAccessGroup}
+                        $FilteredPermissions = $Permissions | Where-Object { $null -eq $_.base.GlobalAccessGroup }
 
                         foreach ($Permission in $FilteredPermissions) {
-                            Write-PscriboMessage "Discovered Role Permissions Information."
+                            Write-PScriboMessage "Discovered Role Permissions Information."
                             $AdministratorIDNameResults = ''
                             # Find Administrator ID Name
                             $AdministratorIDName = ''
@@ -52,15 +52,14 @@ function Get-AbrHRZRolePermission {
                                         break
                                     }
                                 }
-                                    if ($PermissionGroups.count -gt 1){
-                                        $AdministratorIDNameResults += "$AdministratorIDName, "
-                                        $AdministratorIDName = $AdministratorIDNameResults.TrimEnd(', ')
-                                    }
+                                if ($PermissionGroups.count -gt 1) {
+                                    $AdministratorIDNameResults += "$AdministratorIDName, "
+                                    $AdministratorIDName = $AdministratorIDNameResults.TrimEnd(', ')
+                                }
                             }
-                            Switch ($AdministratorIDName)
-                            {
-                                '' {$AdministratorIDName = 'N/A'}
-                                ' ' {$AdministratorIDName = 'N/A'}
+                            Switch ($AdministratorIDName) {
+                                '' { $AdministratorIDName = 'N/A' }
+                                ' ' { $AdministratorIDName = 'N/A' }
                             }
 
                             # Mach Permission Role ID with Role ID
@@ -91,14 +90,13 @@ function Get-AbrHRZRolePermission {
                                 foreach ($AccessGroup in $AccessGroups) {
                                     if ($AccessGroup.Id.id -eq $PermissionGroup) {
                                         $AccessGroupIDName = "/$($AccessGroup.base.name)"
-                                    }
-                                    elseif ($AccessGroup.Children.id.id -eq $PermissionGroup) {
+                                    } elseif ($AccessGroup.Children.id.id -eq $PermissionGroup) {
                                         $AccessGroupIDName = "/Root/$(($AccessGroup.Children | Where-Object {$_.id.id -eq $PermissionGroup}).Base.Name)"
                                     } else {
                                         $AccessGroupIDName = "Federation Access Group"
                                     }
                                 }
-                                if ($PermissionGroups.count -gt 1){
+                                if ($PermissionGroups.count -gt 1) {
                                     $AccessGroupIDNameResults += "$AccessGroupIDName, "
                                     $AccessGroupIDName = $AccessGroupIDNameResults.TrimEnd(', ')
                                 }
@@ -126,9 +124,8 @@ function Get-AbrHRZRolePermission {
                     }
                 }
             }
-        }
-        catch {
-            Write-PscriboMessage -IsWarning $_.Exception.Message
+        } catch {
+            Write-PScriboMessage -IsWarning $_.Exception.Message
         }
     }
     end {}

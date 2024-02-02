@@ -5,7 +5,7 @@ function Get-AbrHRZInfrastructure {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        0.3.0
+        Version:        1.1.1
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr, Chris Hildebrandt
@@ -23,14 +23,14 @@ function Get-AbrHRZInfrastructure {
     )
 
     begin {
-        Write-PscriboMessage "Collecting Infrastructure Summary information."
+        Write-PScriboMessage "Collecting Infrastructure Summary information."
     }
 
     process {
         try {
-            section -Style NOTOCHeading2 "Executive Summary for $($HVEnvironment.toUpper())" {
+            Section -Style NOTOCHeading2 "Executive Summary for $($HVEnvironment.toUpper())" {
                 $OutObj = @()
-                Write-PscriboMessage "Discovered Infrastructure Summary Information."
+                Write-PScriboMessage "Discovered Infrastructure Summary Information."
                 $inObj = [ordered] @{
                     'Number of Local Entitlements' = $EntitledUserOrGroupLocalMachines.Count
                     'Number of Global Entitlements' = $GlobalEntitlements.Count
@@ -61,9 +61,8 @@ function Get-AbrHRZInfrastructure {
                 }
                 $OutObj | Table @TableParams
             }
-        }
-        catch {
-            Write-PscriboMessage -IsWarning $_.Exception.Message
+        } catch {
+            Write-PScriboMessage -IsWarning $_.Exception.Message
         }
     }
     end {}

@@ -5,7 +5,7 @@ function Get-AbrHRZRolePrivilege {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.0
+        Version:        1.1.1
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -24,19 +24,19 @@ function Get-AbrHRZRolePrivilege {
 
     begin {
         Write-PScriboMessage "Role Provilege InfoLevel set at $($InfoLevel.Settings.Administrators.RolePrivileges)."
-        Write-PscriboMessage "Collecting Role Provilege information."
+        Write-PScriboMessage "Collecting Role Provilege information."
     }
 
     process {
         try {
             if ($Roles) {
                 if ($InfoLevel.Settings.Administrators.RolePrivileges -ge 1) {
-                    section -Style Heading3 "Role Privileges" {
+                    Section -Style Heading3 "Role Privileges" {
                         Paragraph "The following section details the Role Privileges information for $($HVEnvironment.toUpper()) server."
                         BlankLine
                         $OutObj = @()
                         foreach ($Role in $Roles) {
-                            Write-PscriboMessage "Discovered Role Provilege Information."
+                            Write-PScriboMessage "Discovered Role Provilege Information."
                             $inObj = [ordered] @{
                                 'Name' = $Role.base.Name
                                 'Description' = $Role.base.Description
@@ -57,12 +57,12 @@ function Get-AbrHRZRolePrivilege {
                         $OutObj | Sort-Object -Property 'Name' | Table @TableParams
                     }
                     if ($InfoLevel.Settings.Administrators.RolePrivileges -ge 2) {
-                        section -Style Heading4 "Role Privileges Details" {
+                        Section -Style Heading4 "Role Privileges Details" {
                             Paragraph "The following section details the Role Privilege details for information for $($HVEnvironment.toUpper()) server."
                             BlankLine
                             $OutObj = @()
                             foreach ($Role in $Roles) {
-                                Write-PscriboMessage "Discovered Role Provilege Detailed Information for $($HVEnvironment.toUpper()) server."
+                                Write-PScriboMessage "Discovered Role Provilege Detailed Information for $($HVEnvironment.toUpper()) server."
                                 $inObj = [ordered] @{
                                     'Name' = $Role.base.Name
                                     'Description' = [string]::join("`n", $($Role.base.Privileges))
@@ -87,9 +87,8 @@ function Get-AbrHRZRolePrivilege {
 
                 }
             }
-        }
-        catch {
-            Write-PscriboMessage -IsWarning $_.Exception.Message
+        } catch {
+            Write-PScriboMessage -IsWarning $_.Exception.Message
         }
     }
     end {}

@@ -5,7 +5,7 @@ function Get-AbrHRZDomains {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.0
+        Version:        1.1.1
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -24,30 +24,29 @@ function Get-AbrHRZDomains {
 
     begin {
         Write-PScriboMessage "InstantCloneDomainAccounts InfoLevel set at $($InfoLevel.Settings.InstantClone.InstantCloneDomainAccounts)."
-        Write-PscriboMessage "Collecting Instant Clone Domain Accounts information."
+        Write-PScriboMessage "Collecting Instant Clone Domain Accounts information."
     }
 
     process {
         try {
-            section -Style Heading2 "Domains" {
+            Section -Style Heading2 "Domains" {
                 if ($InstantCloneDomainAdmins) {
                     if ($InfoLevel.Settings.InstantClone.InstantCloneDomainAccounts -ge 1) {
-                        section -Style Heading3 "Domain Accounts" {
+                        Section -Style Heading3 "Domain Accounts" {
                             Paragraph "The following section details the Domain Accounts configuration for $($HVEnvironment.toUpper()) server."
                             BlankLine
                             $OutObj = @()
                             foreach ($InstantCloneDomainAdmin in $InstantCloneDomainAdmins) {
                                 try {
-                                    Write-PscriboMessage "Discovered Domain Accounts Information."
+                                    Write-PScriboMessage "Discovered Domain Accounts Information."
                                     $inObj = [ordered] @{
                                         'User Name' = $InstantCloneDomainAdmin.Base.UserName
                                         'Domain Name' = $InstantCloneDomainAdmin.NamesData.DnsName
                                     }
 
                                     $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
-                                }
-                                catch {
-                                    Write-PscriboMessage -IsWarning $_.Exception.Message
+                                } catch {
+                                    Write-PScriboMessage -IsWarning $_.Exception.Message
                                 }
                             }
 
@@ -66,13 +65,13 @@ function Get-AbrHRZDomains {
                 }
                 if ($Domains) {
                     if ($InfoLevel.Settings.Servers.vCenterServers.ADDomains -ge 1) {
-                        section -Style Heading3 "Connection Server" {
+                        Section -Style Heading3 "Connection Server" {
                             Paragraph "The following section shows connection servers domains for $($HVEnvironment.toUpper()) environment."
                             BlankLine
                             $OutObj = @()
                             foreach ($Domain in $Domains) {
                                 try {
-                                    Write-PscriboMessage "Discovered Domain Information $($Domain.DNSName)."
+                                    Write-PScriboMessage "Discovered Domain Information $($Domain.DNSName)."
                                     $inObj = [ordered] @{
                                         'Domain DNS Name' = $Domain.DNSName
                                         'Status' = $Domain.ConnectionServerState[0].Status
@@ -82,14 +81,13 @@ function Get-AbrHRZDomains {
                                     }
 
                                     $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
-                                }
-                                catch {
-                                    Write-PscriboMessage -IsWarning $_.Exception.Message
+                                } catch {
+                                    Write-PScriboMessage -IsWarning $_.Exception.Message
                                 }
                             }
 
                             if ($HealthCheck.DataStores.Status) {
-                                $OutObj | Where-Object { $_.'Status' -eq 'ERROR'} | Set-Style -Style Warning
+                                $OutObj | Where-Object { $_.'Status' -eq 'ERROR' } | Set-Style -Style Warning
                             }
 
                             $TableParams = @{
@@ -107,9 +105,8 @@ function Get-AbrHRZDomains {
                 }
             }
 
-        }
-        catch {
-            Write-PscriboMessage -IsWarning $_.Exception.Message
+        } catch {
+            Write-PScriboMessage -IsWarning $_.Exception.Message
         }
     }
     end {}

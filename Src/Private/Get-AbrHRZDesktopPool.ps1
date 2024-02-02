@@ -5,7 +5,7 @@ function Get-AbrHRZDesktopPool {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.0
+        Version:        1.1.1
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -24,28 +24,27 @@ function Get-AbrHRZDesktopPool {
 
     begin {
         Write-PScriboMessage "Pool Desktop InfoLevel set at $($InfoLevel.Inventory.Desktop)."
-        Write-PscriboMessage "Collecting Pool Desktop information."
+        Write-PScriboMessage "Collecting Pool Desktop information."
     }
 
     process {
         try {
             if ($Pools) {
                 if ($InfoLevel.Inventory.Desktop -ge 1) {
-                    section -Style Heading3 "Desktop Pools" {
+                    Section -Style Heading3 "Desktop Pools" {
                         Paragraph "The following section details the Desktop Pools configuration for $($HVEnvironment.toUpper()) server."
                         BlankLine
                         $OutObj = @()
                         foreach ($Pool in $Pools) {
-                            Write-PscriboMessage "Discovered Desktop Pool Information for Pool $($Pool.Base.Name)."
-                            Switch ($Pool.Automateddesktopdata.ProvisioningType)
-                            {
-                                'INSTANT_CLONE_ENGINE' {$ProvisioningType = 'Instant Clone' }
-                                'VIRTUAL_CENTER' {$ProvisioningType = 'Full Virtual Machines' }
+                            Write-PScriboMessage "Discovered Desktop Pool Information for Pool $($Pool.Base.Name)."
+                            Switch ($Pool.Automateddesktopdata.ProvisioningType) {
+                                'INSTANT_CLONE_ENGINE' { $ProvisioningType = 'Instant Clone' }
+                                'VIRTUAL_CENTER' { $ProvisioningType = 'Full Virtual Machines' }
                             }
 
                             if ($Pool.Type -eq "MANUAL") {
                                 $UserAssign = $Pool.ManualDesktopData.UserAssignment.UserAssignment
-                            } else {$UserAssign = $Pool.AutomatedDesktopData.UserAssignment.UserAssignment}
+                            } else { $UserAssign = $Pool.AutomatedDesktopData.UserAssignment.UserAssignment }
 
                             $inObj = [ordered] @{
                                 'Name' = $Pool.Base.Name
@@ -69,7 +68,7 @@ function Get-AbrHRZDesktopPool {
                         $OutObj | Sort-Object -Property 'Name' | Table @TableParams
                         try {
                             if ($InfoLevel.Inventory.Desktop -ge 2) {
-                                section -Style Heading4 "Desktop Pools Details" {
+                                Section -Style Heading4 "Desktop Pools Details" {
                                     foreach ($Pool in $Pools) {
                                         # Find Access Group for Desktop Pool
                                         $AccessgroupsJoined = $hzServices.AccessGroup.AccessGroup_List() + $hzServices.AccessGroup.AccessGroup_List().Children
@@ -125,8 +124,8 @@ function Get-AbrHRZDesktopPool {
                                                 $PoolOpperatingSystemArch = $DesktopAssignmentViewResult.OperatingSystemArchitecture
                                                 $DesktopAssignmentViewResultsDataMatch = $true
                                             }
-                                        if ($DesktopAssignmentViewResultsDataMatch) {
-                                            break
+                                            if ($DesktopAssignmentViewResultsDataMatch) {
+                                                break
                                             }
                                         }
 
@@ -140,7 +139,7 @@ function Get-AbrHRZDesktopPool {
                                                     break
                                                 }
                                             }
-                                            if ($PoolGroups.count -gt 1){
+                                            if ($PoolGroups.count -gt 1) {
                                                 $vCenterServerIDNameResults += "$vCenterServerIDName, "
                                                 $vCenterServerIDName = $vCenterServerIDNameResults.TrimEnd(', ')
                                             }
@@ -157,7 +156,7 @@ function Get-AbrHRZDesktopPool {
                                                 }
 
                                             }
-                                            if($PoolGroups.count -gt 1){
+                                            if ($PoolGroups.count -gt 1) {
                                                 $vCenterServerAutoIDNameResults += "$vCenterServerAutoIDName, "
                                                 $vCenterServerAutoIDName = $vCenterServerAutoIDNameResults.TrimEnd(', ')
                                             }
@@ -166,9 +165,9 @@ function Get-AbrHRZDesktopPool {
                                         # Find Base Image ID Name
                                         $PoolBaseImage = ''
                                         $PoolBaseImagePath = ''
-                                        if ($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.ParentVM.id){
+                                        if ($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.ParentVM.id) {
                                             foreach ($CompatibleBaseImageVM in $CompatibleBaseImageVMs) {
-                                                if ($CompatibleBaseImageVM.id.id -eq $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.ParentVM.id){
+                                                if ($CompatibleBaseImageVM.id.id -eq $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.ParentVM.id) {
                                                     $PoolBaseImage = $CompatibleBaseImageVM.name
                                                     $PoolBaseImagePath = $CompatibleBaseImageVM.Path
                                                     break
@@ -178,7 +177,7 @@ function Get-AbrHRZDesktopPool {
 
                                         # Get Pool Base Image Snapshot
                                         $BaseImageSnapshotListLast = ''
-                                        if( $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.Snapshot.id) {
+                                        if ( $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.Snapshot.id) {
                                             $BaseImageSnapshotList = $hzServices.BaseImageSnapshot.BaseImageSnapshot_List($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.ParentVM)
                                             $BaseImageSnapshotListLast = $BaseImageSnapshotList | Select-Object -Last 1
                                         }
@@ -191,7 +190,7 @@ function Get-AbrHRZDesktopPool {
 
                                             # Find DataCenter ID Name
                                             foreach ($DataCenter in $DataCenterList) {
-                                                if ($DataCenter.id.id -eq $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.Datacenter.id){
+                                                if ($DataCenter.id.id -eq $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.Datacenter.id) {
                                                     $PoolDataCenterName = $DataCenter.base.name
                                                     $PoolDatacenterPath = $DataCenter.base.Path
                                                     break
@@ -202,7 +201,7 @@ function Get-AbrHRZDesktopPool {
                                         # VM Folder List
                                         $VMFolder = ''
                                         $VMFolderPath = ''
-                                        if ($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.VmFolder.id){
+                                        if ($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.VmFolder.id) {
 
                                             $VMFolderPath = $Pool.automateddesktopdata.VirtualCenterNamesData.VmFolderPath
                                             $VMFolder = $VMFolderPath -replace '^(.*[\\\/])'
@@ -210,7 +209,7 @@ function Get-AbrHRZDesktopPool {
 
                                         # VM Host or Cluster
                                         $VMhostandCluter = ''
-                                        if ($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.HostOrCluster.id){
+                                        if ($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.HostOrCluster.id) {
                                             #$HostAndCluster = $hzServices.HostOrCluster.HostOrCluster_GetHostOrClusterTree($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.Datacenter)
                                             $VMhostandCluterPath = $Pool.automateddesktopdata.VirtualCenterNamesData.HostOrClusterPath
                                             $VMhostandCluter = $VMhostandCluterPath -replace '^(.*[\\\/])'
@@ -218,7 +217,7 @@ function Get-AbrHRZDesktopPool {
 
                                         # VM Resource Pool
                                         $VMResourcePool = ''
-                                        if ($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.ResourcePool.id){
+                                        if ($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.ResourcePool.id) {
                                             #$ResourcePoolTree = $hzServices.ResourcePool.ResourcePool_GetResourcePoolTree($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.Datacenter)
                                             $VMResourcePoolPath = $Pool.automateddesktopdata.VirtualCenterNamesData.ResourcePoolPath
                                             $VMResourcePool = $VMResourcePoolPath -replace '^(.*[\\\/])'
@@ -240,12 +239,12 @@ function Get-AbrHRZDesktopPool {
                                         # VM AD Container
                                         $PoolContainerName = ''
                                         if ($Pool.automateddesktopdata.CustomizationSettings.AdContainer.id) {
-                                            foreach ($ADDomain in $ADDomains){
+                                            foreach ($ADDomain in $ADDomains) {
                                                 $ADDomainID = ($ADDomain.id.id -creplace '^[^/]*/', '')
                                                 if ($Pool.automateddesktopdata.CustomizationSettings.AdContainer.id -like "ADContainer/$ADDomainID/*") {
                                                     $ADContainers = $hzServices.ADContainer.ADContainer_ListByDomain($ADDomain.id)
                                                     foreach ($ADContainer in $ADContainers) {
-                                                        if ($ADContainer.id.id -eq $Pool.automateddesktopdata.CustomizationSettings.AdContainer.id){
+                                                        if ($ADContainer.id.id -eq $Pool.automateddesktopdata.CustomizationSettings.AdContainer.id) {
                                                             $PoolContainerName = $ADContainer.rdn
                                                             break
                                                         }
@@ -260,11 +259,11 @@ function Get-AbrHRZDesktopPool {
 
                                         # Pool Customization Type
                                         $Customizations = ('')
-                                        If($pool.AutomatedDesktopData.CustomizationSettings.CustomizationType -eq "SYS_PREP"){
-                                            Foreach ($vCenterServer in $vCenterServers){
+                                        If ($pool.AutomatedDesktopData.CustomizationSettings.CustomizationType -eq "SYS_PREP") {
+                                            Foreach ($vCenterServer in $vCenterServers) {
                                                 $Customizations = $hzServices.CustomizationSpec.CustomizationSpec_List($vCenterServer.id)
-                                                Foreach ($Customization in $Customizations){
-                                                    if($pool.AutomatedDesktopData.CustomizationSettings.SysprepCustomizationSettings.CustomizationSpec.id -eq $Customization.id.id){
+                                                Foreach ($Customization in $Customizations) {
+                                                    if ($pool.AutomatedDesktopData.CustomizationSettings.SysprepCustomizationSettings.CustomizationSpec.id -eq $Customization.id.id) {
                                                         $PoolCustomization = $($Customization.CustomizationSpecData.Name)
                                                     }
                                                 }
@@ -272,39 +271,39 @@ function Get-AbrHRZDesktopPool {
                                         }
                                         # VM Template
                                         $PoolTemplateName = ''
-                                        if ($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.Template.id){
+                                        if ($Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.Template.id) {
                                             foreach ($Template in $CompatibleTemplateVMs) {
-                                                if ($Template.id.id -eq $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.Template.id){
+                                                if ($Template.id.id -eq $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterProvisioningData.Template.id) {
                                                     $PoolTemplateName = $Template.name
                                                     break
                                                 }
                                             }
                                         }
                                         try {
-                                            section -Style Heading5 "Pool - $($Pool.Base.name)" {
+                                            Section -Style Heading5 "Pool - $($Pool.Base.name)" {
                                                 $SupportedDisplayProtocolsresult = ''
-                                                $SupportedDisplayProtocols = $Pool.DesktopSettings.DisplayProtocolSettings | ForEach-Object { $_.SupportedDisplayProtocols}
+                                                $SupportedDisplayProtocols = $Pool.DesktopSettings.DisplayProtocolSettings | ForEach-Object { $_.SupportedDisplayProtocols }
                                                 $SupportedDisplayProtocolsresult = $SupportedDisplayProtocols -join ', '
 
                                                 $StorageOvercommitsresult = ''
-                                                $StorageOvercommit = $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterStorageSettings.datastores | ForEach-Object { $_.StorageOvercommit}
+                                                $StorageOvercommit = $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.VirtualCenterStorageSettings.datastores | ForEach-Object { $_.StorageOvercommit }
                                                 $StorageOvercommitsresult = $StorageOvercommit -join ', '
 
                                                 $DatastoreFinal = ''
                                                 Switch ($Pool.Type) {
-                                                    'MANUAL' {$POOLDST = $Pool.ManualDesktopData.VirtualCenterNamesData}
-                                                    default {$POOLDST = $Pool.automateddesktopdata.VirtualCenterNamesData}
+                                                    'MANUAL' { $POOLDST = $Pool.ManualDesktopData.VirtualCenterNamesData }
+                                                    default { $POOLDST = $Pool.automateddesktopdata.VirtualCenterNamesData }
                                                 }
-                                                $DatastorePaths = $POOLDST | ForEach-Object { $_.DatastorePaths}
-                                                foreach($Datastore in $DatastorePaths){
-                                                $Datastorename = $Datastore -replace '^(.*[\\\/])'
-                                                $DatastoreFinal += $DatastoreName -join "`r`n" | Out-String
+                                                $DatastorePaths = $POOLDST | ForEach-Object { $_.DatastorePaths }
+                                                foreach ($Datastore in $DatastorePaths) {
+                                                    $Datastorename = $Datastore -replace '^(.*[\\\/])'
+                                                    $DatastoreFinal += $DatastoreName -join "`r`n" | Out-String
                                                 }
                                                 #$DatastorePathsresult = $DatastorePaths -join ', '
                                                 try {
-                                                    section -ExcludeFromTOC -Style NOTOCHeading5 "General Summary - $($Pool.Base.name)" {
+                                                    Section -ExcludeFromTOC -Style NOTOCHeading5 "General Summary - $($Pool.Base.name)" {
                                                         $OutObj = @()
-                                                        Write-PscriboMessage "Discovered $($Pool.Base.name) General Information."
+                                                        Write-PScriboMessage "Discovered $($Pool.Base.name) General Information."
                                                         $inObj = [ordered] @{
                                                             'Name' = $Pool.Base.name
                                                             'Display Name' = $Pool.base.displayName
@@ -313,14 +312,14 @@ function Get-AbrHRZDesktopPool {
                                                             'Enabled' = $Pool.DesktopSettings.Enabled
                                                             'Type' = $Pool.Type
                                                             'Machine Source' = Switch ($pool.Source) {
-                                                                'INSTANT_CLONE_ENGINE' {'vCenter(Instant Clone)' }
-                                                                'VIRTUAL_CENTER' {'vCenter' }
-                                                                default {$pool.Source}
+                                                                'INSTANT_CLONE_ENGINE' { 'vCenter(Instant Clone)' }
+                                                                'VIRTUAL_CENTER' { 'vCenter' }
+                                                                default { $pool.Source }
                                                             }
                                                             'Provisioning Type' = Switch ($Pool.Automateddesktopdata.ProvisioningType) {
-                                                                'INSTANT_CLONE_ENGINE' {'Instant Clone' }
-                                                                'VIRTUAL_CENTER' {'Full Virtual Machines' }
-                                                                default {$Pool.Automateddesktopdata.ProvisioningType}
+                                                                'INSTANT_CLONE_ENGINE' { 'Instant Clone' }
+                                                                'VIRTUAL_CENTER' { 'Full Virtual Machines' }
+                                                                default { $Pool.Automateddesktopdata.ProvisioningType }
                                                             }
                                                             'Enabled for Provisioning' = $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.EnableProvisioning
                                                             'Client Restrictions Enabled' = $Pool.DesktopSettings.ClientRestrictions
@@ -344,14 +343,13 @@ function Get-AbrHRZDesktopPool {
                                                         }
                                                         $OutObj | Table @TableParams
                                                     }
-                                                }
-                                                catch {
-                                                    Write-PscriboMessage -IsWarning $_.Exception.Message
+                                                } catch {
+                                                    Write-PScriboMessage -IsWarning $_.Exception.Message
                                                 }
                                                 try {
-                                                    section -ExcludeFromTOC -Style NOTOCHeading5 "Detailed Settings - $($Pool.Base.name)" {
+                                                    Section -ExcludeFromTOC -Style NOTOCHeading5 "Detailed Settings - $($Pool.Base.name)" {
                                                         $OutObj = @()
-                                                        Write-PscriboMessage "Discovered $($Pool.Base.name) Pool Setting Information."
+                                                        Write-PScriboMessage "Discovered $($Pool.Base.name) Pool Setting Information."
                                                         $inObj = [ordered] @{
                                                             'Name' = $Pool.Base.name
                                                             'Display Name' = $Pool.base.displayName
@@ -360,14 +358,14 @@ function Get-AbrHRZDesktopPool {
                                                             'Enabled' = $Pool.DesktopSettings.Enabled
                                                             'Type' = $Pool.Type
                                                             'Machine Source' = Switch ($pool.Source) {
-                                                                'INSTANT_CLONE_ENGINE' {'vCenter(Instant Clone)' }
-                                                                'VIRTUAL_CENTER' {'vCenter' }
-                                                                default {$pool.Source}
+                                                                'INSTANT_CLONE_ENGINE' { 'vCenter(Instant Clone)' }
+                                                                'VIRTUAL_CENTER' { 'vCenter' }
+                                                                default { $pool.Source }
                                                             }
                                                             'Provisioning Type' = Switch ($Pool.Automateddesktopdata.ProvisioningType) {
-                                                                'INSTANT_CLONE_ENGINE' {'Instant Clone' }
-                                                                'VIRTUAL_CENTER' {'Full Virtual Machines' }
-                                                                default {$Pool.Automateddesktopdata.ProvisioningType}
+                                                                'INSTANT_CLONE_ENGINE' { 'Instant Clone' }
+                                                                'VIRTUAL_CENTER' { 'Full Virtual Machines' }
+                                                                default { $Pool.Automateddesktopdata.ProvisioningType }
                                                             }
                                                             'Enabled for Provisioning' = $Pool.automateddesktopdata.VirtualCenterProvisioningSettings.EnableProvisioning
                                                             'Client Restrictions Enabled' = $Pool.DesktopSettings.ClientRestrictions
@@ -417,7 +415,7 @@ function Get-AbrHRZDesktopPool {
                                                             'vRam Size MB' = $Pool.DesktopSettings.DisplayProtocolSettings.PcoipDisplaySettings.VRamSizeMB
                                                             'Max Number of Monitors' = $Pool.DesktopSettings.DisplayProtocolSettings.PcoipDisplaySettings.MaxNumberOfMonitors
                                                             'Max Resolution of Any One Monitor' = $Pool.DesktopSettings.DisplayProtocolSettings.PcoipDisplaySettings.MaxResolutionOfAnyOneMonitor
-                                                            'Use View Storage Accelerator' =  $pool.ManualDesktopData.ViewStorageAcceleratorSettings.UseViewStorageAccelerator
+                                                            'Use View Storage Accelerator' = $pool.ManualDesktopData.ViewStorageAcceleratorSettings.UseViewStorageAccelerator
                                                             'Regenerate View Storage Accelerator Days' = $pool.ManualDesktopData.ViewStorageAcceleratorSettings.RegenerateViewStorageAcceleratorDays
                                                             'Black Out Times' = $BlackOutDateString
                                                             'Transparent Page Sharing Scope' = $Pool.ManualDesktopData.VirtualCenterManagedCommonSettings.TransparentPageSharingScope
@@ -467,18 +465,17 @@ function Get-AbrHRZDesktopPool {
                                                         }
                                                         $OutObj | Table @TableParams
                                                     }
-                                                }
-                                                catch {
-                                                    Write-PscriboMessage -IsWarning $_.Exception.Message
+                                                } catch {
+                                                    Write-PScriboMessage -IsWarning $_.Exception.Message
                                                 }
                                                 try {
-                                                    section -ExcludeFromTOC -Style NOTOCHeading5 "vCenter Server Settings - $($Pool.Base.name)" {
+                                                    Section -ExcludeFromTOC -Style NOTOCHeading5 "vCenter Server Settings - $($Pool.Base.name)" {
                                                         $OutObj = @()
-                                                        Write-PscriboMessage "Discovered $($Pool.Base.name) vCenter Server Information."
+                                                        Write-PScriboMessage "Discovered $($Pool.Base.name) vCenter Server Information."
                                                         $inObj = [ordered] @{
                                                             'Virtual Center' = Switch ($Pool.Type) {
-                                                                'MANUAL' {$vCenterServerIDName}
-                                                                default {$vCenterServerAutoIDName}
+                                                                'MANUAL' { $vCenterServerIDName }
+                                                                default { $vCenterServerAutoIDName }
                                                             }
                                                             'Template' = $PoolTemplateName
                                                             'Parent VM' = $PoolBaseImage
@@ -492,37 +489,37 @@ function Get-AbrHRZDesktopPool {
                                                             'Datacenter Path' = $PoolDatacenterPath
                                                             'VM Folder' = $VMFolder
                                                             'VM Folder Path' = Switch ($Pool.Type) {
-                                                                'MANUAL' {$Pool.ManualDesktopData.VirtualCenterNamesData.VmFolderPath}
-                                                                default {$Pool.automateddesktopdata.VirtualCenterNamesData.VmFolderPath}
+                                                                'MANUAL' { $Pool.ManualDesktopData.VirtualCenterNamesData.VmFolderPath }
+                                                                default { $Pool.automateddesktopdata.VirtualCenterNamesData.VmFolderPath }
                                                             }
                                                             'Host or Cluster' = $VMhostandCluter
                                                             'Host or Cluster Path' = Switch ($Pool.Type) {
-                                                                'MANUAL' {$Pool.ManualDesktopData.VirtualCenterNamesData.HostOrClusterPath}
-                                                                default {$Pool.automateddesktopdata.VirtualCenterNamesData.HostOrClusterPath}
+                                                                'MANUAL' { $Pool.ManualDesktopData.VirtualCenterNamesData.HostOrClusterPath }
+                                                                default { $Pool.automateddesktopdata.VirtualCenterNamesData.HostOrClusterPath }
                                                             }
                                                             'Resource Pool' = $VMResourcePool
                                                             'Resource Pool Path' = Switch ($Pool.Type) {
-                                                                'MANUAL' {$Pool.ManualDesktopData.VirtualCenterNamesData.ResourcePoolPath}
-                                                                default {$Pool.automateddesktopdata.VirtualCenterNamesData.ResourcePoolPath}
+                                                                'MANUAL' { $Pool.ManualDesktopData.VirtualCenterNamesData.ResourcePoolPath }
+                                                                default { $Pool.automateddesktopdata.VirtualCenterNamesData.ResourcePoolPath }
                                                             }
                                                             'Datastores' = $DatastoreFinal
                                                             'Datastores Storage Over-Commit' = $StorageOvercommitsresult
                                                             'Use VSAN' = $pool.AutomatedDesktopData.VirtualCenterProvisioningSettings.VirtualCenterStorageSettings.usevsan
                                                             'Storage Cluster Path' = $pool.AutomatedDesktopData.VirtualCenterNamesData.SdrsClusterPath
                                                             'View Storage Accelerator' = Switch ($Pool.Type) {
-                                                                'MANUAL' {$Pool.ManualDesktopData.ViewStorageAcceleratorSettings.UseViewStorageAccelerator}
-                                                                'AUTOMATED' {$Pool.AutomatedDesktopData.VirtualCenterProvisioningSettings.VirtualCenterStorageSettings.ViewStorageAcceleratorSettings.UseViewStorageAccelerator}
-                                                                default {'Not Supported'}
+                                                                'MANUAL' { $Pool.ManualDesktopData.ViewStorageAcceleratorSettings.UseViewStorageAccelerator }
+                                                                'AUTOMATED' { $Pool.AutomatedDesktopData.VirtualCenterProvisioningSettings.VirtualCenterStorageSettings.ViewStorageAcceleratorSettings.UseViewStorageAccelerator }
+                                                                default { 'Not Supported' }
                                                             }
                                                             'Transparent Page Sharing Scope' = Switch ($Pool.Type) {
-                                                                'MANUAL' {$Pool.ManualDesktopData.VirtualCenterManagedCommonSettings.TransparentPageSharingScope}
-                                                                'AUTOMATED' {$Pool.AutomatedDesktopData.VirtualCenterManagedCommonSettings.TransparentPageSharingScope}
-                                                                default {'Not Supported'}
+                                                                'MANUAL' { $Pool.ManualDesktopData.VirtualCenterManagedCommonSettings.TransparentPageSharingScope }
+                                                                'AUTOMATED' { $Pool.AutomatedDesktopData.VirtualCenterManagedCommonSettings.TransparentPageSharingScope }
+                                                                default { 'Not Supported' }
                                                             }
                                                             'Replica Disk Datastore Path' = $Pool.automateddesktopdata.VirtualCenterNamesData.ReplicaDiskDatastorePath
                                                             'Networks' = Switch ($Pool.AutomatedDesktopData.VirtualCenterNamesData.NetworkLabelNames) {
-                                                                $null {'Golden Image network selected'}
-                                                                default {$Pool.AutomatedDesktopData.VirtualCenterNamesData.NetworkLabelNames}
+                                                                $null { 'Golden Image network selected' }
+                                                                default { $Pool.AutomatedDesktopData.VirtualCenterNamesData.NetworkLabelNames }
                                                             }
                                                             'Network Card' = $NetworkInterfaceCardList.data.name
                                                             'Network Label Enabled' = $pool.AutomatedDesktopData.VirtualCenterProvisioningSettings.VirtualCenterNetworkingSettings.nics.NetworkLabelAssignmentSpecs.Enabled
@@ -537,7 +534,7 @@ function Get-AbrHRZDesktopPool {
                                                             'Post Synchronization Script Name' = $pool.AutomatedDesktopData.CustomizationSettings.CloneprepCustomizationSettings.PostSynchronizationScriptName
                                                             'Post Synchronization Script Parameters' = $pool.AutomatedDesktopData.CustomizationSettings.CloneprepCustomizationSettings.PostSynchronizationScriptParameters
                                                             'Priming Computer Account' = $pool.AutomatedDesktopData.CustomizationSettings.CloneprepCustomizationSettings.PrimingComputerAccount
-                                                            'Guest Customization Account' = ($InstantCloneDomainAdmins | Where-Object {$_.id.id -eq $Pool.automateddesktopdata.CustomizationSettings.InstantCloneEngineDomainAdministrator.id}).Base.Username
+                                                            'Guest Customization Account' = ($InstantCloneDomainAdmins | Where-Object { $_.id.id -eq $Pool.automateddesktopdata.CustomizationSettings.InstantCloneEngineDomainAdministrator.id }).Base.Username
                                                             'No Customization Settings' = $pool.AutomatedDesktopData.CustomizationSettings.NoCustomizationSettings
                                                             'Sysprep Customization Settings' = $PoolCustomization
                                                             'Quick Prep Customization Settings' = $pool.AutomatedDesktopData.CustomizationSettings.QuickprepCustomizationSettings
@@ -619,18 +616,17 @@ function Get-AbrHRZDesktopPool {
                                                         }
                                                         $OutObj | Table @TableParams
                                                     }
-                                                }
-                                                catch {
-                                                    Write-PscriboMessage -IsWarning $_.Exception.Message
+                                                } catch {
+                                                    Write-PScriboMessage -IsWarning $_.Exception.Message
                                                 }
                                             }
 
                                             if ($InfoLevel.Inventory.Desktop -ge 3) {
                                                 try {
-                                                    section -ExcludeFromTOC -Style NOTOCHeading6 "Pool Machine Summary - $($Pool.Base.name)" {
+                                                    Section -ExcludeFromTOC -Style NOTOCHeading6 "Pool Machine Summary - $($Pool.Base.name)" {
                                                         $OutObj = @()
                                                         foreach ($Machine in $Machines) {
-                                                            If($Machine.Base.DesktopName -like $Pool.base.Name){
+                                                            If ($Machine.Base.DesktopName -like $Pool.base.Name) {
                                                                 $inObj = [ordered] @{
                                                                     'Machine Name' = $Machine.Base.Name
                                                                     'Agent Version' = $Machine.Base.AgentVersion
@@ -643,8 +639,8 @@ function Get-AbrHRZDesktopPool {
                                                             }
                                                         }
                                                         $TableParams = @{
-                                                            Name         = "Pool Machine Summary - $($Pool.Base.Name)"
-                                                            List         = $false
+                                                            Name = "Pool Machine Summary - $($Pool.Base.Name)"
+                                                            List = $false
                                                             ColumnWidths = 15, 10, 20, 25, 15, 15
                                                         }
                                                         if ($Report.ShowTableCaptions) {
@@ -652,24 +648,22 @@ function Get-AbrHRZDesktopPool {
                                                         }
                                                         $OutObj | Sort-Object -Property 'Name' | Table @TableParams
                                                     }
-                                                }
-                                                catch {
-                                                    Write-PscriboMessage -IsWarning $_.Exception.Message
+                                                } catch {
+                                                    Write-PScriboMessage -IsWarning $_.Exception.Message
                                                 }
 
                                             }
 
-                                        }
-                                        catch {
-                                            Write-PscriboMessage -IsWarning $_.Exception.Message
+                                        } catch {
+                                            Write-PScriboMessage -IsWarning $_.Exception.Message
                                         }
                                         try {
                                             $OutObj = @()
-                                            section -ExcludeFromToC -Style NOTOCHeading6 "Desktop Pools Entitlements - $($Pool.Base.Name)" {
+                                            Section -ExcludeFromTOC -Style NOTOCHeading6 "Desktop Pools Entitlements - $($Pool.Base.Name)" {
                                                 try {
-                                                    Write-PscriboMessage "Discovered Desktop Pool Entitlements Information for - $($Pool.Base.Name)."
-                                                    foreach ($Principal in ($EntitledUserOrGrouplocalMachines | Where-Object {$_.localData.Desktops.id -eq $Pool.Id.id})) {
-                                                        Write-PscriboMessage "Discovered Desktop Pool Entitlements Name for - $($Principal.Base.LoginName)."
+                                                    Write-PScriboMessage "Discovered Desktop Pool Entitlements Information for - $($Pool.Base.Name)."
+                                                    foreach ($Principal in ($EntitledUserOrGrouplocalMachines | Where-Object { $_.localData.Desktops.id -eq $Pool.Id.id })) {
+                                                        Write-PScriboMessage "Discovered Desktop Pool Entitlements Name for - $($Principal.Base.LoginName)."
                                                         $inObj = [ordered] @{
                                                             'Name' = $Principal.Base.LoginName
                                                             'Domain' = $Principal.Base.Domain
@@ -686,28 +680,24 @@ function Get-AbrHRZDesktopPool {
                                                         $TableParams['Caption'] = "- $($TableParams.Name)"
                                                     }
                                                     $OutObj | Sort-Object -Property 'Name' | Table @TableParams
-                                                }
-                                                catch {
-                                                    Write-PscriboMessage -IsWarning $_.Exception.Message
+                                                } catch {
+                                                    Write-PScriboMessage -IsWarning $_.Exception.Message
                                                 }
                                             }
-                                        }
-                                        catch {
-                                            Write-PscriboMessage -IsWarning $_.Exception.Message
+                                        } catch {
+                                            Write-PScriboMessage -IsWarning $_.Exception.Message
                                         }
                                     }
                                 }
                             }
-                        }
-                        catch {
-                            Write-PscriboMessage -IsWarning $_.Exception.Message
+                        } catch {
+                            Write-PScriboMessage -IsWarning $_.Exception.Message
                         }
                     }
                 }
             }
-        }
-        catch {
-            Write-PscriboMessage -IsWarning $_.Exception.Message
+        } catch {
+            Write-PScriboMessage -IsWarning $_.Exception.Message
         }
     }
     end {}

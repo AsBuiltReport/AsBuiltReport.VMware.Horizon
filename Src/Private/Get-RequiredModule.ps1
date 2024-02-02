@@ -25,7 +25,7 @@ function Get-RequiredModule {
     # Check if the required version of VMware PowerCLI is installed
     $RequiredModule = Get-Module -ListAvailable -Name $Name | Sort-Object -Property Version -Descending | Select-Object -First 1
     $ModuleVersion = "$($RequiredModule.Version.Major)" + "." + "$($RequiredModule.Version.Minor)"
-    if ($ModuleVersion -eq ".")  {
+    if ($ModuleVersion -eq ".") {
         throw "VMware PowerCLI $Version or higher is required to run the VMware Horizon As Built Report. Run 'Install-Module -Name $Name -MinimumVersion $Version' to install the required modules."
     }
     if ($ModuleVersion -lt $Version) {

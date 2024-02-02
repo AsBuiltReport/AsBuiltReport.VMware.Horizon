@@ -5,7 +5,7 @@ function Get-AbrHRZLocalEntitlement {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        0.2.0
+        Version:        1.1.1
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -24,7 +24,7 @@ function Get-AbrHRZLocalEntitlement {
 
     begin {
         Write-PScriboMessage "Users And Groups InfoLevel set at $($InfoLevel.UsersAndGroups.Entitlements)."
-        Write-PscriboMessage "Collecting Users And Groups information."
+        Write-PScriboMessage "Collecting Users And Groups information."
     }
 
     process {
@@ -38,14 +38,14 @@ function Get-AbrHRZLocalEntitlement {
                         foreach ($EntitledUserOrGroupLocalMachine in $EntitledUserOrGroupLocalMachines) {
                             try {
                                 Switch ($EntitledUserOrGroupLocalMachine.base.Group) {
-                                    'True' {$EntitledUserOrGroupLocalMachinegroup = 'Group' }
-                                    'False' {$EntitledUserOrGroupLocalMachinegroup = 'User' }
+                                    'True' { $EntitledUserOrGroupLocalMachinegroup = 'Group' }
+                                    'False' { $EntitledUserOrGroupLocalMachinegroup = 'User' }
                                 }
                                 Switch ($EntitledUserOrGroupLocalMachinegroup) {
-                                    'Group' {$UserPrincipalName = $EntitledUserOrGroupLocalMachine.base.Name}
-                                    'User' {$UserPrincipalName = $EntitledUserOrGroupLocalMachine.base.UserPrincipalName}
+                                    'Group' { $UserPrincipalName = $EntitledUserOrGroupLocalMachine.base.Name }
+                                    'User' { $UserPrincipalName = $EntitledUserOrGroupLocalMachine.base.UserPrincipalName }
                                 }
-                                Write-PscriboMessage "Discovered Local Entitlements $($EntitledUserOrGroupLocalMachine.base.UserPrincipalName)."
+                                Write-PScriboMessage "Discovered Local Entitlements $($EntitledUserOrGroupLocalMachine.base.UserPrincipalName)."
                                 $inObj = [ordered] @{
                                     'User Principal Name' = $UserPrincipalName
                                     'Group or User' = $EntitledUserOrGroupLocalMachinegroup
@@ -53,9 +53,8 @@ function Get-AbrHRZLocalEntitlement {
                                     'Application Entitlements' = ($EntitledUserOrGroupLocalMachine.LocalData.Applications.id).count
                                 }
                                 $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
-                            }
-                            catch {
-                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                            } catch {
+                                Write-PScriboMessage -IsWarning $_.Exception.Message
                             }
                         }
                     }
@@ -78,7 +77,7 @@ function Get-AbrHRZLocalEntitlement {
                             try {
                                 $PoolIDNameResults = ''
                                 $AppIDNameResults = ''
-                                foreach($EntitledUserOrGroupLocalMachine in $EntitledUserOrGroupLocalMachines) {
+                                foreach ($EntitledUserOrGroupLocalMachine in $EntitledUserOrGroupLocalMachines) {
                                     try {
                                         # Find Machine ID Name
                                         $MachineIDName = ''
@@ -90,14 +89,14 @@ function Get-AbrHRZLocalEntitlement {
                                                     break
                                                 }
                                             }
-                                            if($Entitledlocalmachines.count -gt 1){
+                                            if ($Entitledlocalmachines.count -gt 1) {
                                                 $MachineIDNameResults += "$MachineIDName, "
                                                 $MachineIDName = $MachineIDNameResults.TrimEnd(', ')
                                             }
                                         }
                                         Switch ($MachineIDName) {
-                                            '' {$MachineIDName = 'N/A'}
-                                            ' ' {$MachineIDName = 'N/A'}
+                                            '' { $MachineIDName = 'N/A' }
+                                            ' ' { $MachineIDName = 'N/A' }
                                         }
 
                                         # Find Desktop ID Name
@@ -110,7 +109,7 @@ function Get-AbrHRZLocalEntitlement {
                                                     break
                                                 }
                                             }
-                                            if($Entitledlocalmachines.count -gt 1){
+                                            if ($Entitledlocalmachines.count -gt 1) {
                                                 $PoolIDNameResults += "$PoolIDName, "
                                                 $PoolIDName = $PoolIDNameResults.TrimEnd(', ')
                                             }
@@ -127,24 +126,24 @@ function Get-AbrHRZLocalEntitlement {
                                                 }
 
                                             }
-                                            if ($Entitledlocalmachines.count -gt 1){
+                                            if ($Entitledlocalmachines.count -gt 1) {
                                                 $AppIDNameResults += "$AppIDName, "
                                                 $AppIDName = $AppIDNameResults.TrimEnd(', ')
                                             }
                                         }
                                         Switch ($AppIDName) {
-                                            '' {$AppIDName = 'N/A'}
-                                            ' ' {$AppIDName = 'N/A'}
+                                            '' { $AppIDName = 'N/A' }
+                                            ' ' { $AppIDName = 'N/A' }
                                         }
 
                                         Switch ($EntitledUserOrGroupLocalMachine.base.Group) {
-                                            'True' {$EntitledUserOrGroupLocalMachinegroup = 'Group' }
-                                            'False' {$EntitledUserOrGroupLocalMachinegroup = 'User' }
+                                            'True' { $EntitledUserOrGroupLocalMachinegroup = 'Group' }
+                                            'False' { $EntitledUserOrGroupLocalMachinegroup = 'User' }
                                         }
                                         Section -ExcludeFromTOC -Style NOTOCHeading5 "Local Entitlement Details - $($EntitledUserOrGroupLocalMachine.base.Name)" {
                                             $OutObj = @()
                                             try {
-                                                Write-PscriboMessage "Local Entitlements Details for $($EntitledUserOrGroupLocalMachine.base.Name)."
+                                                Write-PScriboMessage "Local Entitlements Details for $($EntitledUserOrGroupLocalMachine.base.Name)."
                                                 $inObj = [ordered] @{
                                                     'Name' = $EntitledUserOrGroupLocalMachine.base.Name
                                                     'Group or User' = $EntitledUserOrGroupLocalMachinegroup
@@ -179,26 +178,22 @@ function Get-AbrHRZLocalEntitlement {
                                                 }
 
                                                 $OutObj | Table @TableParams
-                                            }
-                                            catch {
-                                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                                            } catch {
+                                                Write-PScriboMessage -IsWarning $_.Exception.Message
                                             }
                                         }
-                                    }
-                                    catch {
-                                        Write-PscriboMessage -IsWarning $_.Exception.Message
+                                    } catch {
+                                        Write-PScriboMessage -IsWarning $_.Exception.Message
                                     }
                                 }
-                            }
-                            catch {
-                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                            } catch {
+                                Write-PScriboMessage -IsWarning $_.Exception.Message
                             }
                         }
                     }
                 }
-            }
-            catch {
-                Write-PscriboMessage -IsWarning $_.Exception.Message
+            } catch {
+                Write-PScriboMessage -IsWarning $_.Exception.Message
             }
         }
     }

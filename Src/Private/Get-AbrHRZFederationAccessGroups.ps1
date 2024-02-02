@@ -5,7 +5,7 @@ function Get-AbrHRZFederationAccessGroups {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.0
+        Version:        1.1.1
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -24,20 +24,20 @@ function Get-AbrHRZFederationAccessGroups {
 
     begin {
         Write-PScriboMessage "Role Permissions InfoLevel set at $($InfoLevel.Settings.Administrators.RolePermissions)."
-        Write-PscriboMessage "Collecting Role Federation Access Groups information."
+        Write-PScriboMessage "Collecting Role Federation Access Groups information."
     }
 
     process {
         try {
             if ($Permissions) {
                 if ($InfoLevel.Settings.Administrators.FederationAccessGroup -ge 1) {
-                    section -Style Heading3 "Federation Access Groups" {
+                    Section -Style Heading3 "Federation Access Groups" {
                         Paragraph "The following section details the Federation Access Group information for $($HVEnvironment.toUpper()) server."
                         BlankLine
                         $OutObj = @()
 
                         $FilteredPermissions = ''
-                        $FilteredPermissions = $Permissions | Where-Object{$null -ne $_.base.GlobalAccessGroup}
+                        $FilteredPermissions = $Permissions | Where-Object { $null -ne $_.base.GlobalAccessGroup }
 
                         foreach ($Permission in $FilteredPermissions) {
 
@@ -52,15 +52,14 @@ function Get-AbrHRZFederationAccessGroups {
                                         break
                                     }
                                 }
-                                    if ($PermissionGroups.count -gt 1){
-                                        $AdministratorIDNameResults += "$AdministratorIDName, "
-                                        $AdministratorIDName = $AdministratorIDNameResults.TrimEnd(', ')
-                                    }
+                                if ($PermissionGroups.count -gt 1) {
+                                    $AdministratorIDNameResults += "$AdministratorIDName, "
+                                    $AdministratorIDName = $AdministratorIDNameResults.TrimEnd(', ')
+                                }
                             }
-                            Switch ($AdministratorIDName)
-                            {
-                                '' {$AdministratorIDName = 'N/A'}
-                                ' ' {$AdministratorIDName = 'N/A'}
+                            Switch ($AdministratorIDName) {
+                                '' { $AdministratorIDName = 'N/A' }
+                                ' ' { $AdministratorIDName = 'N/A' }
                             }
 
                             # Mach Permission Role ID with Role ID
@@ -90,8 +89,7 @@ function Get-AbrHRZFederationAccessGroups {
                                 foreach ($GlobalAccessGroup in $GlobalAccessGroups) {
                                     if ($GlobalAccessGroup.Id.id -eq $PermissionGroup) {
                                         $GlobalAccessGroupIDName = "/$($GlobalAccessGroup.base.name)"
-                                    }
-                                    elseif ($GlobalAccessGroup.Children.id.id -eq $PermissionGroup) {
+                                    } elseif ($GlobalAccessGroup.Children.id.id -eq $PermissionGroup) {
                                         $GlobalAccessGroupIDName = "/Root/$(($AccessGroup.Children | Where-Object {$_.id.id -eq $PermissionGroup}).Base.Name)"
                                     }
                                     $GlobalAccessGroupIDName = $GlobalAccessGroupIDName.TrimStart('/')
@@ -122,9 +120,8 @@ function Get-AbrHRZFederationAccessGroups {
                     }
                 }
             }
-        }
-        catch {
-            Write-PscriboMessage -IsWarning $_.Exception.Message
+        } catch {
+            Write-PScriboMessage -IsWarning $_.Exception.Message
         }
     }
     end {}

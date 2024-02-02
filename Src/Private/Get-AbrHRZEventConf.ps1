@@ -5,7 +5,7 @@ function Get-AbrHRZEventConf {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.0
+        Version:        1.1.1
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -24,22 +24,22 @@ function Get-AbrHRZEventConf {
 
     begin {
         Write-PScriboMessage "EventDatabase InfoLevel set at $($InfoLevel.Settings.EventConfiguration.EventDatabase)."
-        Write-PscriboMessage "Collecting Event Configuration information."
+        Write-PScriboMessage "Collecting Event Configuration information."
     }
 
     process {
         try {
             if ($EventDataBases -or $Syslog) {
                 if ($InfoLevel.Settings.EventConfiguration.PSObject.Properties.Value -ne 0) {
-                    section -Style Heading2 "Event Configuration" {
+                    Section -Style Heading2 "Event Configuration" {
                         Paragraph "The following section details on the events configuration information for $($HVEnvironment.toUpper())."
                         BlankLine
                         if ($InfoLevel.Settings.EventConfiguration.EventDatabase -ge 1) {
                             try {
-                                section -Style Heading3 "Event Database" {
+                                Section -Style Heading3 "Event Database" {
                                     $OutObj = @()
                                     foreach ($EventDataBase in $EventDataBases) {
-                                        Write-PscriboMessage "Discovered Event Database Information."
+                                        Write-PScriboMessage "Discovered Event Database Information."
                                         $inObj = [ordered] @{
                                             'Server' = $EventDataBase.database.Server
                                             'Type' = $EventDataBase.database.Type
@@ -57,7 +57,7 @@ function Get-AbrHRZEventConf {
                                     }
 
                                     if ($HealthCheck.EventConfiguration.EventDatabase) {
-                                        $OutObj | Where-Object { $_.'Enabled' -eq 'No'} | Set-Style -Style Warning -Property 'Enabled'
+                                        $OutObj | Where-Object { $_.'Enabled' -eq 'No' } | Set-Style -Style Warning -Property 'Enabled'
                                     }
 
                                     $TableParams = @{
@@ -71,17 +71,16 @@ function Get-AbrHRZEventConf {
                                     }
                                     $OutObj |  Table @TableParams
                                 }
-                            }
-                            catch {
-                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                            } catch {
+                                Write-PScriboMessage -IsWarning $_.Exception.Message
                             }
                         }
                         if ($InfoLevel.Settings.EventConfiguration.Syslog -ge 1 -and $Syslog.UdpData.Enabled) {
                             try {
-                                section -Style Heading3 "Syslog Configuration" {
+                                Section -Style Heading3 "Syslog Configuration" {
                                     $OutObj = @()
                                     foreach ($Logging in $Syslog.UdpData.NetworkAddresses) {
-                                        Write-PscriboMessage "Discovered Syslog Information."
+                                        Write-PScriboMessage "Discovered Syslog Information."
                                         $inObj = [ordered] @{
                                             'Server' = $Logging.split(':')[0]
                                             'Port' = $Logging.split(':')[1]
@@ -101,17 +100,16 @@ function Get-AbrHRZEventConf {
                                     }
                                     $OutObj | Sort-Object -Property 'Server' | Table @TableParams
                                 }
-                            }
-                            catch {
-                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                            } catch {
+                                Write-PScriboMessage -IsWarning $_.Exception.Message
                             }
                         }
                         if ($InfoLevel.Settings.EventConfiguration.EventstoFileSystem -ge 1 -and ($Syslog.FileData.Enabled -or $Syslog.FileData.EnabledOnError)) {
                             try {
-                                section -Style Heading3 "Events to File System" {
+                                Section -Style Heading3 "Events to File System" {
                                     $OutObj = @()
                                     foreach ($Logging in $Syslog) {
-                                        Write-PscriboMessage "Discovered Events to File System Information."
+                                        Write-PScriboMessage "Discovered Events to File System Information."
                                         $inObj = [ordered] @{
                                             'Enabled' = $Logging.FileData.Enabled
                                             'Enabled on Error' = $Logging.FileData.EnabledOnError
@@ -134,17 +132,15 @@ function Get-AbrHRZEventConf {
                                     }
                                     $OutObj | Table @TableParams
                                 }
-                            }
-                            catch {
-                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                            } catch {
+                                Write-PScriboMessage -IsWarning $_.Exception.Message
                             }
                         }
                     }
                 }
             }
-        }
-        catch {
-            Write-PscriboMessage -IsWarning $_.Exception.Message
+        } catch {
+            Write-PScriboMessage -IsWarning $_.Exception.Message
         }
     }
     end {}
