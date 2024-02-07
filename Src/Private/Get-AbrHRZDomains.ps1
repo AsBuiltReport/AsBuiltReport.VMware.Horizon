@@ -5,7 +5,7 @@ function Get-AbrHRZDomains {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.1
+        Version:        1.1.2
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -65,7 +65,7 @@ function Get-AbrHRZDomains {
                 }
                 if ($Domains) {
                     if ($InfoLevel.Settings.Servers.vCenterServers.ADDomains -ge 1) {
-                        Section -Style Heading3 "Connection Server" {
+                        Section -Style Heading3 "Connection Server Domain Status" {
                             Paragraph "The following section shows connection servers domains for $($HVEnvironment.toUpper()) environment."
                             BlankLine
                             $OutObj = @()
@@ -91,7 +91,7 @@ function Get-AbrHRZDomains {
                             }
 
                             $TableParams = @{
-                                Name = "Connection Server- $($HVEnvironment.toUpper())"
+                                Name = "Connection Server Domain Status- $($HVEnvironment.toUpper())"
                                 List = $false
                                 ColumnWidths = 25, 25, 25, 25
                             }

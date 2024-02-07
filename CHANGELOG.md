@@ -1,5 +1,14 @@
 # :arrows_clockwise: VMware Horizon As Built Report Changelog
 
+## [1.1.2] - 2023-12-19
+
+### Added
+
+- Renamed Domains Connection Server Section
+Isssue[#13](https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues/13)
+- Fixed Admin Users and Groups bug details reporting incorrectly.
+Issue[#12](https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues/12)
+
 ## [1.1.0] - 2023-12-19
 
 ### Added

@@ -5,7 +5,7 @@ function Get-AbrHRZAdminGroup {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.1
+        Version:        1.1.2
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -82,8 +82,8 @@ function Get-AbrHRZAdminGroup {
                         $OutObj | Sort-Object -Property 'Display Name' | Table @TableParams
                         try {
                             if ($InfoLevel.Settings.Administrators.AdministratorsandGroups -ge 2) {
-                                Section -Style Heading4 "Administrators Users and Groups Details for $($Administrator.base.Name)" {
-                                    foreach ($Administrator in $Administrators) {
+                                foreach ($Administrator in $Administrators) {
+                                    Section -Style Heading4 "Administrators Users and Groups Details for $($Administrator.base.Name)" {
                                         Write-PScriboMessage "Discovered $($Administrator.base.Name) Information."
                                         $RoleIDNameResults = ''
                                         foreach ($Permission in $Permissions) {
