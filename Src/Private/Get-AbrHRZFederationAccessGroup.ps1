@@ -1,4 +1,4 @@
-function Get-AbrHRZFederationAccessGroups {
+function Get-AbrHRZFederationAccessGroup {
     <#
     .SYNOPSIS
         PowerShell script which documents the configuration of VMware Horizon in Word/HTML/XML/Text formats
@@ -85,15 +85,22 @@ function Get-AbrHRZFederationAccessGroups {
                             # Find AccessGroup ID Name
                             $GlobalAccessGroupIDName = ''
                             $PermissionGroups = $Permission.base.GlobalAccessGroup.id
-                            foreach ($PermissionGroup in $PermissionGroups) {
-                                foreach ($GlobalAccessGroup in $GlobalAccessGroups) {
-                                    if ($GlobalAccessGroup.Id.id -eq $PermissionGroup) {
-                                        $GlobalAccessGroupIDName = "/$($GlobalAccessGroup.base.name)"
-                                    } elseif ($GlobalAccessGroup.Children.id.id -eq $PermissionGroup) {
-                                        $GlobalAccessGroupIDName = "/Root/$(($AccessGroup.Children | Where-Object {$_.id.id -eq $PermissionGroup}).Base.Name)"
+                            if($PermissionGroups){
+                                foreach ($PermissionGroup in $PermissionGroups) {
+                                    if($PermissionGroup){
+                                        if($GlobalAccessGroups){
+                                            foreach ($GlobalAccessGroup in $GlobalAccessGroups) {
+                                                if($GlobalAccessGroup){
+                                                    if ($GlobalAccessGroup.Id.id -eq $PermissionGroup) {
+                                                        $GlobalAccessGroupIDName = "/$($GlobalAccessGroup.base.name)"
+                                                    } elseif ($GlobalAccessGroup.Children.id.id -eq $PermissionGroup) {
+                                                        $GlobalAccessGroupIDName = "/Root/$(($AccessGroup.Children | Where-Object {$_.id.id -eq $PermissionGroup}).Base.Name)"
+                                                    }
+                                                    $GlobalAccessGroupIDName = $GlobalAccessGroupIDName.TrimStart('/')
+                                                }
+                                            }
+                                        }
                                     }
-                                    $GlobalAccessGroupIDName = $GlobalAccessGroupIDName.TrimStart('/')
-
                                 }
                             }
                             $inObj = [ordered] @{

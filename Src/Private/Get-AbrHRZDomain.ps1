@@ -1,4 +1,4 @@
-function Get-AbrHRZDomains {
+function Get-AbrHRZDomain {
     <#
     .SYNOPSIS
         PowerShell script which documents the configuration of VMware Horizon in Word/HTML/XML/Text formats

@@ -1,4 +1,4 @@
-function Get-AbrHRZSites {
+function Get-AbrHRZSite {
     <#
     .SYNOPSIS
         PowerShell script which documents the configuration of VMware Horizon in Word/HTML/XML/Text formats

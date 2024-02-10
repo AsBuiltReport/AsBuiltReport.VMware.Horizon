@@ -64,10 +64,10 @@
             $vCenterHealth = try { $hzServices.VirtualCenterHealth.VirtualCenterHealth_List() } catch { Write-PScriboMessage -IsWarning $_.Exception.Message }
 
             # ESXHosts
-            $esxhosts = $vCenterHealth
+            #$esxhosts = $vCenterHealth
 
             # DataStores
-            $datastores = $vCenterHealth
+            #$datastores = $vCenterHealth
 
             # Domains
             $domains = try { $hzServices.ADDomainHealth.ADDomainHealth_List() } catch { Write-PScriboMessage -IsWarning $_.Exception.Message }
@@ -331,13 +331,6 @@
             } catch {
                 Write-PScriboMessage -IsWarning $_.Exception.Message
             }
-            try {
-                # Certificate Management
-                $CertificateManagement = $hzServices.GlobalSettings.GlobalSettings_ListGatewayCertificates()
-
-            } catch {
-                Write-PScriboMessage -IsWarning $_.Exception.Message
-            }
 
             try {
                 # Global Access Group Info
@@ -371,7 +364,7 @@
                     Get-AbrHRZDesktopPool
                     Get-AbrHRZApplicationPool
                     Get-AbrHRZFarm
-                    Get-AbrHRZMachines
+                    Get-AbrHRZMachine
                     Get-AbrHRZGlobalEntitlement
                 }
             }
@@ -390,7 +383,7 @@
                 }
 
                 #Get-AbrHRZADDomain
-                Get-AbrHRZDomains
+                Get-AbrHRZDomain
                 Get-AbrHRZCertMgmt
                 Get-AbrHRZLicense
                 Get-AbrHRZGlobalSetting
@@ -402,14 +395,14 @@
                         Get-AbrHRZRolePrivilege
                         Get-AbrHRZRolePermission
                         Get-AbrHRZAccessGroup
-                        Get-AbrHRZFederationAccessGroups
+                        Get-AbrHRZFederationAccessGroup
                     }
                 }
 
                 Get-AbrHRZCloudPod
-                Get-AbrHRZSites
+                Get-AbrHRZSite
                 Get-AbrHRZEventConf
-                Get-AbrHRZGlobalPolicies
+                Get-AbrHRZGlobalpolicy
             }
         }
     }
