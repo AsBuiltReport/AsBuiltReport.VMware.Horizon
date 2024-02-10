@@ -5,7 +5,7 @@ function Get-AbrHRZDesktopPool {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.2
+        Version:        1.1.3
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -626,16 +626,18 @@ function Get-AbrHRZDesktopPool {
                                                     Section -ExcludeFromTOC -Style NOTOCHeading6 "Pool Machine Summary - $($Pool.Base.name)" {
                                                         $OutObj = @()
                                                         foreach ($Machine in $Machines) {
-                                                            If ($Machine.Base.DesktopName -like $Pool.base.Name) {
-                                                                $inObj = [ordered] @{
-                                                                    'Machine Name' = $Machine.Base.Name
-                                                                    'Agent Version' = $Machine.Base.AgentVersion
-                                                                    'User' = $Machine.Base.User
-                                                                    'Host' = $Machine.ManagedMachineData.VirtualCenterData.Hostname
-                                                                    'Data Store' = $Machine.ManagedMachineData.VirtualCenterData.VirtualDisks.DatastorePath
-                                                                    'Basic State' = $Machine.Base.BasicState
+                                                            if($Machine.Base.Name) {
+                                                                If ($Machine.Base.DesktopName -like $Pool.base.Name) {
+                                                                    $inObj = [ordered] @{
+                                                                        'Machine Name' = $Machine.Base.Name
+                                                                        'Agent Version' = $Machine.Base.AgentVersion
+                                                                        'User' = $Machine.Base.User
+                                                                        'Host' = $Machine.ManagedMachineData.VirtualCenterData.Hostname
+                                                                        'Data Store' = $Machine.ManagedMachineData.VirtualCenterData.VirtualDisks.DatastorePath
+                                                                        'Basic State' = $Machine.Base.BasicState
+                                                                    }
+                                                                    $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                                                                 }
-                                                                $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                                                             }
                                                         }
                                                         $TableParams = @{
@@ -658,30 +660,34 @@ function Get-AbrHRZDesktopPool {
                                             Write-PScriboMessage -IsWarning $_.Exception.Message
                                         }
                                         try {
-                                            $OutObj = @()
-                                            Section -ExcludeFromTOC -Style NOTOCHeading6 "Desktop Pools Entitlements - $($Pool.Base.Name)" {
-                                                try {
-                                                    Write-PScriboMessage "Discovered Desktop Pool Entitlements Information for - $($Pool.Base.Name)."
-                                                    foreach ($Principal in ($EntitledUserOrGrouplocalMachines | Where-Object { $_.localData.Desktops.id -eq $Pool.Id.id })) {
-                                                        Write-PScriboMessage "Discovered Desktop Pool Entitlements Name for - $($Principal.Base.LoginName)."
-                                                        $inObj = [ordered] @{
-                                                            'Name' = $Principal.Base.LoginName
-                                                            'Domain' = $Principal.Base.Domain
-                                                            'Is Group?' = $Principal.Base.Group
+                                            if($EntitledUserOrGrouplocalMachines | Where-Object { $_.localData.Desktops.id -eq $Pool.Id.id }){
+                                                Section -ExcludeFromTOC -Style NOTOCHeading6 "Desktop Pools Entitlements - $($Pool.Base.Name)" {
+                                                    try {
+                                                        $OutObj = @()
+                                                        Write-PScriboMessage "Discovered Desktop Pool Entitlements Information for - $($Pool.Base.Name)."
+                                                        foreach ($Principal in ($EntitledUserOrGrouplocalMachines | Where-Object { $_.localData.Desktops.id -eq $Pool.Id.id })) {
+                                                            if($Principal.Base.LoginName){
+                                                                Write-PScriboMessage "Discovered Desktop Pool Entitlements Name for - $($Principal.Base.LoginName)."
+                                                                $inObj = [ordered] @{
+                                                                    'Name' = $Principal.Base.LoginName
+                                                                    'Domain' = $Principal.Base.Domain
+                                                                    'Is Group?' = $Principal.Base.Group
+                                                                }
+                                                                $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
+                                                            }
                                                         }
-                                                        $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
+                                                        $TableParams += @{
+                                                            Name = "Desktop Pools Entitlements - $($Pool.Base.Name)"
+                                                            List = $false
+                                                            ColumnWidths = 34, 33, 33
+                                                        }
+                                                        if ($Report.ShowTableCaptions) {
+                                                            $TableParams['Caption'] = "- $($TableParams.Name)"
+                                                        }
+                                                        $OutObj | Sort-Object -Property 'Name' | Table @TableParams
+                                                    } catch {
+                                                        Write-PScriboMessage -IsWarning $_.Exception.Message
                                                     }
-                                                    $TableParams += @{
-                                                        Name = "Desktop Pools Entitlements - $($Pool.Base.Name)"
-                                                        List = $false
-                                                        ColumnWidths = 34, 33, 33
-                                                    }
-                                                    if ($Report.ShowTableCaptions) {
-                                                        $TableParams['Caption'] = "- $($TableParams.Name)"
-                                                    }
-                                                    $OutObj | Sort-Object -Property 'Name' | Table @TableParams
-                                                } catch {
-                                                    Write-PScriboMessage -IsWarning $_.Exception.Message
                                                 }
                                             }
                                         } catch {
