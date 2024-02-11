@@ -5,7 +5,7 @@ function Get-AbrHRZCloudPod {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.2
+        Version:        1.1.3
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -36,48 +36,50 @@ function Get-AbrHRZCloudPod {
                         BlankLine
                         $OutObj = @()
                         foreach ($CloudPodList in $CloudPodLists) {
+                            if ($CloudPodList) {
 
-                            # CP Site Info
-                            $CloudPodSiteInfo = $hzServices.Site.Site_Get($CloudPodList.site)
+                                # CP Site Info
+                                $CloudPodSiteInfo = $hzServices.Site.Site_Get($CloudPodList.site)
 
-                            # Connection Server Info
-                            $CloudPodListEndpoints = $CloudPodList.Endpoints
-                            $CloudPodListEndpointConnectionServerList = ''
-                            foreach ($CloudPodListEndpoint in $CloudPodListEndpoints) {
-                                $CloudPodListEndpointConnectionServer = $hzServices.PodEndpoint.PodEndpoint_Get($CloudPodListEndpoint)
-                                $CloudPodListEndpointConnectionServerList += $CloudPodListEndpointConnectionServer.name -join "`r`n" | Out-String
+                                # Connection Server Info
+                                $CloudPodListEndpoints = $CloudPodList.Endpoints
+                                $CloudPodListEndpointConnectionServerList = ''
+                                foreach ($CloudPodListEndpoint in $CloudPodListEndpoints) {
+                                    $CloudPodListEndpointConnectionServer = $hzServices.PodEndpoint.PodEndpoint_Get($CloudPodListEndpoint)
+                                    $CloudPodListEndpointConnectionServerList += $CloudPodListEndpointConnectionServer.name -join "`r`n" | Out-String
+                                }
+
+                                # Active Global Entitlements
+                                $CloudPodListActiveGlobalEntitlements = $CloudPodList.ActiveGlobalEntitlements
+                                $CloudPodListActiveGlobalEntitlementList = ''
+                                foreach ($CloudPodListActiveGlobalEntitlement in $CloudPodListActiveGlobalEntitlements) {
+                                    $CloudPodListActiveGlobalEntitlementInfo = $hzServices.GlobalEntitlement.GlobalEntitlement_Get($CloudPodListActiveGlobalEntitlement)
+                                    $CloudPodListActiveGlobalEntitlementList += $CloudPodListActiveGlobalEntitlementInfo.Base.DisplayName -join "`r`n" | Out-String
+                                }
+
+                                # Active Global Application Entitlements
+                                $CloudPodListActiveGlobalApplicationEntitlements = $CloudPodList.ActiveGlobalApplicationEntitlements
+                                $CloudPodListActiveGlobalApplicationEntitlementList = ''
+                                foreach ($CloudPodListActiveGlobalApplicationEntitlement in $CloudPodListActiveGlobalApplicationEntitlements) {
+                                    $CloudPodListActiveGlobalApplicationEntitlementInfo = $hzServices.GlobalApplicationEntitlement.GlobalApplicationEntitlement_Get($CloudPodListActiveGlobalApplicationEntitlement)
+                                    $CloudPodListActiveGlobalApplicationEntitlementList += $CloudPodListActiveGlobalApplicationEntitlementInfo.Base.DisplayName -join "`r`n" | Out-String
+                                }
+
+
+                                Write-PScriboMessage "Discovered Cloud Pod Federation Information."
+                                $inObj = [ordered] @{
+                                    'Pod Name' = $CloudPodList.DisplayName
+                                    'Pod Local' = $CloudPodList.Localpod
+                                    'Pod Site' = $CloudPodSiteInfo.Base.DisplayName
+                                    'Pod Description' = $CloudPodList.Description
+                                    'Pod Cloud Managed' = $CloudPodList.CloudManaged
+                                    'Pod Connection Servers' = $CloudPodListEndpointConnectionServerList
+                                    'Pod Active Global Entitlements' = $CloudPodListActiveGlobalEntitlementList
+                                    'Pod Active Global Application Entitlements' = $CloudPodListActiveGlobalApplicationEntitlementList
+                                }
+
+                                $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                             }
-
-                            # Active Global Entitlements
-                            $CloudPodListActiveGlobalEntitlements = $CloudPodList.ActiveGlobalEntitlements
-                            $CloudPodListActiveGlobalEntitlementList = ''
-                            foreach ($CloudPodListActiveGlobalEntitlement in $CloudPodListActiveGlobalEntitlements) {
-                                $CloudPodListActiveGlobalEntitlementInfo = $hzServices.GlobalEntitlement.GlobalEntitlement_Get($CloudPodListActiveGlobalEntitlement)
-                                $CloudPodListActiveGlobalEntitlementList += $CloudPodListActiveGlobalEntitlementInfo.Base.DisplayName -join "`r`n" | Out-String
-                            }
-
-                            # Active Global Application Entitlements
-                            $CloudPodListActiveGlobalApplicationEntitlements = $CloudPodList.ActiveGlobalApplicationEntitlements
-                            $CloudPodListActiveGlobalApplicationEntitlementList = ''
-                            foreach ($CloudPodListActiveGlobalApplicationEntitlement in $CloudPodListActiveGlobalApplicationEntitlements) {
-                                $CloudPodListActiveGlobalApplicationEntitlementInfo = $hzServices.GlobalApplicationEntitlement.GlobalApplicationEntitlement_Get($CloudPodListActiveGlobalApplicationEntitlement)
-                                $CloudPodListActiveGlobalApplicationEntitlementList += $CloudPodListActiveGlobalApplicationEntitlementInfo.Base.DisplayName -join "`r`n" | Out-String
-                            }
-
-
-                            Write-PScriboMessage "Discovered Cloud Pod Federation Information."
-                            $inObj = [ordered] @{
-                                'Pod Name' = $CloudPodList.DisplayName
-                                'Pod Local' = $CloudPodList.Localpod
-                                'Pod Site' = $CloudPodSiteInfo.Base.DisplayName
-                                'Pod Description' = $CloudPodList.Description
-                                'Pod Cloud Managed' = $CloudPodList.CloudManaged
-                                'Pod Connection Servers' = $CloudPodListEndpointConnectionServerList
-                                'Pod Active Global Entitlements' = $CloudPodListActiveGlobalEntitlementList
-                                'Pod Active Global Application Entitlements' = $CloudPodListActiveGlobalApplicationEntitlementList
-                            }
-
-                            $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                         }
 
                         $TableParams = @{

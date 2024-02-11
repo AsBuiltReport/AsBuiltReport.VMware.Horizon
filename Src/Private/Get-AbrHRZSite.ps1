@@ -1,11 +1,11 @@
-function Get-AbrHRZSites {
+function Get-AbrHRZSite {
     <#
     .SYNOPSIS
         PowerShell script which documents the configuration of VMware Horizon in Word/HTML/XML/Text formats
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.2
+        Version:        1.1.3
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr

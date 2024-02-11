@@ -5,7 +5,7 @@ function Get-AbrHRZGlobalSetting {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.2
+        Version:        1.1.3
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -29,7 +29,7 @@ function Get-AbrHRZGlobalSetting {
 
     process {
         try {
-            if ($GlobalSettings) {
+            if ($GlobalSettings.GeneralData) {
                 if ($InfoLevel.Settings.GlobalSettings.GlobalSettings -ge 1) {
                     Section -Style Heading2 "Global Settings" {
                         Paragraph "The following section details the Global Settings configuration for $($HVEnvironment.toUpper()) server."
