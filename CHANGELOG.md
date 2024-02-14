@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated VMware PowerCLI requirements to v13.2
 - Updated Sample Reports
+- Updated CodeQL upload-sarif action requirement to v3
 
 ### Fixed
 
