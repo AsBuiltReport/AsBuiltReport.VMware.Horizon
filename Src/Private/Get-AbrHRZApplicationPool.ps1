@@ -5,7 +5,7 @@ function Get-AbrHRZApplicationPool {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.0
+        Version:        1.1.3
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -24,19 +24,19 @@ function Get-AbrHRZApplicationPool {
 
     begin {
         Write-PScriboMessage "Applications InfoLevel set at $($InfoLevel.Inventory.Applications)."
-        Write-PscriboMessage "Collecting Applications information."
+        Write-PScriboMessage "Collecting Applications information."
     }
 
     process {
         try {
             if ($Apps) {
                 if ($InfoLevel.Inventory.Applications -ge 1) {
-                    section -Style Heading3 "Application Pool" {
+                    Section -Style Heading3 "Application Pool" {
                         Paragraph "The following section details the configuration of Application Pool for $($HVEnvironment.toUpper()) server."
                         BlankLine
                         $OutObj = @()
                         foreach ($App in $Apps) {
-                            Write-PscriboMessage "Discovered Applications Information for $($App.Data.DisplayName)."
+                            Write-PScriboMessage "Discovered Applications Information for $($App.Data.DisplayName)."
                             $inObj = [ordered] @{
                                 'Name' = $App.Data.DisplayName
                                 'Version' = $App.ExecutionData.Version
@@ -58,7 +58,7 @@ function Get-AbrHRZApplicationPool {
                         $OutObj | Sort-Object -Property 'Name' | Table @TableParams
                         try {
                             if ($InfoLevel.Inventory.Applications -ge 2) {
-                                section -Style Heading4 "Application Pool Details" {
+                                Section -Style Heading4 "Application Pool Details" {
                                     foreach ($App in $Apps) {
                                         # Find out Farm Name for Applications
                                         $farmMatch = $false
@@ -92,25 +92,24 @@ function Get-AbrHRZApplicationPool {
                                             } else {
                                                 $GlobalApplicationEntitlementGroupDisplayName = "No Global Application Entitlement"
                                             }
-                                        if ($GlobalApplicationEntitlementGroupMatch) {
-                                            break
+                                            if ($GlobalApplicationEntitlementGroupMatch) {
+                                                break
                                             }
                                         }
-                                        If([string]::IsNullOrEmpty($App.Data.AvApplicationPackageGuid)){
+                                        If ([string]::IsNullOrEmpty($App.Data.AvApplicationPackageGuid)) {
 
                                             $AppVolumesApp = "False"
-                                        }
-                                        else {
+                                        } else {
                                             $AppVolumesApp = "True"
                                         }
-                                        $ApplicationFileTypes = $App.ExecutionData.FileTypes | ForEach-Object { $_.FileType}
+                                        $ApplicationFileTypes = $App.ExecutionData.FileTypes | ForEach-Object { $_.FileType }
                                         $ApplicationFileTypesresult = $ApplicationFileTypes -join ', '
-                                        $OtherApplicationFileTypes = $App.ExecutionData.OtherFileTypes | ForEach-Object { $_.FileType}
+                                        $OtherApplicationFileTypes = $App.ExecutionData.OtherFileTypes | ForEach-Object { $_.FileType }
                                         $OtherApplicationFileTypesresult = $OtherApplicationFileTypes -join ', '
 
-                                        section -Style Heading5 "Application Summary - $($App.Data.DisplayName)" {
+                                        Section -Style Heading5 "Application Summary - $($App.Data.DisplayName)" {
                                             $OutObj = @()
-                                            Write-PscriboMessage "Discovered $($App.Data.DisplayName) Applications Information."
+                                            Write-PScriboMessage "Discovered $($App.Data.DisplayName) Applications Information."
                                             $inObj = [ordered] @{
                                                 'Display Name' = $App.Data.DisplayName
                                                 'Description' = $App.Data.Description
@@ -158,16 +157,14 @@ function Get-AbrHRZApplicationPool {
                                     }
                                 }
                             }
-                        }
-                        catch {
-                            Write-PscriboMessage -IsWarning $_.Exception.Message
+                        } catch {
+                            Write-PScriboMessage -IsWarning $_.Exception.Message
                         }
                     }
                 }
             }
-        }
-        catch {
-            Write-PscriboMessage -IsWarning $_.Exception.Message
+        } catch {
+            Write-PScriboMessage -IsWarning $_.Exception.Message
         }
     }
     end {}

@@ -5,7 +5,7 @@ function Get-AbrHRZGlobalEntitlement {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.0
+        Version:        1.1.3
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -24,7 +24,7 @@ function Get-AbrHRZGlobalEntitlement {
 
     begin {
         Write-PScriboMessage "Global Entitlements InfoLevel set at $($InfoLevel.Inventory.GlobalEntitlements)."
-        Write-PscriboMessage "Collecting Global Entitlements information."
+        Write-PScriboMessage "Collecting Global Entitlements information."
     }
 
     process {
@@ -32,24 +32,23 @@ function Get-AbrHRZGlobalEntitlement {
             if ($GlobalEntitlements) {
 
                 if ($InfoLevel.Inventory.GlobalEntitlements -ge 1) {
-                    section -Style Heading3 "Global Entitlements" {
+                    Section -Style Heading3 "Global Entitlements" {
                         Paragraph "The following section details the Global Entitlements configuration for $($HVEnvironment.toUpper()) server."
                         BlankLine
 
-                        $GlobalEntitlements | ForEach-Object{ $_ | Add-Member -MemberType NoteProperty -Name "GE_Type" -Value "Desktop"}
-                        $GlobalApplicationEntitlementGroups | ForEach-Object{ $_ | Add-Member -MemberType NoteProperty -Name "GE_Type" -Value "Application"}
+                        $GlobalEntitlements | ForEach-Object { $_ | Add-Member -MemberType NoteProperty -Name "GE_Type" -Value "Desktop" }
+                        $GlobalApplicationEntitlementGroups | ForEach-Object { $_ | Add-Member -MemberType NoteProperty -Name "GE_Type" -Value "Application" }
                         $GlobalEntitlementJoined = @()
                         $GlobalEntitlementJoined += $GlobalEntitlements
                         $GlobalEntitlementJoined += $GlobalApplicationEntitlementGroups
 
                         $OutObj = @()
                         foreach ($GlobalEntitlement in $GlobalEntitlementJoined) {
-                            Write-PscriboMessage "Discovered Global Entitlements Information."
+                            Write-PScriboMessage "Discovered Global Entitlements Information."
                             $GlobalEntitlementPodCount = ($GlobalEntitlement.data.memberpods.id).count
                             if ($GlobalEntitlement.Data.LocalApplicationCount) {
                                 $Type = 'Application'
-                            }
-                            elseif ($GlobalEntitlement.Data.LocalDesktopCount) {
+                            } elseif ($GlobalEntitlement.Data.LocalDesktopCount) {
                                 $Type = 'Desktop'
                             }
                             $inObj = [ordered] @{
@@ -73,29 +72,28 @@ function Get-AbrHRZGlobalEntitlement {
                         $OutObj | Sort-Object -Property 'Name' | Table @TableParams
 
 
-                        section -Style Heading4 "Global Entitlement Summary Details" {
+                        Section -Style Heading4 "Global Entitlement Summary Details" {
                             foreach ($GlobalEntitlement in $GlobalEntitlementJoined) {
 
-                                Write-PscriboMessage "Discovered Global Entitlements Detailed Information for $($GlobalEntitlement.base.DisplayName)."
+                                Write-PScriboMessage "Discovered Global Entitlements Detailed Information for $($GlobalEntitlement.base.DisplayName)."
                                 try {
                                     if ($InfoLevel.Inventory.GlobalEntitlements -ge 2) {
-                                        section -Style Heading5 "Summary - $($GlobalEntitlement.base.DisplayName)" {
+                                        Section -Style Heading5 "Summary - $($GlobalEntitlement.base.DisplayName)" {
 
                                             $SupportedDisplayProtocolsresult = ''
-                                            $SupportedDisplayProtocols = $GlobalEntitlement.base | ForEach-Object { $_.SupportedDisplayProtocols}
+                                            $SupportedDisplayProtocols = $GlobalEntitlement.base | ForEach-Object { $_.SupportedDisplayProtocols }
                                             $SupportedDisplayProtocolsresult = $SupportedDisplayProtocols -join ', '
 
                                             if ($GlobalEntitlement.Data.LocalApplicationCount) {
                                                 $Type = 'Application'
-                                            }
-                                            elseif ($GlobalEntitlement.Data.LocalDesktopCount) {
+                                            } elseif ($GlobalEntitlement.Data.LocalDesktopCount) {
                                                 $Type = 'Desktop'
                                             }
 
                                             $GlobalAccessGroupID = $($hzServices.GlobalAccessGroup.GlobalAccessGroup_Get($GlobalEntitlement.base.GlobalAccessGroupId).base.Name)
 
                                             $OutObj = @()
-                                            Write-PscriboMessage "Discovered Global Entitlement Data for $HVEnvironment"
+                                            Write-PScriboMessage "Discovered Global Entitlement Data for $HVEnvironment"
                                             $inObj = [ordered] @{
                                                 'Display Name' = $GlobalEntitlement.base.DisplayName
                                                 'Alias Name' = $GlobalEntitlement.base.AliasName
@@ -117,7 +115,7 @@ function Get-AbrHRZGlobalEntitlement {
                                                 'Category Folder Name' = $GlobalEntitlement.base.CategoryFolderName
                                                 'Client Restrictions' = $GlobalEntitlement.base.ClientRestrictions
                                                 'Enable Collaboration' = $GlobalEntitlement.base.EnableCollaboration
-                                                'Shortcut Locations' = $GlobalEntitlement.base.ShortcutLocations
+                                                'Shortcut Locations' = $($GlobalEntitlement.base.ShortcutLocations -join ', ')
                                                 'Multisession Mode' = $GlobalEntitlement.base.MultiSessionMode
                                                 'Backup GAE' = $GlobalEntitlement.base.BackupGAE
                                                 'Display Assigned Machine Name' = $GlobalEntitlement.base.DisplayAssignedMachineName
@@ -156,38 +154,38 @@ function Get-AbrHRZGlobalEntitlement {
 
                                         try {
                                             $OutObj = @()
-                                            section -Style Heading6 "Local Pools - $($GlobalEntitlement.base.DisplayName)" {
+                                            Section -Style Heading6 "Local Pools - $($GlobalEntitlement.base.DisplayName)" {
                                                 try {
-                                                    Write-PscriboMessage "Discovered Local Pools Information for $($HVEnvironment.toUpper())."
+                                                    Write-PScriboMessage "Discovered Local Pools Information for $($HVEnvironment.toUpper())."
 
                                                     $GEPodMembers = $GlobalEntitlement.data.MemberPods.id
                                                     $PodSiteID = ('')
 
-                                                    Foreach($GEPodMember in $GEPodMembers){
-                                                        Foreach($CPSite in $CloudPodLists){
-                                                           If($CPSite.id.id -eq $GEPodMember){
+                                                    Foreach ($GEPodMember in $GEPodMembers) {
+                                                        Foreach ($CPSite in $CloudPodLists) {
+                                                            If ($CPSite.id.id -eq $GEPodMember) {
                                                                 $PodSiteID += $CPSite.DisplayName
-                                                           }
+                                                            }
                                                         }
                                                     }
 
                                                     $PodMembers = ''
-                                                    $PodMembers = ForEach-Object {$PodSiteID}
+                                                    $PodMembers = ForEach-Object { $PodSiteID }
                                                     $PodMemberList = $PodMembers -join ', '
 
                                                     $inObj = [ordered] @{
-                                                        'Local Desktop Count'       = $GlobalEntitlement.data.LocalDesktopCount
-                                                        'Local Application Count'   = $GlobalEntitlement.data.LocalApplicationCount
+                                                        'Local Desktop Count' = $GlobalEntitlement.data.LocalDesktopCount
+                                                        'Local Application Count' = $GlobalEntitlement.data.LocalApplicationCount
                                                         'Remote Desktop Count' = $GlobalEntitlement.data.RemoteDesktopCount
                                                         'Remote Application Count' = $GlobalEntitlement.data.RemoteApplicationCount
-                                                        'User Count'     = $GlobalEntitlement.data.UserCount
-                                                        'User or Group Count'      = $GlobalEntitlement.data.UserGroupCount
+                                                        'User Count' = $GlobalEntitlement.data.UserCount
+                                                        'User or Group Count' = $GlobalEntitlement.data.UserGroupCount
                                                         'User or Group Site Override Count' = $GlobalEntitlement.data.UserGroupSiteOverrideCount
-                                                        'Member Pods'  = $PodMemberList
+                                                        'Member Pods' = $PodMemberList
                                                     }
                                                     $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
 
-                                                    if ($Type -eq 'Application'){
+                                                    if ($Type -eq 'Application') {
                                                         $inObj.Remove('Local Desktop Count')
                                                         $inObj.Remove('Remote Desktop Count')
                                                     }
@@ -198,35 +196,33 @@ function Get-AbrHRZGlobalEntitlement {
                                                     }
 
                                                     $TableParams = @{
-                                                        Name         = "Local Pools - $($HVEnvironment.toUpper())"
-                                                        List         = $true
+                                                        Name = "Local Pools - $($HVEnvironment.toUpper())"
+                                                        List = $true
                                                         ColumnWidths = 30, 70
                                                     }
                                                     if ($Report.ShowTableCaptions) {
                                                         $TableParams['Caption'] = "- $($TableParams.Name)"
                                                     }
                                                     $OutObj | Table @TableParams
-                                                }
-                                                catch {
-                                                    Write-PscriboMessage -IsWarning $_.Exception.Message
+                                                } catch {
+                                                    Write-PScriboMessage -IsWarning $_.Exception.Message
                                                 }
                                             }
-                                        }
-                                        catch {
-                                            Write-PscriboMessage -IsWarning $_.Exception.Message
+                                        } catch {
+                                            Write-PScriboMessage -IsWarning $_.Exception.Message
                                         }
 
                                         # Users and Groups
                                         try {
 
-                                            section -Style Heading6 "Users and Groups - $($GlobalEntitlement.base.DisplayName)" {
+                                            Section -Style Heading6 "Users and Groups - $($GlobalEntitlement.base.DisplayName)" {
                                                 $OutObj = @()
                                                 try {
-                                                    Write-PscriboMessage "Discovered Users and Groups - $($GlobalEntitlement.base.DisplayName)."
+                                                    Write-PScriboMessage "Discovered Users and Groups - $($GlobalEntitlement.base.DisplayName)."
 
                                                     foreach ($EntitledUserOrGroupGlobal in $EntitledUserOrGroupGlobals) {
                                                         Switch ($EntitledUserOrGroupGlobal.base.Group) {
-                                                            'True'  { $GlobalEntitledGroup = 'Group' }
+                                                            'True' { $GlobalEntitledGroup = 'Group' }
                                                             'False' { $GlobalEntitledGroup = 'User' }
                                                         }
                                                         $EntitledDefined = @()
@@ -243,7 +239,7 @@ function Get-AbrHRZGlobalEntitlement {
                                                             }
                                                         }
 
-                                                        foreach ($ED in $EntitledDefined){
+                                                        foreach ($ED in $EntitledDefined) {
                                                             $inObj = [ordered] @{
                                                                 'Name' = $ED.Base.Name
                                                                 'User or Group' = $GlobalEntitledGroup
@@ -253,14 +249,13 @@ function Get-AbrHRZGlobalEntitlement {
                                                         }
 
                                                     } # End If Group or User
-                                                }
-                                                catch {
-                                                    Write-PscriboMessage -IsWarning $_.Exception.Message
+                                                } catch {
+                                                    Write-PScriboMessage -IsWarning $_.Exception.Message
                                                 }
 
                                                 $TableParams = @{
-                                                    Name         = "Users and Groups - $($GlobalEntitlement.base.DisplayName)"
-                                                    List         = $false
+                                                    Name = "Users and Groups - $($GlobalEntitlement.base.DisplayName)"
+                                                    List = $false
                                                     ColumnWidths = 40, 30, 30
                                                 }
                                                 if ($Report.ShowTableCaptions) {
@@ -268,23 +263,20 @@ function Get-AbrHRZGlobalEntitlement {
                                                 }
                                                 $OutObj | Table @TableParams
                                             }
-                                        }
-                                        catch {
-                                            Write-PscriboMessage -IsWarning $_.Exception.Message
+                                        } catch {
+                                            Write-PScriboMessage -IsWarning $_.Exception.Message
                                         }
                                     }
-                                }
-                                catch {
-                                    Write-PscriboMessage -IsWarning $_.Exception.Message
+                                } catch {
+                                    Write-PScriboMessage -IsWarning $_.Exception.Message
                                 }
                             }
                         }
                     }
                 }
             }
-        }
-        catch {
-            Write-PscriboMessage -IsWarning $_.Exception.Message
+        } catch {
+            Write-PScriboMessage -IsWarning $_.Exception.Message
         }
     }
     end {}

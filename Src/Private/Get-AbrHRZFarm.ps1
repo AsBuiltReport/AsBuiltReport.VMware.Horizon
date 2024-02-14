@@ -5,7 +5,7 @@ function Get-AbrHRZFarm {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.0
+        Version:        1.1.3
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -24,19 +24,19 @@ function Get-AbrHRZFarm {
 
     begin {
         Write-PScriboMessage "Farm InfoLevel set at $($InfoLevel.Inventory.Farms)."
-        Write-PscriboMessage "Collecting Farm information."
+        Write-PScriboMessage "Collecting Farm information."
     }
 
     process {
         try {
             if ($Farms) {
                 if ($InfoLevel.Inventory.Farms -ge 1) {
-                    section -Style Heading3 "Farm Pools" {
+                    Section -Style Heading3 "Farm Pools" {
                         Paragraph "The following section details the Farms configuration for $($HVEnvironment.toUpper()[0]) server."
                         BlankLine
                         $OutObj = @()
                         foreach ($Farm in $Farms) {
-                            Write-PscriboMessage "Discovered Farms Information."
+                            Write-PScriboMessage "Discovered Farms Information."
                             $inObj = [ordered] @{
                                 'Name' = $Farm.Data.displayName
                                 'Type' = $Farm.Type
@@ -47,7 +47,7 @@ function Get-AbrHRZFarm {
                         }
 
                         if ($HealthCheck.Farms.Status) {
-                            $OutObj | Where-Object { $_.'Enabled' -eq 'No'} | Set-Style -Style Warning -Property 'Enabled'
+                            $OutObj | Where-Object { $_.'Enabled' -eq 'No' } | Set-Style -Style Warning -Property 'Enabled'
                         }
 
                         $TableParams = @{
@@ -62,9 +62,9 @@ function Get-AbrHRZFarm {
                         $OutObj | Sort-Object -Property 'Name' | Table @TableParams
                         try {
                             if ($InfoLevel.Inventory.Farms -ge 2) {
-                                section -Style Heading4 "Farm Pools Details" {
+                                Section -Style Heading4 "Farm Pools Details" {
                                     foreach ($Farm in $Farms) {
-                                        section -Style Heading5 $($Farm.Data.name) {
+                                        Section -Style Heading5 $($Farm.Data.name) {
                                             # Find out Access Group for Applications
                                             $AccessgroupMatch = $false
                                             $AccessgroupJoined = @()
@@ -83,12 +83,12 @@ function Get-AbrHRZFarm {
                                             # Farm AD Container
                                             $FarmContainerName = ''
                                             if ($Farm.AutomatedFarmData.CustomizationSettings.AdContainer.id) {
-                                                foreach ($ADDomain in $ADDomains){
+                                                foreach ($ADDomain in $ADDomains) {
                                                     $ADDomainID = ($ADDomain.id.id -creplace '^[^/]*/', '')
                                                     if ($Farm.AutomatedFarmData.CustomizationSettings.AdContainer.id -like "ADContainer/$ADDomainID/*") {
                                                         $ADContainers = $hzServices.ADContainer.ADContainer_ListByDomain($ADDomain.id)
                                                         foreach ($ADContainer in $ADContainers) {
-                                                            if ($ADContainer.id.id -eq $Farm.AutomatedFarmData.CustomizationSettings.AdContainer.id){
+                                                            if ($ADContainer.id.id -eq $Farm.AutomatedFarmData.CustomizationSettings.AdContainer.id) {
                                                                 $FarmContainerName = $ADContainer.rdn
                                                                 break
                                                             }
@@ -99,11 +99,11 @@ function Get-AbrHRZFarm {
 
                                             # Farm Customization Type
                                             $Customizations = ('')
-                                            If($Farm.AutomatedFarmData.CustomizationSettings.SysprepCustomizationSettings.CustomizationSpec){
-                                                Foreach ($vCenterServer in $vCenterServers){
+                                            If ($Farm.AutomatedFarmData.CustomizationSettings.SysprepCustomizationSettings.CustomizationSpec) {
+                                                Foreach ($vCenterServer in $vCenterServers) {
                                                     $Customizations = $hzServices.CustomizationSpec.CustomizationSpec_List($vCenterServer.id)
-                                                    Foreach ($Customization in $Customizations){
-                                                        if($Farm.AutomatedFarmData.CustomizationSettings.SysprepCustomizationSettings.CustomizationSpec.id -eq $Customization.id.id){
+                                                    Foreach ($Customization in $Customizations) {
+                                                        if ($Farm.AutomatedFarmData.CustomizationSettings.SysprepCustomizationSettings.CustomizationSpec.id -eq $Customization.id.id) {
                                                             $FarmCustomization = $($Customization.CustomizationSpecData.Name)
                                                         }
                                                     }
@@ -112,9 +112,9 @@ function Get-AbrHRZFarm {
 
 
                                             try {
-                                                section -ExcludeFromTOC -Style NOTOCHeading5 "General" {
+                                                Section -ExcludeFromTOC -Style NOTOCHeading5 "General" {
                                                     $OutObj = @()
-                                                    Write-PscriboMessage "Discovered $($Farm.Data.name) General Information."
+                                                    Write-PScriboMessage "Discovered $($Farm.Data.name) General Information."
                                                     $inObj = [ordered] @{
                                                         'Pool Name' = $Farm.Data.name
                                                         'Display Name' = $Farm.Data.displayName
@@ -136,7 +136,7 @@ function Get-AbrHRZFarm {
                                                     $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
 
                                                     if ($HealthCheck.Farms.Status) {
-                                                        $OutObj | Where-Object { $_.'Enabled' -eq 'No'} | Set-Style -Style Warning -Property 'Enabled'
+                                                        $OutObj | Where-Object { $_.'Enabled' -eq 'No' } | Set-Style -Style Warning -Property 'Enabled'
                                                     }
 
                                                     $TableParams = @{
@@ -150,14 +150,13 @@ function Get-AbrHRZFarm {
                                                     }
                                                     $OutObj | Table @TableParams
                                                 }
-                                            }
-                                            catch {
-                                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                                            } catch {
+                                                Write-PScriboMessage -IsWarning $_.Exception.Message
                                             }
                                             try {
-                                                section -ExcludeFromTOC -Style NOTOCHeading5 "Load Balancing Settings" {
+                                                Section -ExcludeFromTOC -Style NOTOCHeading5 "Load Balancing Settings" {
                                                     $OutObj = @()
-                                                    Write-PscriboMessage "Discovered $($Farm.Data.name) Load Balancing Settings."
+                                                    Write-PScriboMessage "Discovered $($Farm.Data.name) Load Balancing Settings."
                                                     $inObj = [ordered] @{
                                                         'Use Custom Script' = $Farm.Data.LbSettings.UseCustomScript
                                                         'Include Session Count' = $Farm.Data.LbSettings.LbMetricsSettings.IncludeSessionCount
@@ -182,14 +181,13 @@ function Get-AbrHRZFarm {
                                                     }
                                                     $OutObj | Table @TableParams
                                                 }
-                                            }
-                                            catch {
-                                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                                            } catch {
+                                                Write-PScriboMessage -IsWarning $_.Exception.Message
                                             }
                                             try {
-                                                section -ExcludeFromTOC -Style NOTOCHeading5 "Provisioning Settings" {
+                                                Section -ExcludeFromTOC -Style NOTOCHeading5 "Provisioning Settings" {
                                                     $OutObj = @()
-                                                    Write-PscriboMessage "Discovered $($Farm.Data.name) Settings."
+                                                    Write-PScriboMessage "Discovered $($Farm.Data.name) Settings."
                                                     $inObj = [ordered] @{
                                                         'Provisioning Enabled' = $Farm.AutomatedFarmData.VirtualCenterProvisioningSettings.EnableProvisioning
                                                         'Stop Provisioning on Error' = $Farm.AutomatedFarmData.VirtualCenterProvisioningSettings.StopProvisioningOnError
@@ -203,7 +201,7 @@ function Get-AbrHRZFarm {
                                                     $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
 
                                                     if ($HealthCheck.Farms.Status) {
-                                                        $OutObj | Where-Object { $_.'Provisioning Enabled' -eq 'No'} | Set-Style -Style Warning -Property 'Provisioning Enabled'
+                                                        $OutObj | Where-Object { $_.'Provisioning Enabled' -eq 'No' } | Set-Style -Style Warning -Property 'Provisioning Enabled'
                                                     }
 
                                                     $TableParams = @{
@@ -217,24 +215,23 @@ function Get-AbrHRZFarm {
                                                     }
                                                     $OutObj | Table @TableParams
                                                 }
-                                            }
-                                            catch {
-                                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                                            } catch {
+                                                Write-PScriboMessage -IsWarning $_.Exception.Message
                                             }
                                             try {
-                                                section -ExcludeFromTOC -Style NOTOCHeading6 "vCenter Server Settings" {
+                                                Section -ExcludeFromTOC -Style NOTOCHeading6 "vCenter Server Settings" {
                                                     $OutObj = @()
-                                                    Write-PscriboMessage "Discovered $($Farm.Data.name) vCenter Server Settings Information."
+                                                    Write-PScriboMessage "Discovered $($Farm.Data.name) vCenter Server Settings Information."
                                                     $inObj = [ordered] @{
                                                         'VM folder' = $Farm.AutomatedFarmData.VirtualCenterNamesData.VmFolderPath
                                                         'Host Or Cluster Path' = $Farm.AutomatedFarmData.VirtualCenterNamesData.HostOrClusterPath
                                                         'Resource Pool' = $Farm.AutomatedFarmData.VirtualCenterNamesData.ResourcePoolPath
                                                         'Golden Image' = $Farm.AutomatedFarmData.VirtualCenterNamesData.ParentVmPath
                                                         'Snapshot' = $Farm.AutomatedFarmData.VirtualCenterNamesData.SnapshotPath
-                                                        'Datastore Paths' = ($Farm.AutomatedFarmData.VirtualCenterNamesData.DatastorePaths | ForEach-Object {$_.Split('/')[4]}) -join ', '
+                                                        'Datastore Paths' = ($Farm.AutomatedFarmData.VirtualCenterNamesData.DatastorePaths | ForEach-Object { $_.Split('/')[4] }) -join ', '
                                                         'Networks' = Switch ($Farm.AutomatedFarmData.VirtualCenterNamesData.NetworkLabelNames) {
-                                                            $null {'Golden Image network selected'}
-                                                            default {$Farm.AutomatedFarmData.VirtualCenterNamesData.NetworkLabelNames}
+                                                            $null { 'Golden Image network selected' }
+                                                            default { $Farm.AutomatedFarmData.VirtualCenterNamesData.NetworkLabelNames }
                                                         }
                                                     }
 
@@ -251,18 +248,17 @@ function Get-AbrHRZFarm {
                                                     }
                                                     $OutObj | Table @TableParams
                                                 }
-                                            }
-                                            catch {
-                                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                                            } catch {
+                                                Write-PScriboMessage -IsWarning $_.Exception.Message
                                             }
 
                                             try {
-                                                section -ExcludeFromTOC -Style NOTOCHeading5 "Guest Customization" {
+                                                Section -ExcludeFromTOC -Style NOTOCHeading5 "Guest Customization" {
                                                     $OutObj = @()
-                                                    Write-PscriboMessage "Guest Customization $($Farm.Data.name) Settings."
+                                                    Write-PScriboMessage "Guest Customization $($Farm.Data.name) Settings."
                                                     $inObj = [ordered] @{
                                                         'Guest Customization' = $Farm.AutomatedFarmData.CustomizationSettings.CustomizationType
-                                                        'Guest Customization Domain and Account' = ($InstantCloneDomainAdmins | Where-Object {$_.Id.id -eq $Farm.AutomatedFarmData.CustomizationSettings.InstantCloneEngineDomainAdministrator.id}).Base.UserName
+                                                        'Guest Customization Domain and Account' = ($InstantCloneDomainAdmins | Where-Object { $_.Id.id -eq $Farm.AutomatedFarmData.CustomizationSettings.InstantCloneEngineDomainAdministrator.id }).Base.UserName
                                                         'Allow Reuse of Existing Computer Accounts' = $Farm.AutomatedFarmData.CustomizationSettings.ReusePreExistingAccounts
                                                         'AD Container' = $FarmContainerName
                                                         'Farm Customization Specification' = $FarmCustomization
@@ -297,9 +293,8 @@ function Get-AbrHRZFarm {
                                                     }
                                                     $OutObj | Table @TableParams
                                                 }
-                                            }
-                                            catch {
-                                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                                            } catch {
+                                                Write-PScriboMessage -IsWarning $_.Exception.Message
                                             }
 
 
@@ -307,16 +302,14 @@ function Get-AbrHRZFarm {
                                     }
                                 }
                             }
-                        }
-                        catch {
-                            Write-PscriboMessage -IsWarning $_.Exception.Message
+                        } catch {
+                            Write-PScriboMessage -IsWarning $_.Exception.Message
                         }
                     }
                 }
             }
-        }
-        catch {
-            Write-PscriboMessage -IsWarning $_.Exception.Message
+        } catch {
+            Write-PScriboMessage -IsWarning $_.Exception.Message
         }
     }
     end {}

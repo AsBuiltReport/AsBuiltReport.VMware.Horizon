@@ -5,7 +5,7 @@ function Get-AbrHRZGlobalSetting {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.0
+        Version:        1.1.3
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -24,19 +24,19 @@ function Get-AbrHRZGlobalSetting {
 
     begin {
         Write-PScriboMessage "GlobalSettings InfoLevel set at $($InfoLevel.Settings.GlobalSettings.GlobalSettings)."
-        Write-PscriboMessage "Collecting Global Settings information."
+        Write-PScriboMessage "Collecting Global Settings information."
     }
 
     process {
         try {
-            if ($GlobalSettings) {
+            if ($GlobalSettings.GeneralData) {
                 if ($InfoLevel.Settings.GlobalSettings.GlobalSettings -ge 1) {
-                    section -Style Heading2 "Global Settings" {
+                    Section -Style Heading2 "Global Settings" {
                         Paragraph "The following section details the Global Settings configuration for $($HVEnvironment.toUpper()) server."
                         BlankLine
-                        section -Style Heading3 "General Settings" {
+                        Section -Style Heading3 "General Settings" {
                             $OutObj = @()
-                            Write-PscriboMessage "Discovered Global Settings Information."
+                            Write-PScriboMessage "Discovered Global Settings Information."
                             $inObj = [ordered] @{
                                 'Client Session Time Out Policy' = $GlobalSettings.GeneralData.ClientIdleSessionTimeoutPolicy
                                 'Client Max Session Time Minutes ' = $GlobalSettings.GeneralData.ClientMaxSessionTimeMinutes
@@ -91,18 +91,18 @@ function Get-AbrHRZGlobalSetting {
 
                         try {
                             if ($InfoLevel.Settings.GlobalSettings.GlobalSettings -ge 2) {
-                                section -Style Heading3 "Security Settings" {
+                                Section -Style Heading3 "Security Settings" {
                                     $OutObj = @()
-                                    Write-PscriboMessage "Discovered Security Settings Information."
-                                        $inObj = [ordered] @{
-                                            'Reauthenticate Secure Tunnel After Interruption' = $GlobalSettings.SecurityData.ReauthSecureTunnelAfterInterruption
-                                            'Disallow Enhanced Security Mode' = $GlobalSettings.SecurityData.DisallowEnhancedSecurityMode
-                                            'No Managed Certs' = $GlobalSettings.SecurityData.NoManagedCerts
-                                            'Message Security Mode' = $GlobalSettings.SecurityData.MessageSecurityMode
-                                            'Message Security Status' = $GlobalSettings.SecurityData.MessageSecurityStatus
-                                            'Enable IP Sec for Security Server Pairing' = $GlobalSettings.SecurityData.EnableIPSecForSecurityServerPairing
-                                        }
-                                        $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
+                                    Write-PScriboMessage "Discovered Security Settings Information."
+                                    $inObj = [ordered] @{
+                                        'Reauthenticate Secure Tunnel After Interruption' = $GlobalSettings.SecurityData.ReauthSecureTunnelAfterInterruption
+                                        'Disallow Enhanced Security Mode' = $GlobalSettings.SecurityData.DisallowEnhancedSecurityMode
+                                        'No Managed Certs' = $GlobalSettings.SecurityData.NoManagedCerts
+                                        'Message Security Mode' = $GlobalSettings.SecurityData.MessageSecurityMode
+                                        'Message Security Status' = $GlobalSettings.SecurityData.MessageSecurityStatus
+                                        'Enable IP Sec for Security Server Pairing' = $GlobalSettings.SecurityData.EnableIPSecForSecurityServerPairing
+                                    }
+                                    $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
 
                                     $TableParams = @{
                                         Name = "Security Settings - $($HVEnvironment.toUpper())"
@@ -116,16 +116,15 @@ function Get-AbrHRZGlobalSetting {
                                     $OutObj | Table @TableParams
                                 }
                             }
-                        }
-                        catch {
-                            Write-PscriboMessage -IsWarning $_.Exception.Message
+                        } catch {
+                            Write-PScriboMessage -IsWarning $_.Exception.Message
                         }
 
                         try {
                             if ($InfoLevel.Settings.GlobalSettings.GlobalSettings -ge 2) {
-                                section -Style Heading3 "Client Restriction Settings" {
+                                Section -Style Heading3 "Client Restriction Settings" {
                                     $OutObj = @()
-                                    Write-PscriboMessage "Discovered Client Restriction Settings Information."
+                                    Write-PScriboMessage "Discovered Client Restriction Settings Information."
                                     foreach ($CLientData in $GlobalSettings.ClientRestrictionConfiguration.ClientData) {
                                         $inObj = [ordered] @{
                                             'Type' = $CLientData.Type
@@ -148,16 +147,14 @@ function Get-AbrHRZGlobalSetting {
                                     $OutObj | Table @TableParams
                                 }
                             }
-                        }
-                        catch {
-                            Write-PscriboMessage -IsWarning $_.Exception.Message
+                        } catch {
+                            Write-PScriboMessage -IsWarning $_.Exception.Message
                         }
                     }
                 }
             }
-        }
-        catch {
-            Write-PscriboMessage -IsWarning $_.Exception.Message
+        } catch {
+            Write-PScriboMessage -IsWarning $_.Exception.Message
         }
     }
     end {}

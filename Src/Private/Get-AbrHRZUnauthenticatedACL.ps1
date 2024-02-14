@@ -5,7 +5,7 @@ function Get-AbrHRZUnauthenticatedACL {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        0.2.0
+        Version:        1.1.3
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -24,14 +24,14 @@ function Get-AbrHRZUnauthenticatedACL {
 
     begin {
         Write-PScriboMessage "UnauthenticatedAccess InfoLevel set at $($InfoLevel.UsersAndGroups.UnauthenticatedAccess)."
-        Write-PscriboMessage "Collecting Unauthenticated Access Information."
+        Write-PScriboMessage "Collecting Unauthenticated Access Information."
     }
 
     process {
         if ($InfoLevel.UsersAndGroups.UnauthenticatedAccess -ge 1) {
             try {
                 if ($unauthenticatedAccessList) {
-                    section -Style Heading3 "Unauthenticated Access" {
+                    Section -Style Heading3 "Unauthenticated Access" {
                         Paragraph "The following section provide a summary of user and group unauthenticated access configuration."
                         BlankLine
                         $OutObj = @()
@@ -44,20 +44,18 @@ function Get-AbrHRZUnauthenticatedACL {
                                         $unauthenticatedAccessUserID = $hzServices.ADUserOrGroup.ADUserOrGroup_Get($unauthenticatedAccess.userdata.UserId)
                                         $unauthenticatedAccessUserIDName = $unauthenticatedAccessUserID.Base.DisplayName
                                     }
-                                }
-                                catch {
-                                    Write-PscriboMessage -IsWarning $_.Exception.Message
+                                } catch {
+                                    Write-PScriboMessage -IsWarning $_.Exception.Message
                                 }
                                 # Pod Info
                                 try {
                                     $unauthenticatedAccessPodListName = ''
                                     if ($unauthenticatedAccess.SourcePods) {
-                                        $unauthenticatedAccessPodList = $CloudPodLists | Where-Object {$_.id.id -eq $unauthenticatedAccess.SourcePods.Id}
+                                        $unauthenticatedAccessPodList = $CloudPodLists | Where-Object { $_.id.id -eq $unauthenticatedAccess.SourcePods.Id }
                                         $unauthenticatedAccessPodListName = $unauthenticatedAccessPodList.DisplayName
                                     }
-                                }
-                                catch {
-                                    Write-PscriboMessage -IsWarning $_.Exception.Message
+                                } catch {
+                                    Write-PScriboMessage -IsWarning $_.Exception.Message
                                 }
 
                                 $inObj = [ordered] @{
@@ -68,9 +66,8 @@ function Get-AbrHRZUnauthenticatedACL {
                                     'Pod Name' = $unauthenticatedAccessPodListName
                                 }
                                 $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
-                            }
-                            catch {
-                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                            } catch {
+                                Write-PScriboMessage -IsWarning $_.Exception.Message
                             }
                         }
 
@@ -86,9 +83,8 @@ function Get-AbrHRZUnauthenticatedACL {
                         $OutObj | Sort-Object -Property 'Login Name' | Table @TableParams
                     }
                 }
-            }
-            catch {
-                Write-PscriboMessage -IsWarning $_.Exception.Message
+            } catch {
+                Write-PScriboMessage -IsWarning $_.Exception.Message
             }
         }
     }

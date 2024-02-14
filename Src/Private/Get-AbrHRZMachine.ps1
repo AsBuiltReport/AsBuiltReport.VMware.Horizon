@@ -1,11 +1,11 @@
-function Get-AbrHRZMachines {
+function Get-AbrHRZMachine {
     <#
     .SYNOPSIS
         PowerShell script which documents the configuration of VMware Horizon in Word/HTML/XML/Text formats
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.0
+        Version:        1.1.3
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -24,18 +24,18 @@ function Get-AbrHRZMachines {
 
     begin {
         Write-PScriboMessage "Machine InfoLevel set at $($InfoLevel.Inventory.Machines)."
-        Write-PscriboMessage "Collecting Machine information."
+        Write-PScriboMessage "Collecting Machine information."
     }
 
     process {
         try {
             if ($Machines) {
                 if ($InfoLevel.Inventory.Machines -ge 1) {
-                    section -Style Heading3 "Machines" {
+                    Section -Style Heading3 "Machines" {
                         Paragraph "The following section details on all of the machine information for $($HVEnvironment.toUpper())."
                         BlankLine
-                        Write-PscriboMessage "Working on Machines Information for $($HVEnvironment.toUpper())."
-                        section -Style Heading4 "vCenter Machine Summary" {
+                        Write-PScriboMessage "Working on Machines Information for $($HVEnvironment.toUpper())."
+                        Section -Style Heading4 "vCenter Machine Summary" {
                             $OutObj = @()
                             foreach ($Machine in $Machines) {
                                 $inObj = [ordered] @{
@@ -49,8 +49,8 @@ function Get-AbrHRZMachines {
                                 $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                             }
                             $TableParams = @{
-                                Name         = "vCenter Machine Summary - $($HVEnvironment.toUpper())"
-                                List         = $false
+                                Name = "vCenter Machine Summary - $($HVEnvironment.toUpper())"
+                                List = $false
                                 ColumnWidths = 15, 10, 20, 25, 15, 15
                             }
                             if ($Report.ShowTableCaptions) {
@@ -61,9 +61,8 @@ function Get-AbrHRZMachines {
                     }
                 }
             }
-        }
-        catch {
-            Write-PscriboMessage -IsWarning $_.Exception.Message
+        } catch {
+            Write-PScriboMessage -IsWarning $_.Exception.Message
         }
     }
     end {}

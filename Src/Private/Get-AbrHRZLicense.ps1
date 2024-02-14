@@ -5,7 +5,7 @@ function Get-AbrHRZLicense {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.0
+        Version:        1.1.3
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -24,53 +24,52 @@ function Get-AbrHRZLicense {
 
     begin {
         Write-PScriboMessage "ProductLicensingandUsage InfoLevel set at $($InfoLevel.Settings.ProductLicensing.ProductLicensingandUsage)."
-        Write-PscriboMessage "Collecting Product Licensing information."
+        Write-PScriboMessage "Collecting Product Licensing information."
     }
 
     process {
         try {
             if ($ProductLicenseingInfo) {
                 if ($InfoLevel.Settings.ProductLicensing.ProductLicensingandUsage -ge 1) {
-                    section -Style Heading2 "Product Licensing and Usage" {
+                    Section -Style Heading2 "Product Licensing and Usage" {
                         Paragraph "The following section details the product license and usage information for $($HVEnvironment.toUpper()) server."
                         BlankLine
 
-                        section -Style Heading3 "Licensing" {
+                        Section -Style Heading3 "Licensing" {
                             $OutObj = @()
                             foreach ($ProductLic in $ProductLicenseingInfo) {
                                 try {
-                                    Write-PscriboMessage "Discovered Product Licensing Information."
+                                    Write-PScriboMessage "Discovered Product Licensing Information."
 
                                     # If $ProductLic.ExpirationTime is null, then the license is perpetual
                                     $ProductLicExpirationTime = ""
                                     if ($null -eq $ProductLic.ExpirationTime) {
                                         $ProductLicExpirationTime = "Perpetual"
-                                    }else {
+                                    } else {
                                         $ProductLicExpirationTime = $ProductLic.ExpirationTime.ToShortDateString()
                                     }
 
                                     $inObj = [ordered] @{
-                                                'Is Licensed' = $ProductLic.Licensed
-                                                'License Key' = $ProductLic.LicenseKey
-                                                'License Expiration' = $ProductLicExpirationTime
-                                                'Composer enabled' = $ProductLic.ViewComposerEnabled
-                                                'Desktop Launching enabled' = $ProductLic.DesktopLaunchingEnabled
-                                                'Application Launching enabled' = $ProductLic.ApplicationLaunchingEnabled
-                                                'Instant Clone enabled' = $ProductLic.InstantCloneEnabled
-                                                'Helpdesk enabled' = $ProductLic.HelpDeskEnabled
-                                                'Collaboration enabled' = $ProductLic.CollaborationEnabled
-                                                'License Edition' = $ProductLic.LicenseEdition
-                                                'License Usage Model' = $ProductLic.UsageModel
-                                                'License Mode' = $ProductLic.LicenseMode
-                                                'Grace Period Days' = $ProductLic.GracePeriodDays
-                                                'Subscription Slice Expiry' = $ProductLic.SubscriptionSliceExpiry
-                                                'License Health' = $ProductLic.LicenseHealth
+                                        'Is Licensed' = $ProductLic.Licensed
+                                        'License Key' = $ProductLic.LicenseKey
+                                        'License Expiration' = $ProductLicExpirationTime
+                                        'Composer enabled' = $ProductLic.ViewComposerEnabled
+                                        'Desktop Launching enabled' = $ProductLic.DesktopLaunchingEnabled
+                                        'Application Launching enabled' = $ProductLic.ApplicationLaunchingEnabled
+                                        'Instant Clone enabled' = $ProductLic.InstantCloneEnabled
+                                        'Helpdesk enabled' = $ProductLic.HelpDeskEnabled
+                                        'Collaboration enabled' = $ProductLic.CollaborationEnabled
+                                        'License Edition' = $ProductLic.LicenseEdition
+                                        'License Usage Model' = $ProductLic.UsageModel
+                                        'License Mode' = $ProductLic.LicenseMode
+                                        'Grace Period Days' = $ProductLic.GracePeriodDays
+                                        'Subscription Slice Expiry' = $ProductLic.SubscriptionSliceExpiry
+                                        'License Health' = $ProductLic.LicenseHealth
                                     }
 
                                     $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
-                                }
-                                Catch{
-                                    Write-PscriboMessage -IsWarning $_.Exception.Message
+                                } Catch {
+                                    Write-PScriboMessage -IsWarning $_.Exception.Message
                                 }
                             }
                             $TableParams = @{
@@ -85,24 +84,23 @@ function Get-AbrHRZLicense {
                             $OutObj | Table @TableParams
                         }
                         try {
-                            $UsageStatisticsInfo = try {$hzServices.UsageStatistics.UsageStatistics_GetLicensingCounters()} catch {Write-PscriboMessage -IsWarning $_.Exception.Message}
+                            $UsageStatisticsInfo = try { $hzServices.UsageStatistics.UsageStatistics_GetLicensingCounters() } catch { Write-PScriboMessage -IsWarning $_.Exception.Message }
                             if ($UsageStatisticsInfo) {
                                 if ($InfoLevel.Settings.ProductLicensing.ProductLicensingandUsage -ge 2) {
-                                    section -Style Heading3 "Usage" {
+                                    Section -Style Heading3 "Usage" {
                                         $OutObj = @()
                                         foreach ($ProductUsage in $UsageStatisticsInfo.HighestUsage.PSObject.Properties.Name) {
                                             try {
-                                                Write-PscriboMessage "Discovered Product Licensing Usage Information."
+                                                Write-PScriboMessage "Discovered Product Licensing Usage Information."
                                                 $inObj = [ordered] @{
-                                                    'Name' = ($ProductUsage -creplace '([A-Z\W_]|\d+)(?<![a-z])',' $&').trim()
-                                                    'Current Usage' = ($UsageStatisticsInfo.CurrentUsage.PSObject.Properties | Where-Object {$_.Name -eq $ProductUsage}).Value
-                                                    'Highest Usage' = ($UsageStatisticsInfo.HighestUsage.PSObject.Properties | Where-Object {$_.Name -eq $ProductUsage}).Value
+                                                    'Name' = ($ProductUsage -creplace '([A-Z\W_]|\d+)(?<![a-z])', ' $&').trim()
+                                                    'Current Usage' = ($UsageStatisticsInfo.CurrentUsage.PSObject.Properties | Where-Object { $_.Name -eq $ProductUsage }).Value
+                                                    'Highest Usage' = ($UsageStatisticsInfo.HighestUsage.PSObject.Properties | Where-Object { $_.Name -eq $ProductUsage }).Value
                                                 }
 
                                                 $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
-                                            }
-                                            catch {
-                                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                                            } catch {
+                                                Write-PScriboMessage -IsWarning $_.Exception.Message
                                             }
                                         }
 
@@ -119,18 +117,17 @@ function Get-AbrHRZLicense {
                                     }
                                 }
                             }
-                        }
-                        catch {
-                            Write-PscriboMessage -IsWarning $_.Exception.Message
+                        } catch {
+                            Write-PScriboMessage -IsWarning $_.Exception.Message
                         }
 
                         try {
                             if ($CEIP) {
                                 if ($InfoLevel.Settings.ProductLicensing.ProductLicensingandUsage -ge 2) {
-                                    section -Style Heading3 "Customer Experience Program" {
+                                    Section -Style Heading3 "Customer Experience Program" {
                                         $OutObj = @()
                                         try {
-                                            Write-PscriboMessage "Discovered Customer Experience Program Information."
+                                            Write-PScriboMessage "Discovered Customer Experience Program Information."
                                             $inObj = [ordered] @{
                                                 'CEIP Enabled' = $CEIP.Enabled
                                                 'Company Size' = $CEIP.CompanySize
@@ -139,9 +136,8 @@ function Get-AbrHRZLicense {
                                             }
 
                                             $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
-                                        }
-                                        catch {
-                                            Write-PscriboMessage -IsWarning $_.Exception.Message
+                                        } catch {
+                                            Write-PScriboMessage -IsWarning $_.Exception.Message
                                         }
 
                                         $TableParams = @{
@@ -157,16 +153,14 @@ function Get-AbrHRZLicense {
                                     }
                                 }
                             }
-                        }
-                        catch {
-                            Write-PscriboMessage -IsWarning $_.Exception.Message
+                        } catch {
+                            Write-PScriboMessage -IsWarning $_.Exception.Message
                         }
                     }
                 }
             }
-        }
-        catch {
-            Write-PscriboMessage -IsWarning $_.Exception.Message
+        } catch {
+            Write-PScriboMessage -IsWarning $_.Exception.Message
         }
     }
     end {}

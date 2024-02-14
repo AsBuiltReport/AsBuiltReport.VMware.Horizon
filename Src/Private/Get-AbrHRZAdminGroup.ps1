@@ -5,7 +5,7 @@ function Get-AbrHRZAdminGroup {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.0
+        Version:        1.1.3
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -24,21 +24,21 @@ function Get-AbrHRZAdminGroup {
 
     begin {
         Write-PScriboMessage "Administrators InfoLevel set at $($InfoLevel.Settings.Administrators.AdministratorsandGroups)."
-        Write-PscriboMessage "Collecting Registered Machines information."
+        Write-PScriboMessage "Collecting Registered Machines information."
     }
 
     process {
         try {
             if ($Administrators) {
                 if ($InfoLevel.Settings.Administrators.AdministratorsandGroups -ge 1) {
-                    section -Style Heading3 "Administrators and Groups" {
+                    Section -Style Heading3 "Administrators and Groups" {
                         Paragraph "The following section details the configuration of Administrators and Groups for $($HVEnvironment.toUpper()) server."
                         BlankLine
                         $OutObj = @()
                         foreach ($Administrator in $Administrators) {
                             $RoleIDNameResults = ''
                             foreach ($Permission in $Permissions) {
-                                if ($Administrator.PermissionData.Permissions.id -eq $Permission.id.id){
+                                if ($Administrator.PermissionData.Permissions.id -eq $Permission.id.id) {
                                     # Find Role ID Name
                                     $RoleIDName = ''
                                     $PermissionGroups = $Permission.base.Role.id
@@ -49,7 +49,7 @@ function Get-AbrHRZAdminGroup {
                                                 break
                                             }
                                         }
-                                        if ($Administrator.PermissionData.Permissions.id.count -gt 1){
+                                        if ($Administrator.PermissionData.Permissions.id.count -gt 1) {
                                             $RoleIDNameResults += "$RoleIDName, "
                                             $RoleIDName = $RoleIDNameResults.TrimEnd(', ')
                                         }
@@ -57,12 +57,12 @@ function Get-AbrHRZAdminGroup {
                                 }
                             }
 
-                            Write-PscriboMessage "Discovered Administrators and Groups Information."
+                            Write-PScriboMessage "Discovered Administrators and Groups Information."
                             $inObj = [ordered] @{
                                 'Display Name' = $Administrator.base.DisplayName
                                 'Type' = Switch ($Administrator.base.Group) {
-                                    $False {'User'}
-                                    $True {'Group'}
+                                    $False { 'User' }
+                                    $True { 'Group' }
                                 }
                                 'Permission Role' = [string](($RoleIDName.split(', ') | Select-Object -Unique) -join ', ')
                             }
@@ -82,12 +82,12 @@ function Get-AbrHRZAdminGroup {
                         $OutObj | Sort-Object -Property 'Display Name' | Table @TableParams
                         try {
                             if ($InfoLevel.Settings.Administrators.AdministratorsandGroups -ge 2) {
-                                section -Style Heading4 "Administrators Users and Groups Details for $($Administrator.base.Name)" {
-                                    foreach ($Administrator in $Administrators) {
-                                        Write-PscriboMessage "Discovered $($Administrator.base.Name) Information."
+                                foreach ($Administrator in $Administrators) {
+                                    Section -Style Heading4 "Administrators Users and Groups Details for $($Administrator.base.Name)" {
+                                        Write-PScriboMessage "Discovered $($Administrator.base.Name) Information."
                                         $RoleIDNameResults = ''
-                                        foreach($Permission in $Permissions) {
-                                            if($Administrator.PermissionData.Permissions.id -eq $Permission.id.id){
+                                        foreach ($Permission in $Permissions) {
+                                            if ($Administrator.PermissionData.Permissions.id -eq $Permission.id.id) {
                                                 # Find Role ID Name
                                                 $RoleIDName = ''
                                                 $PermissionGroups = $Permission.base.Role.id
@@ -98,19 +98,18 @@ function Get-AbrHRZAdminGroup {
                                                             break
                                                         }
                                                     }
-                                                    if ($Administrator.PermissionData.Permissions.id.count -gt 1){
+                                                    if ($Administrator.PermissionData.Permissions.id.count -gt 1) {
                                                         $RoleIDNameResults += "$RoleIDName, "
                                                         $RoleIDName = $RoleIDNameResults.TrimEnd(', ')
                                                     }
                                                 }
                                             }
                                         }
-                                        Switch ($Administrator.base.Group)
-                                        {
-                                            'True' {$Administratorbasegroup = 'Group' }
-                                            'False' {$Administratorbasegroup = 'User' }
+                                        Switch ($Administrator.base.Group) {
+                                            'True' { $Administratorbasegroup = 'Group' }
+                                            'False' { $Administratorbasegroup = 'User' }
                                         }
-                                        section -ExcludeFromTOC -Style NOTOCHeading6 $Administrator.Base.Name {
+                                        Section -ExcludeFromTOC -Style NOTOCHeading6 $Administrator.Base.Name {
                                             $OutObj = @()
                                             $inObj = [ordered] @{
                                                 'Name' = $Administrator.base.Name
@@ -147,16 +146,14 @@ function Get-AbrHRZAdminGroup {
                                     }
                                 }
                             }
-                        }
-                        catch {
-                            Write-PscriboMessage -IsWarning $_.Exception.Message
+                        } catch {
+                            Write-PScriboMessage -IsWarning $_.Exception.Message
                         }
                     }
                 }
             }
-        }
-        catch {
-            Write-PscriboMessage -IsWarning $_.Exception.Message
+        } catch {
+            Write-PScriboMessage -IsWarning $_.Exception.Message
         }
     }
     end {}

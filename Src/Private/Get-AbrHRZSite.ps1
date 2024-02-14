@@ -1,11 +1,11 @@
-function Get-AbrHRZSites {
+function Get-AbrHRZSite {
     <#
     .SYNOPSIS
         PowerShell script which documents the configuration of VMware Horizon in Word/HTML/XML/Text formats
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.0
+        Version:        1.1.3
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -24,29 +24,29 @@ function Get-AbrHRZSites {
 
     begin {
         Write-PScriboMessage "Site InfoLevel set at $($InfoLevel.Settings.Sites.Sites)."
-        Write-PscriboMessage "Collecting Cloud Pod Site information."
+        Write-PScriboMessage "Collecting Cloud Pod Site information."
     }
 
     process {
         try {
             if ($CloudPodSites) {
                 if ($InfoLevel.Settings.Sites.Sites -ge 1) {
-                    section -Style Heading2 "Site" {
+                    Section -Style Heading2 "Site" {
                         Paragraph "The following section details on the Cloud Pod Site information for $($HVEnvironment.toUpper())."
                         BlankLine
                         $OutObj = @()
-                        foreach($CloudPodSite in $CloudPodSites) {
+                        foreach ($CloudPodSite in $CloudPodSites) {
 
                             # Find CloudPod Info
-                            foreach($CloudPodList in $CloudPodLists) {
-                                if($CloudPodList.Id.id -eq $CloudPodSite.pods.id){
+                            foreach ($CloudPodList in $CloudPodLists) {
+                                if ($CloudPodList.Id.id -eq $CloudPodSite.pods.id) {
                                     $CloudPodDisplayName = $CloudPodList.DisplayName
                                     break
                                 } # if($AccessGroup.Id.id -eq $RDSServers.base.accessgroup.id)
                             } # Close out foreach($AccessGroup in $AccessGroups)
 
 
-                            Write-PscriboMessage "Discovered Site Information."
+                            Write-PScriboMessage "Discovered Site Information."
                             $inObj = [ordered] @{
                                 'Cloud Pod Sites Name' = $CloudPodSite.base.DisplayName
                                 'Cloud Pod Sites Description' = $CloudPodSite.base.Description
@@ -71,9 +71,8 @@ function Get-AbrHRZSites {
 
                 }
             }
-        }
-        catch {
-            Write-PscriboMessage -IsWarning $_.Exception.Message
+        } catch {
+            Write-PScriboMessage -IsWarning $_.Exception.Message
         }
     }
     end {}

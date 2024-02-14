@@ -1,11 +1,11 @@
-function Get-AbrHRZGlobalPolicies {
+function Get-AbrHRZGlobalpolicy {
     <#
     .SYNOPSIS
         PowerShell script which documents the configuration of VMware Horizon in Word/HTML/XML/Text formats
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.0
+        Version:        1.1.3
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -24,19 +24,19 @@ function Get-AbrHRZGlobalPolicies {
 
     begin {
         Write-PScriboMessage "Global Policies InfoLevel set at $($InfoLevel.Settings.GlobalPolicies.GlobalPolicies)."
-        Write-PscriboMessage "Collecting Global Policies information."
+        Write-PScriboMessage "Collecting Global Policies information."
     }
 
     process {
         try {
             if ($GlobalPolicies) {
                 if ($InfoLevel.Settings.GlobalPolicies.GlobalPolicies -ge 1) {
-                    section -Style Heading2 "Global Policies" {
+                    Section -Style Heading2 "Global Policies" {
                         Paragraph "The following section details on the Global Policies information for $($HVEnvironment.toUpper())."
                         BlankLine
                         $OutObj = @()
 
-                        Write-PscriboMessage "Discovered Global Policies Information."
+                        Write-PScriboMessage "Discovered Global Policies Information."
                         $inObj = [ordered] @{
                             'Allow Multimedia Redirection' = $GlobalPolicies.GlobalPolicies.AllowMultimediaRedirection
                             'Allow USB Access' = $GlobalPolicies.GlobalPolicies.AllowUSBAccess
@@ -60,9 +60,8 @@ function Get-AbrHRZGlobalPolicies {
                     }
                 }
             }
-        }
-        catch {
-            Write-PscriboMessage -IsWarning $_.Exception.Message
+        } catch {
+            Write-PScriboMessage -IsWarning $_.Exception.Message
         }
     }
     end {}

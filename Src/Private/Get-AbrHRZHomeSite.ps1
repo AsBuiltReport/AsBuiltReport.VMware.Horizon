@@ -5,7 +5,7 @@ function Get-AbrHRZHomeSite {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        0.2.0
+        Version:        1.1.3
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -24,7 +24,7 @@ function Get-AbrHRZHomeSite {
 
     begin {
         Write-PScriboMessage "Home Site Assignments InfoLevel set at $($InfoLevel.UsersAndGroups.HomeSiteAssignments)."
-        Write-PscriboMessage "Collecting Home Site General Information."
+        Write-PScriboMessage "Collecting Home Site General Information."
     }
 
     process {
@@ -82,9 +82,8 @@ function Get-AbrHRZHomeSite {
                                     'Global Application Entitlement' = $HomeSiteGlobalApplicationEntitlementIDName
                                 }
                                 $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
-                            }
-                            catch {
-                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                            } catch {
+                                Write-PScriboMessage -IsWarning $_.Exception.Message
                             }
                         }
 
@@ -100,9 +99,8 @@ function Get-AbrHRZHomeSite {
                         $OutObj | Sort-Object -Property 'User or Group Name' | Table @TableParams
                     }
                 }
-            }
-            catch {
-                Write-PscriboMessage -IsWarning $_.Exception.Message
+            } catch {
+                Write-PScriboMessage -IsWarning $_.Exception.Message
             }
         }
     }

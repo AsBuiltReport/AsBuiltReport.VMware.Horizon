@@ -5,7 +5,7 @@ function Get-AbrHRZInstantClone {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        0.2.0
+        Version:        1.1.3
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -24,29 +24,28 @@ function Get-AbrHRZInstantClone {
 
     begin {
         Write-PScriboMessage "InstantCloneDomainAccounts InfoLevel set at $($InfoLevel.Settings.InstantClone.InstantCloneDomainAccounts)."
-        Write-PscriboMessage "Collecting Instant Clone Domain Accounts information."
+        Write-PScriboMessage "Collecting Instant Clone Domain Accounts information."
     }
 
     process {
         try {
             if ($InstantCloneDomainAdmins) {
                 if ($InfoLevel.Settings.InstantClone.InstantCloneDomainAccounts -ge 1) {
-                    section -Style Heading3 "Instant Clone Accounts" {
+                    Section -Style Heading3 "Instant Clone Accounts" {
                         Paragraph "The following section details the Instant Clone Accounts configuration for $($HVEnvironment.split('.')[0]) server."
                         BlankLine
                         $OutObj = @()
                         foreach ($InstantCloneDomainAdmin in $InstantCloneDomainAdmins) {
                             try {
-                                Write-PscriboMessage "Discovered Instant Clone Accounts Information."
+                                Write-PScriboMessage "Discovered Instant Clone Accounts Information."
                                 $inObj = [ordered] @{
                                     'User Name' = $InstantCloneDomainAdmin.Base.UserName
                                     'Domain Name' = $InstantCloneDomainAdmin.NamesData.DnsName
                                 }
 
                                 $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
-                            }
-                            catch {
-                                Write-PscriboMessage -IsWarning $_.Exception.Message
+                            } catch {
+                                Write-PScriboMessage -IsWarning $_.Exception.Message
                             }
                         }
 
@@ -63,9 +62,8 @@ function Get-AbrHRZInstantClone {
                     }
                 }
             }
-        }
-        catch {
-            Write-PscriboMessage -IsWarning $_.Exception.Message
+        } catch {
+            Write-PScriboMessage -IsWarning $_.Exception.Message
         }
     }
     end {}

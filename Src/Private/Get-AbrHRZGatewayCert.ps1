@@ -5,7 +5,7 @@ function Get-AbrHRZGatewayCert {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.0
+        Version:        1.1.3
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -24,19 +24,19 @@ function Get-AbrHRZGatewayCert {
 
     begin {
         Write-PScriboMessage "Gatway Certificate InfoLevel set at $($InfoLevel.Settings.Servers.ConnectionServers.ConnectionServers)."
-        Write-PscriboMessage "Collecting Gatway Certificate information."
+        Write-PScriboMessage "Collecting Gatway Certificate information."
     }
 
     process {
         try {
             if ($GatewayCerts) {
                 if ($InfoLevel.Settings.CloudPodArch.CloudPodArch -ge 1) {
-                    section -Style Heading3 "Gateway Certificate" {
+                    Section -Style Heading3 "Gateway Certificate" {
                         Paragraph "The following section details on the gateway certificate information for $($HVEnvironment.toUpper())."
                         BlankLine
-                        Write-PscriboMessage "Working on Gateway Certificate Information for $($HVEnvironment.toUpper())."
+                        Write-PScriboMessage "Working on Gateway Certificate Information for $($HVEnvironment.toUpper())."
                         $OutObj = @()
-                        foreach ($GatewayCert in $GatewayCerts){
+                        foreach ($GatewayCert in $GatewayCerts) {
                             $inObj = [ordered] @{
                                 'Certificate Name' = $GatewayCert.CertificateName
                                 'Common Name' = $GatewayCert.CommonName
@@ -47,8 +47,8 @@ function Get-AbrHRZGatewayCert {
                             $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
                         }
                         $TableParams = @{
-                            Name         = "Gateway Certificate - $($HVEnvironment.toUpper())"
-                            List         = $true
+                            Name = "Gateway Certificate - $($HVEnvironment.toUpper())"
+                            List = $true
                             ColumnWidths = 30, 70
                         }
                         if ($Report.ShowTableCaptions) {
@@ -58,9 +58,8 @@ function Get-AbrHRZGatewayCert {
                     }
                 }
             }
-        }
-        catch {
-            Write-PscriboMessage -IsWarning $_.Exception.Message
+        } catch {
+            Write-PScriboMessage -IsWarning $_.Exception.Message
         }
     }
     end {}
