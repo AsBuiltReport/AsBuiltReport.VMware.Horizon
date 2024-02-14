@@ -10,16 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Resolved the Following issues:
-Issue [#15](https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues/15)
-Issue [#16](https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues/16)
-Issue [#17](https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues/17)
-Issue [#18](https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues/18)
-Issue [#19](https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues/19)
-Issue [#20](https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues/20)
-Issue [#21](https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues/21)
-Issue [#22](https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues/22)
-Issue [#23](https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues/23)
-Issue [#24](https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues/24)
+  - [#15](https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues/15), [#16](https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues/16), [#17](https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues/17), [#18](https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues/18), [#19](https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues/19), [#20](https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues/20), [#21](https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues/21), [#22](https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues/22), [#23](https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues/23), [#24](https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues/24)
 
 ## [1.1.2] - 2024-02-02
 
