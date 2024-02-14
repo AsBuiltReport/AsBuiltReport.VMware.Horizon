@@ -29,7 +29,7 @@
     Write-PScriboMessage -IsWarning "Issues or bug reporting: https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues"
 
     # Check if the required version of VMware PowerCLI is installed
-    Get-RequiredModule -Name 'VMware.PowerCLI' -Version '12.7'
+    Get-RequiredModule -Name 'VMware.PowerCLI' -Version '13.2'
 
     # Import Report Configuration
     $Report = $ReportConfig.Report
