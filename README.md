@@ -50,7 +50,7 @@ Below are the instructions on how to install, configure and generate a VMware Ho
 
 The VMware Horizon As Built Report supports the following Horizon versions;
 
-- Horizon 8+
+- Horizon 8+, 23**
 - Horizon 7? (Need Testing)
 
 ### PowerShell
@@ -76,10 +76,10 @@ PowerShell 5.1 or PowerShell 7, and the following PowerShell modules are require
 
 Open a PowerShell terminal window and install each of the required modules.
 
-:warning: VMware PowerCLI 12.7 or higher is required. Please ensure older PowerCLI versions have been uninstalled.
+:warning: VMware PowerCLI 13.2 or higher is required. Please ensure older PowerCLI versions have been uninstalled.
 
 ```powershell
-install-module VMware.PowerCLI -MinimumVersion 12.7 -AllowClobber
+install-module VMware.PowerCLI -MinimumVersion 13.2 -AllowClobber
 install-module AsBuiltReport.VMware.Horizon
 ```
 
