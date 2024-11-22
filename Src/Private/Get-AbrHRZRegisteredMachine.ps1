@@ -69,7 +69,7 @@ function Get-AbrHRZRegisteredMachine {
                                         foreach ($RDSServer in $RDSServers) {
                                             Write-PScriboMessage "Discovered RDS Host $($RDSServer.base.name) Information."
                                             $OutObj = @()
-                                            Section -ExcludeFromTOC -Style Heading6 $RDSServer.Base.Name {
+                                            Section -ExcludeFromTOC -Style NOTOCHeading6 $RDSServer.Base.Name {
                                                 $inObj = [ordered] @{
                                                     'Name' = $RDSServer.base.name
                                                     'Description' = $RDSServer.base.Description

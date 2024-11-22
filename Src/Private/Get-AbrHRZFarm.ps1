@@ -64,7 +64,7 @@ function Get-AbrHRZFarm {
                             if ($InfoLevel.Inventory.Farms -ge 2) {
                                 Section -Style Heading4 "Farm Pools Details" {
                                     foreach ($Farm in $Farms) {
-                                        Section -Style Heading5 $($Farm.Data.name) {
+                                        Section -Style NOTOCHeading5 $($Farm.Data.name) {
                                             # Find out Access Group for Applications
                                             $AccessgroupMatch = $false
                                             $AccessgroupJoined = @()
@@ -111,7 +111,7 @@ function Get-AbrHRZFarm {
                                             }
 
                                             try {
-                                                Section -ExcludeFromTOC -Style Heading5 "General" {
+                                                Section -ExcludeFromTOC -Style NOTOCHeading5 "General" {
                                                     $OutObj = @()
                                                     Write-PScriboMessage "Discovered $($Farm.Data.name) General Information."
                                                     $inObj = [ordered] @{
@@ -153,7 +153,7 @@ function Get-AbrHRZFarm {
                                                 Write-PScriboMessage -IsWarning $_.Exception.Message
                                             }
                                             try {
-                                                Section -ExcludeFromTOC -Style Heading5 "Load Balancing Settings" {
+                                                Section -ExcludeFromTOC -Style NOTOCHeading5 "Load Balancing Settings" {
                                                     $OutObj = @()
                                                     Write-PScriboMessage "Discovered $($Farm.Data.name) Load Balancing Settings."
                                                     $inObj = [ordered] @{
@@ -184,7 +184,7 @@ function Get-AbrHRZFarm {
                                                 Write-PScriboMessage -IsWarning $_.Exception.Message
                                             }
                                             try {
-                                                Section -ExcludeFromTOC -Style Heading5 "Provisioning Settings" {
+                                                Section -ExcludeFromTOC -Style NOTOCHeading5 "Provisioning Settings" {
                                                     $OutObj = @()
                                                     Write-PScriboMessage "Discovered $($Farm.Data.name) Settings."
                                                     $inObj = [ordered] @{
@@ -218,7 +218,7 @@ function Get-AbrHRZFarm {
                                                 Write-PScriboMessage -IsWarning $_.Exception.Message
                                             }
                                             try {
-                                                Section -ExcludeFromTOC -Style Heading6 "vCenter Server Settings" {
+                                                Section -ExcludeFromTOC -Style NOTOCHeading6 "vCenter Server Settings" {
                                                     $OutObj = @()
                                                     Write-PScriboMessage "Discovered $($Farm.Data.name) vCenter Server Settings Information."
                                                     $inObj = [ordered] @{
@@ -252,7 +252,7 @@ function Get-AbrHRZFarm {
                                             }
 
                                             try {
-                                                Section -ExcludeFromTOC -Style Heading5 "Guest Customization" {
+                                                Section -ExcludeFromTOC -Style NOTOCHeading5 "Guest Customization" {
                                                     $OutObj = @()
                                                     Write-PScriboMessage "Guest Customization $($Farm.Data.name) Settings."
                                                     $inObj = [ordered] @{

@@ -39,9 +39,6 @@ Please refer to the AsBuiltReport [website](https://www.asbuiltreport.com) for m
 
 Sample VMware Horizon As Built report HTML file: [Sample VMware Horizon As-Built Report.html](https://htmlpreview.github.io/?https://raw.githubusercontent.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/dev/Samples/Sample%20VMware%20Horizon%20As%20Built%20Report.html)
 
-Sample VMware Horizon As Built report PDF file: [Sample VMware Horizon As Built Report.pdf](https://raw.githubusercontent.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/dev/Samples/VMware%20Horizon%20As%20Built%20Report.pdf)
-
-
 # :beginner: Getting Started
 
 Below are the instructions on how to install, configure and generate a VMware Horizon As Built report.

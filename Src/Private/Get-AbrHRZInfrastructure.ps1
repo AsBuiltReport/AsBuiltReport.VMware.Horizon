@@ -28,7 +28,7 @@ function Get-AbrHRZInfrastructure {
 
     process {
         try {
-            Section -Style Heading2 "Executive Summary for $($HVEnvironment.toUpper())" {
+            Section -Style NOTOCHeading4 "Executive Summary for $($HVEnvironment.toUpper())" {
                 $OutObj = @()
                 Write-PScriboMessage "Discovered Infrastructure Summary Information."
                 $inObj = [ordered] @{

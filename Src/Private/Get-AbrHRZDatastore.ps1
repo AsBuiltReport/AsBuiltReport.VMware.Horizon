@@ -31,7 +31,7 @@ function Get-AbrHRZDatastore {
         try {
             if ($vCenterHealth) {
                 if ($InfoLevel.Settings.Servers.vCenterServers.DataStores -ge 1) {
-                    Section -Style Heading5 "Datastores" {
+                    Section -Style NOTOCHeading5 "Datastores" {
                         $OutObj = @()
                         $Datastores = $vCenterHealth.datastoredata
                         foreach ($DataStore in $Datastores) {
@@ -66,11 +66,11 @@ function Get-AbrHRZDatastore {
                         $OutObj | Sort-Object -Property 'Name' | Table @TableParams
                         try {
                             if ($InfoLevel.Settings.Servers.vCenterServers.DataStores -ge 2) {
-                                Section -Style Heading6 "Datastores Detailed" {
+                                Section -Style NOTOCHeading6 "Datastores Detailed" {
                                     foreach ($DataStore in $Datastores) {
                                         if ($DataStore) {
                                             try {
-                                                Section -ExcludeFromTOC -Style Heading6 "$($DataStore.Name)" {
+                                                Section -ExcludeFromTOC -Style NOTOCHeading6 "$($DataStore.Name)" {
                                                     $OutObj = @()
                                                     Write-PScriboMessage "Discovered Datastore Information from $($DataStore.Name)."
                                                     $inObj = [ordered] @{

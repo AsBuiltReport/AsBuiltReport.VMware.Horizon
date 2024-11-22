@@ -105,7 +105,7 @@ function Get-AbrHRZVcenter {
                                             try {
                                                 $HorizonVirtualCenterStorageAcceleratorHostOverrides = $vCenterServer.StorageAcceleratorData.HostOverrides
                                                 if ($HorizonVirtualCenterStorageAcceleratorHostOverrides) {
-                                                    Section -ExcludeFromTOC -Style Heading6 "Storage Accelerator Overrides" {
+                                                    Section -ExcludeFromTOC -Style NOTOCHeading6 "Storage Accelerator Overrides" {
                                                         $OutObj = @()
                                                         foreach ($HorizonVirtualCenterStorageAcceleratorHostOverride in $HorizonVirtualCenterStorageAcceleratorHostOverrides) {
                                                             try {

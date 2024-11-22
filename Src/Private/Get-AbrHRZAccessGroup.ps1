@@ -84,7 +84,7 @@ function Get-AbrHRZAccessGroup {
                                             }
                                         }
                                         if ($AdministratorIDName) {
-                                            Section -ExcludeFromTOC -Style Heading5 $AccessGroup.base.Name {
+                                            Section -ExcludeFromTOC -Style NOTOCHeading5 $AccessGroup.base.Name {
                                                 $OutObj = @()
                                                 foreach ($Principal in ($AdministratorIDName | Select-Object -Unique)) {
                                                     $PrincipalPermissionsName = @()

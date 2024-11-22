@@ -72,7 +72,7 @@ function Get-AbrHRZConnectionServer {
                             try {
                                 $OutObj = @()
                                 foreach ($ConnectionServer in $ConnectionServers) {
-                                    Section -Style Heading5 "General $($ConnectionServer.General.Name) Details" {
+                                    Section -Style NOTOCHeading5 "General $($ConnectionServer.General.Name) Details" {
                                         try {
                                             $ConnectionServerTags = $ConnectionServer.General | ForEach-Object { $_.Tags }
                                             $ConnectionServerTagsresult = $ConnectionServerTags -join ', '
@@ -137,7 +137,7 @@ function Get-AbrHRZConnectionServer {
 
                                     try {
                                         $OutObj = @()
-                                        Section -Style Heading5 "Authentication $($ConnectionServer.General.Name) Details" {
+                                        Section -Style NOTOCHeading5 "Authentication $($ConnectionServer.General.Name) Details" {
                                             try {
                                                 Write-PScriboMessage "Discovered Connection Servers Authentication Information $($ConnectionServer.General.Name)."
 
@@ -192,7 +192,7 @@ function Get-AbrHRZConnectionServer {
                                     }
                                     try {
                                         $OutObj = @()
-                                        Section -Style Heading5 "Backup $($ConnectionServer.General.Name) Details" {
+                                        Section -Style NOTOCHeading5 "Backup $($ConnectionServer.General.Name) Details" {
                                             try {
                                                 Write-PScriboMessage "Discovered Connection Servers Authentication Information $($ConnectionServer.General.Name)."
                                                 $inObj = [ordered] @{
@@ -238,7 +238,7 @@ function Get-AbrHRZConnectionServer {
                                     }
                                     try {
                                         $OutObj = @()
-                                        Section -Style Heading5 "Certificate Details for $($ConnectionServer.General.Name) Details" {
+                                        Section -Style NOTOCHeading5 "Certificate Details for $($ConnectionServer.General.Name) Details" {
                                             try {
 
                                                 # Connection Server Health Data
@@ -295,7 +295,7 @@ function Get-AbrHRZConnectionServer {
                                         if ($InfoLevel.settings.servers.ConnectionServers.ConnectionServers -ge 2) {
                                             try {
                                                 $OutObj = @()
-                                                Section -Style Heading5 "Replication Status for Connection Server $($connectionserver.General.Name)" {
+                                                Section -Style NOTOCHeading5 "Replication Status for Connection Server $($connectionserver.General.Name)" {
                                                     try {
                                                         Write-PScriboMessage "Working on Replication Information for $($connectionserver.General.Name)."
 
