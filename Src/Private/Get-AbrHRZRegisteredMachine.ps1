@@ -5,7 +5,7 @@ function Get-AbrHRZRegisteredMachine {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.3
+        Version:        1.1.4
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -69,7 +69,7 @@ function Get-AbrHRZRegisteredMachine {
                                         foreach ($RDSServer in $RDSServers) {
                                             Write-PScriboMessage "Discovered RDS Host $($RDSServer.base.name) Information."
                                             $OutObj = @()
-                                            Section -ExcludeFromTOC -Style NOTOCHeading6 $RDSServer.Base.Name {
+                                            Section -ExcludeFromTOC -Style Heading6 $RDSServer.Base.Name {
                                                 $inObj = [ordered] @{
                                                     'Name' = $RDSServer.base.name
                                                     'Description' = $RDSServer.base.Description

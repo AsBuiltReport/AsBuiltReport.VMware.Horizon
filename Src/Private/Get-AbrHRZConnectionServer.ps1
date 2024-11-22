@@ -5,7 +5,7 @@ function Get-AbrHRZConnectionServer {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.3
+        Version:        1.1.4
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -299,13 +299,13 @@ function Get-AbrHRZConnectionServer {
                                                     try {
                                                         Write-PScriboMessage "Working on Replication Information for $($connectionserver.General.Name)."
 
-                                                        If($CSHealth.Message){
+                                                        If ($CSHealth.Message) {
                                                             $CSHealthMessage = $CSHealth.Message
-                                                        }else {
+                                                        } else {
                                                             $CSHealthMessage = "No Replication Issues"
                                                         }
 
-                                                        foreach($CSHealth in ($ConnectionServersHealth | Where-Object {$_.Name -EQ $connectionserver.General.Name})){
+                                                        foreach ($CSHealth in ($ConnectionServersHealth | Where-Object { $_.Name -EQ $connectionserver.General.Name })) {
                                                             $inObj = [ordered] @{
                                                                 'Connection Server' = $CSHealth.Name
                                                                 'Replication Partner' = $($CSHealth.ReplicationStatus | ForEach-Object { $_.ServerName }) -join ','

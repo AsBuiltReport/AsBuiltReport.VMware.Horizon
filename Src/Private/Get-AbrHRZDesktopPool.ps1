@@ -5,7 +5,7 @@ function Get-AbrHRZDesktopPool {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.3
+        Version:        1.1.4
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -301,7 +301,7 @@ function Get-AbrHRZDesktopPool {
                                                 }
                                                 #$DatastorePathsresult = $DatastorePaths -join ', '
                                                 try {
-                                                    Section -ExcludeFromTOC -Style NOTOCHeading5 "General Summary - $($Pool.Base.name)" {
+                                                    Section -ExcludeFromTOC -Style Heading5 "General Summary - $($Pool.Base.name)" {
                                                         $OutObj = @()
                                                         Write-PScriboMessage "Discovered $($Pool.Base.name) General Information."
                                                         $inObj = [ordered] @{
@@ -347,7 +347,7 @@ function Get-AbrHRZDesktopPool {
                                                     Write-PScriboMessage -IsWarning $_.Exception.Message
                                                 }
                                                 try {
-                                                    Section -ExcludeFromTOC -Style NOTOCHeading5 "Detailed Settings - $($Pool.Base.name)" {
+                                                    Section -ExcludeFromTOC -Style Heading5 "Detailed Settings - $($Pool.Base.name)" {
                                                         $OutObj = @()
                                                         Write-PScriboMessage "Discovered $($Pool.Base.name) Pool Setting Information."
                                                         $inObj = [ordered] @{
@@ -469,7 +469,7 @@ function Get-AbrHRZDesktopPool {
                                                     Write-PScriboMessage -IsWarning $_.Exception.Message
                                                 }
                                                 try {
-                                                    Section -ExcludeFromTOC -Style NOTOCHeading5 "vCenter Server Settings - $($Pool.Base.name)" {
+                                                    Section -ExcludeFromTOC -Style Heading5 "vCenter Server Settings - $($Pool.Base.name)" {
                                                         $OutObj = @()
                                                         Write-PScriboMessage "Discovered $($Pool.Base.name) vCenter Server Information."
                                                         $inObj = [ordered] @{
@@ -623,7 +623,7 @@ function Get-AbrHRZDesktopPool {
 
                                             if ($InfoLevel.Inventory.Desktop -ge 3) {
                                                 try {
-                                                    Section -ExcludeFromTOC -Style NOTOCHeading6 "Pool Machine Summary - $($Pool.Base.name)" {
+                                                    Section -ExcludeFromTOC -Style Heading6 "Pool Machine Summary - $($Pool.Base.name)" {
                                                         $OutObj = @()
                                                         foreach ($Machine in $Machines) {
                                                             if($Machine.Base.Name) {
@@ -661,7 +661,7 @@ function Get-AbrHRZDesktopPool {
                                         }
                                         try {
                                             if($EntitledUserOrGrouplocalMachines | Where-Object { $_.localData.Desktops.id -eq $Pool.Id.id }){
-                                                Section -ExcludeFromTOC -Style NOTOCHeading6 "Desktop Pools Entitlements - $($Pool.Base.Name)" {
+                                                Section -ExcludeFromTOC -Style Heading6 "Desktop Pools Entitlements - $($Pool.Base.Name)" {
                                                     try {
                                                         $OutObj = @()
                                                         Write-PScriboMessage "Discovered Desktop Pool Entitlements Information for - $($Pool.Base.Name)."

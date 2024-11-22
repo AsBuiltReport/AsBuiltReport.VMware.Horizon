@@ -5,7 +5,7 @@ function Get-AbrHRZFarm {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.3
+        Version:        1.1.4
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -110,9 +110,8 @@ function Get-AbrHRZFarm {
                                                 }
                                             }
 
-
                                             try {
-                                                Section -ExcludeFromTOC -Style NOTOCHeading5 "General" {
+                                                Section -ExcludeFromTOC -Style Heading5 "General" {
                                                     $OutObj = @()
                                                     Write-PScriboMessage "Discovered $($Farm.Data.name) General Information."
                                                     $inObj = [ordered] @{
@@ -154,7 +153,7 @@ function Get-AbrHRZFarm {
                                                 Write-PScriboMessage -IsWarning $_.Exception.Message
                                             }
                                             try {
-                                                Section -ExcludeFromTOC -Style NOTOCHeading5 "Load Balancing Settings" {
+                                                Section -ExcludeFromTOC -Style Heading5 "Load Balancing Settings" {
                                                     $OutObj = @()
                                                     Write-PScriboMessage "Discovered $($Farm.Data.name) Load Balancing Settings."
                                                     $inObj = [ordered] @{
@@ -185,7 +184,7 @@ function Get-AbrHRZFarm {
                                                 Write-PScriboMessage -IsWarning $_.Exception.Message
                                             }
                                             try {
-                                                Section -ExcludeFromTOC -Style NOTOCHeading5 "Provisioning Settings" {
+                                                Section -ExcludeFromTOC -Style Heading5 "Provisioning Settings" {
                                                     $OutObj = @()
                                                     Write-PScriboMessage "Discovered $($Farm.Data.name) Settings."
                                                     $inObj = [ordered] @{
@@ -219,7 +218,7 @@ function Get-AbrHRZFarm {
                                                 Write-PScriboMessage -IsWarning $_.Exception.Message
                                             }
                                             try {
-                                                Section -ExcludeFromTOC -Style NOTOCHeading6 "vCenter Server Settings" {
+                                                Section -ExcludeFromTOC -Style Heading6 "vCenter Server Settings" {
                                                     $OutObj = @()
                                                     Write-PScriboMessage "Discovered $($Farm.Data.name) vCenter Server Settings Information."
                                                     $inObj = [ordered] @{
@@ -253,7 +252,7 @@ function Get-AbrHRZFarm {
                                             }
 
                                             try {
-                                                Section -ExcludeFromTOC -Style NOTOCHeading5 "Guest Customization" {
+                                                Section -ExcludeFromTOC -Style Heading5 "Guest Customization" {
                                                     $OutObj = @()
                                                     Write-PScriboMessage "Guest Customization $($Farm.Data.name) Settings."
                                                     $inObj = [ordered] @{

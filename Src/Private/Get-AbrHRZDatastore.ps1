@@ -5,7 +5,7 @@ function Get-AbrHRZDatastore {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.3
+        Version:        1.1.4
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -70,7 +70,7 @@ function Get-AbrHRZDatastore {
                                     foreach ($DataStore in $Datastores) {
                                         if ($DataStore) {
                                             try {
-                                                Section -ExcludeFromTOC -Style NOTOCHeading6 "$($DataStore.Name)" {
+                                                Section -ExcludeFromTOC -Style Heading6 "$($DataStore.Name)" {
                                                     $OutObj = @()
                                                     Write-PScriboMessage "Discovered Datastore Information from $($DataStore.Name)."
                                                     $inObj = [ordered] @{

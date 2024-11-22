@@ -5,7 +5,7 @@ function Get-AbrHRZESXi {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.3
+        Version:        1.1.4
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -72,7 +72,7 @@ function Get-AbrHRZESXi {
                                         foreach ($ESXHost in ($ESXHosts | Where-Object { $_.ClusterName -eq $ESXCLUSTER })) {
                                             if ($ESXHost.Name) {
                                                 try {
-                                                    Section -ExcludeFromTOC -Style NOTOCHeading6 "$($ESXHost.Name) Details" {
+                                                    Section -ExcludeFromTOC -Style Heading6 "$($ESXHost.Name) Details" {
                                                         Write-PScriboMessage "Discovered ESXI Server Information from $($ESXHost.Name)."
                                                         $inObj = [ordered] @{
                                                             'CPU Cores' = $ESXHost.NumCpuCores

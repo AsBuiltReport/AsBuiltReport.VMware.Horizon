@@ -5,7 +5,7 @@ function Get-AbrHRZLocalEntitlement {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.3
+        Version:        1.1.4
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -140,7 +140,7 @@ function Get-AbrHRZLocalEntitlement {
                                             'True' { $EntitledUserOrGroupLocalMachinegroup = 'Group' }
                                             'False' { $EntitledUserOrGroupLocalMachinegroup = 'User' }
                                         }
-                                        Section -ExcludeFromTOC -Style NOTOCHeading5 "Local Entitlement Details - $($EntitledUserOrGroupLocalMachine.base.Name)" {
+                                        Section -ExcludeFromTOC -Style Heading5 "Local Entitlement Details - $($EntitledUserOrGroupLocalMachine.base.Name)" {
                                             $OutObj = @()
                                             try {
                                                 Write-PScriboMessage "Local Entitlements Details for $($EntitledUserOrGroupLocalMachine.base.Name)."

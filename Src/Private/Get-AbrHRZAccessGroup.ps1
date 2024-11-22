@@ -5,7 +5,7 @@ function Get-AbrHRZAccessGroup {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.3
+        Version:        1.1.4
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -84,7 +84,7 @@ function Get-AbrHRZAccessGroup {
                                             }
                                         }
                                         if ($AdministratorIDName) {
-                                            Section -ExcludeFromTOC -Style NOTOCHeading5 $AccessGroup.base.Name {
+                                            Section -ExcludeFromTOC -Style Heading5 $AccessGroup.base.Name {
                                                 $OutObj = @()
                                                 foreach ($Principal in ($AdministratorIDName | Select-Object -Unique)) {
                                                     $PrincipalPermissionsName = @()

@@ -50,15 +50,14 @@ Below are the instructions on how to install, configure and generate a VMware Ho
 
 The VMware Horizon As Built Report supports the following Horizon versions;
 
-- Horizon 8+, 23**
-- Horizon 7? (Need Testing)
+- Horizon 8+, 2+**
 
 ### PowerShell
 
 This report is compatible with the following PowerShell versions;
 
-| Windows PowerShell 5.1 |     PowerShell 7    |
-|:----------------------:|:--------------------:|
+| Windows PowerShell 5.1 |    PowerShell 7    |
+| :--------------------: | :----------------: |
 |   :white_check_mark:   | :white_check_mark: |
 
 ## :wrench: System Requirements
@@ -120,7 +119,7 @@ The following provides information of how to configure each schema within the re
 The **Report** schema provides configuration of the VMware Horizon report information.
 
 | Sub-Schema          | Setting      | Default                        | Description                                                  |
-|---------------------|--------------|--------------------------------|--------------------------------------------------------------|
+| ------------------- | ------------ | ------------------------------ | ------------------------------------------------------------ |
 | Name                | User defined | VMware Horizon As Built Report | The name of the As Built Report                              |
 | Version             | User defined | 1.0                            | The report version                                           |
 | Status              | User defined | Released                       | The report release status                                    |
@@ -140,53 +139,53 @@ The **InfoLevel** schema allows configuration of each section of the report at a
 
 There are 3 levels (0-3) of detail granularity for each section as follows;
 
-| Setting | InfoLevel         | Description                                                                                                                                |
-|:-------:|-------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
-|    0    | Disabled          | Does not collect or display any information                                                                                                |
-|    1    | Enabled / Summary | Provides summarised information for a collection of objects                                                                                |
-|    2    | Adv Summary       | Provides condensed, detailed information for a collection of objects                                                                       |
+| Setting | InfoLevel         | Description                                                          |
+| :-----: | ----------------- | -------------------------------------------------------------------- |
+|    0    | Disabled          | Does not collect or display any information                          |
+|    1    | Enabled / Summary | Provides summarised information for a collection of objects          |
+|    2    | Adv Summary       | Provides condensed, detailed information for a collection of objects |
 
 The table below outlines the default and maximum InfoLevel settings for each UsersandGroups section.
 
-| Sub-Schema   | Default Setting | Maximum Setting |
-|--------------|:---------------:|:---------------:|
-| Entitlements      |        1        |        2        |
-| HomeSiteAssignments    |        1        |        1        |
-| UnauthenticatedAccess     |        1        |        1        |
+| Sub-Schema            | Default Setting | Maximum Setting |
+| --------------------- | :-------------: | :-------------: |
+| Entitlements          |        1        |        2        |
+| HomeSiteAssignments   |        1        |        1        |
+| UnauthenticatedAccess |        1        |        1        |
 
 The table below outlines the default and maximum InfoLevel settings for each Inventory section.
 
-| Sub-Schema   | Default Setting | Maximum Setting |
-|--------------|:---------------:|:---------------:|
-| Desktop      |        1        |        3        |
-| Applications    |        1        |        2        |
-| Farms     |        1        |        2        |
-| Machines     |        1        |        1        |
-| GlobalEntitlements     |        1        |        1        |
+| Sub-Schema         | Default Setting | Maximum Setting |
+| ------------------ | :-------------: | :-------------: |
+| Desktop            |        1        |        3        |
+| Applications       |        1        |        2        |
+| Farms              |        1        |        2        |
+| Machines           |        1        |        1        |
+| GlobalEntitlements |        1        |        1        |
 
 The table below outlines the default and maximum InfoLevel settings for each Settings section.
 
-| Sub-Schema   | Default Setting | Maximum Setting |
-|--------------|:---------------:|:---------------:|
-| vCenter      |        1        |        2        |
-| ESXiHosts    |        1        |        2        |
-| DataStores     |        1        |        2        |
-| ADDomains     |        1        |        1        |
-| UAGServers      |        1        |        1     |
-| ConnectionServers      |        1        |        2     |
-| InstantCloneDomainAccounts      |        1        |        1     |
-| ProductLicensingandUsage      |        1        |        2     |
-| GlobalSettings      |        1        |        1     |
-| RegisteredMachines      |        1        |        2     |
-| AdministratorsandGroups      |        1        |        2     |
-| RolePrivileges      |        1        |        1     |
-| RolePermissions      |        1        |        1     |
-| AccessGroup      |        1        |        2     |
-| Cloud Pod      |        1        |        2     |
-| Sites      |        1        |        2     |
-| EventDatabase      |        1        |        1     |
-| Syslog      |        1        |        1     |
-| EventstoFileSystem      |        1        |        1     |
+| Sub-Schema                 | Default Setting | Maximum Setting |
+| -------------------------- | :-------------: | :-------------: |
+| vCenter                    |        1        |        2        |
+| ESXiHosts                  |        1        |        2        |
+| DataStores                 |        1        |        2        |
+| ADDomains                  |        1        |        1        |
+| UAGServers                 |        1        |        1        |
+| ConnectionServers          |        1        |        2        |
+| InstantCloneDomainAccounts |        1        |        1        |
+| ProductLicensingandUsage   |        1        |        2        |
+| GlobalSettings             |        1        |        1        |
+| RegisteredMachines         |        1        |        2        |
+| AdministratorsandGroups    |        1        |        2        |
+| RolePrivileges             |        1        |        1        |
+| RolePermissions            |        1        |        1        |
+| AccessGroup                |        1        |        2        |
+| Cloud Pod                  |        1        |        2        |
+| Sites                      |        1        |        2        |
+| EventDatabase              |        1        |        1        |
+| Syslog                     |        1        |        1        |
+| EventstoFileSystem         |        1        |        1        |
 
 ### Healthcheck
 
