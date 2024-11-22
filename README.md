@@ -72,7 +72,7 @@ PowerShell 5.1 or PowerShell 7, and the following PowerShell modules are require
 
 Open a PowerShell terminal window and install each of the required modules.
 
-:warning: VMware PowerCLI 13.2 or higher is required. Please ensure older PowerCLI versions have been uninstalled.
+:warning: VMware PowerCLI 13.2 is required. Please ensure older PowerCLI versions have been uninstalled.
 
 ```powershell
 install-module VMware.PowerCLI -MaximumVersion 13.3 -AllowClobber
