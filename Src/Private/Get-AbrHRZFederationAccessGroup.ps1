@@ -5,7 +5,7 @@ function Get-AbrHRZFederationAccessGroup {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.3
+        Version:        1.1.4
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -85,12 +85,12 @@ function Get-AbrHRZFederationAccessGroup {
                             # Find AccessGroup ID Name
                             $GlobalAccessGroupIDName = ''
                             $PermissionGroups = $Permission.base.GlobalAccessGroup.id
-                            if($PermissionGroups){
+                            if ($PermissionGroups) {
                                 foreach ($PermissionGroup in $PermissionGroups) {
-                                    if($PermissionGroup){
-                                        if($GlobalAccessGroups){
+                                    if ($PermissionGroup) {
+                                        if ($GlobalAccessGroups) {
                                             foreach ($GlobalAccessGroup in $GlobalAccessGroups) {
-                                                if($GlobalAccessGroup){
+                                                if ($GlobalAccessGroup) {
                                                     if ($GlobalAccessGroup.Id.id -eq $PermissionGroup) {
                                                         $GlobalAccessGroupIDName = "/$($GlobalAccessGroup.base.name)"
                                                     } elseif ($GlobalAccessGroup.Children.id.id -eq $PermissionGroup) {

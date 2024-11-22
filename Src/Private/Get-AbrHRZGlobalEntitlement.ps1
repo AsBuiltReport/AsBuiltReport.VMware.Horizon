@@ -5,7 +5,7 @@ function Get-AbrHRZGlobalEntitlement {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.3
+        Version:        1.1.4
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -78,7 +78,7 @@ function Get-AbrHRZGlobalEntitlement {
                                 Write-PScriboMessage "Discovered Global Entitlements Detailed Information for $($GlobalEntitlement.base.DisplayName)."
                                 try {
                                     if ($InfoLevel.Inventory.GlobalEntitlements -ge 2) {
-                                        Section -Style Heading5 "Summary - $($GlobalEntitlement.base.DisplayName)" {
+                                        Section -Style NOTOCHeading5 "Summary - $($GlobalEntitlement.base.DisplayName)" {
 
                                             $SupportedDisplayProtocolsresult = ''
                                             $SupportedDisplayProtocols = $GlobalEntitlement.base | ForEach-Object { $_.SupportedDisplayProtocols }
@@ -154,7 +154,7 @@ function Get-AbrHRZGlobalEntitlement {
 
                                         try {
                                             $OutObj = @()
-                                            Section -Style Heading6 "Local Pools - $($GlobalEntitlement.base.DisplayName)" {
+                                            Section -Style NOTOCHeading6 "Local Pools - $($GlobalEntitlement.base.DisplayName)" {
                                                 try {
                                                     Write-PScriboMessage "Discovered Local Pools Information for $($HVEnvironment.toUpper())."
 
@@ -215,7 +215,7 @@ function Get-AbrHRZGlobalEntitlement {
                                         # Users and Groups
                                         try {
 
-                                            Section -Style Heading6 "Users and Groups - $($GlobalEntitlement.base.DisplayName)" {
+                                            Section -Style NOTOCHeading6 "Users and Groups - $($GlobalEntitlement.base.DisplayName)" {
                                                 $OutObj = @()
                                                 try {
                                                     Write-PScriboMessage "Discovered Users and Groups - $($GlobalEntitlement.base.DisplayName)."

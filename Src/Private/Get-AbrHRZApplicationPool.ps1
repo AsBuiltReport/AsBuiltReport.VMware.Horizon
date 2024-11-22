@@ -5,7 +5,7 @@ function Get-AbrHRZApplicationPool {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.3
+        Version:        1.1.4
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -107,7 +107,7 @@ function Get-AbrHRZApplicationPool {
                                         $OtherApplicationFileTypes = $App.ExecutionData.OtherFileTypes | ForEach-Object { $_.FileType }
                                         $OtherApplicationFileTypesresult = $OtherApplicationFileTypes -join ', '
 
-                                        Section -Style Heading5 "Application Summary - $($App.Data.DisplayName)" {
+                                        Section -Style NOTOCHeading5 "Application Summary - $($App.Data.DisplayName)" {
                                             $OutObj = @()
                                             Write-PScriboMessage "Discovered $($App.Data.DisplayName) Applications Information."
                                             $inObj = [ordered] @{

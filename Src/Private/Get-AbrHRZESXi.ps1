@@ -5,7 +5,7 @@ function Get-AbrHRZESXi {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.3
+        Version:        1.1.4
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -31,12 +31,12 @@ function Get-AbrHRZESXi {
         try {
             if ($vCenterHealth) {
                 if ($InfoLevel.Settings.Servers.vCenterServers.ESXiHosts -ge 1) {
-                    Section -Style Heading5 "ESXi Hosts" {
+                    Section -Style NOTOCHeading5 "ESXi Hosts" {
                         Paragraph "The following section details the hardware information of ESXi Hosts for $($HVEnvironment.toUpper()) server."
                         BlankLine
                         $ESXHosts = $vCenterHealth.hostdata
                         foreach ($ESXCLUSTER in ($ESXHosts.ClusterName | Select-Object -Unique)) {
-                            Section -Style Heading5 "$($ESXCLUSTER) Cluster" {
+                            Section -Style NOTOCHeading5 "$($ESXCLUSTER) Cluster" {
                                 $OutObj = @()
                                 try {
                                     foreach ($ESXHost in ($ESXHosts | Where-Object { $_.ClusterName -eq $ESXCLUSTER })) {

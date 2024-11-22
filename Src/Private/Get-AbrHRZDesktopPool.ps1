@@ -5,7 +5,7 @@ function Get-AbrHRZDesktopPool {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.3
+        Version:        1.1.4
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -280,7 +280,7 @@ function Get-AbrHRZDesktopPool {
                                             }
                                         }
                                         try {
-                                            Section -Style Heading5 "Pool - $($Pool.Base.name)" {
+                                            Section -Style NOTOCHeading5 "Pool - $($Pool.Base.name)" {
                                                 $SupportedDisplayProtocolsresult = ''
                                                 $SupportedDisplayProtocols = $Pool.DesktopSettings.DisplayProtocolSettings | ForEach-Object { $_.SupportedDisplayProtocols }
                                                 $SupportedDisplayProtocolsresult = $SupportedDisplayProtocols -join ', '
