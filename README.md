@@ -78,7 +78,7 @@ Open a PowerShell terminal window and install each of the required modules.
 :warning: VMware PowerCLI 13.2 or higher is required. Please ensure older PowerCLI versions have been uninstalled.
 
 ```powershell
-install-module VMware.PowerCLI -MinimumVersion 13.2 -AllowClobber
+install-module VMware.PowerCLI -MaximumVersion 13.3 -AllowClobber
 install-module AsBuiltReport.VMware.Horizon
 ```
 
