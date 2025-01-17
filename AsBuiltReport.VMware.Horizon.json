@@ -1,6 +1,6 @@
 {
     "Report": {
-        "Name": "VMware Horizon As Built Report",
+        "Name": "Omnissa Horizon As Built Report",
         "Version": "1.0",
         "Status": "Released",
         "ShowCoverPageImage": true,
@@ -35,7 +35,8 @@
                     "UAGServers": 1
                 },
                 "ConnectionServers": {
-                    "ConnectionServers": 1
+                    "ConnectionServers": 1,
+                    "TrueSSO": 1
                 }
             },
             "InstantClone": {
@@ -74,23 +75,30 @@
         }
     },
     "HealthCheck": {
-        "ESXiHosts": {
-            "Status": true
+        "HealthCheck": {
+            "Overview": true
         },
-        "DataStores": {
-            "Status": true
+        "Components": {
+            "ConnectionServers": true,
+            "GatewayServer": true,
+            "EventDataBase": true,
+            "TrueSSO": true
         },
-        "vCenter": {
-            "Status": true
+        "RDSFarms": {
+            "RDSFarms": true
         },
-        "ConnectionServers": {
-            "Status": true
+        "vSphere": {
+            "DataStores": true,
+            "vCenter": true,
+            "ESXiHosts": true
         },
-        "RegisteredMachines": {
-            "Status": true
+        "OtherComponents": {
+            "Domains": true,
+            "SAML2": true,
+            "LicenseService": true
         },
-        "EventConfiguration": {
-            "EventDatabase": true
+        "RemotePod": {
+            "RemotePod": true
         }
     }
 }

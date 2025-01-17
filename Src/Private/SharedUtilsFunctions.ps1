@@ -52,7 +52,7 @@ function Get-UnixDate ($UnixDate) {
 function ConvertTo-EmptyToFiller {
     <#
     .SYNOPSIS
-        Used by As Built Report to convert empty culumns to "-".
+        Used by As Built Report to convert empty columns to "-".
     .DESCRIPTION
 
     .NOTES

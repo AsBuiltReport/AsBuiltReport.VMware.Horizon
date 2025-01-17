@@ -21,5 +21,13 @@
     "editor.rulers": [
         115
     ],
-    "files.trimTrailingWhitespace": true
+    "files.trimTrailingWhitespace": true,
+    "cSpell.words": [
+        "Hildebrandt",
+        "Iain",
+        "jcolonfzenpr",
+        "karlnewick",
+        "Newick",
+        "Scribo"
+    ]
 }

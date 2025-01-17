@@ -5,7 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.4] - 2024-11-22
+## [1.1.6] - 2025-1-17
+
+### Added
+
+- Added TrueSSO Certificate details and Health Check Section
+
+### Changed
+
+- Tested with Horizon 2406
+- Added TrueSSO Cetificate details section
+- Added Health Check module
+
+### Fixed
+
+- Resolved the Following issues:
+- [#30](https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues/30)
+
+
+## [1.1.5] - 2024-11-22
 
 ### Added
 
