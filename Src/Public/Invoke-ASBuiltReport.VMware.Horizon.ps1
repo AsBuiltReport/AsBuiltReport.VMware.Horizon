@@ -5,7 +5,7 @@
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.4
+        Version:        1.1.5
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -55,6 +55,7 @@
     # Import Report Configuration
     $Report = $ReportConfig.Report
     $InfoLevel = $ReportConfig.InfoLevel
+    $HealthCheck = $ReportConfig.HealthCheck
     $Options = $ReportConfig.Options
 
 
@@ -91,13 +92,22 @@
             #$datastores = $vCenterHealth
 
             # Domains
-            $domains = try { $hzServices.ADDomainHealth.ADDomainHealth_List() } catch { Write-PScriboMessage -IsWarning $_.Exception.Message }
+            $Domains = try { $hzServices.ADDomainHealth.ADDomainHealth_List() } catch { Write-PScriboMessage -IsWarning $_.Exception.Message }
 
             # Connection Server Info
             $connectionservers = try { $hzServices.ConnectionServer.ConnectionServer_List() } catch { Write-PScriboMessage -IsWarning $_.Exception.Message }
 
             # Connection Server Health
-            $ConnectionServersHealth = try { $hzServices.ConnectionServerHealth.ConnectionServerHealth_List() }  catch { Write-PScriboMessage -IsWarning $_.Exception.Message }
+            $ConnectionServersHealth = try { $hzServices.ConnectionServerHealth.ConnectionServerHealth_List() } catch { Write-PScriboMessage -IsWarning $_.Exception.Message }
+
+            # TrueSSO
+            $CertificateSSOconnectorHealthlist = try { $hzServices.CertificateSSOConnectorHealth.CertificateSSOConnectorHealth_list()} catch { Write-PScriboMessage -IsWarning $_.Exception.Message }
+
+            # SAML SSO
+            $SAMLAuthenticatorhealthlist=$hzServices.SAMLAuthenticatorHealth.SAMLAuthenticatorHealth_list()
+
+            # Pod Health
+
 
             # GateWay Server Info
             $GatewayServers = try { $hzServices.Gateway.Gateway_List() } catch { Write-PScriboMessage -IsWarning $_.Exception.Message }
@@ -126,9 +136,13 @@
             # Sites
             $CloudPodSites = try { $hzServices.Site.Site_List() } catch { Write-PScriboMessage -IsWarning $_.Exception.Message }
             $CloudPodLists = try { $hzServices.Pod.Pod_List() } catch { Write-PScriboMessage -IsWarning $_.Exception.Message }
+            $CloudPodListsLocal = try { $hzServices.Pod.Pod_List() | Where-Object {$_.localpod -eq $false} } catch { Write-PScriboMessage -IsWarning $_.Exception.Message }
 
             # Event Database Info
             $EventDataBases = try { $hzServices.EventDatabase.EventDatabase_Get() } catch { Write-PScriboMessage -IsWarning $_.Exception.Message }
+
+            # Event Database Health Info
+            $EventDataBaseHealth = try { $hzServices.EventDatabaseHealth.EventDatabaseHealth_get() } catch { Write-PScriboMessage -IsWarning $_.Exception.Message }
 
             # Syslog Info
             $Syslog = try { $hzServices.Syslog.Syslog_Get() } catch { Write-PScriboMessage -IsWarning $_.Exception.Message }
@@ -400,6 +414,7 @@
                         Get-AbrHRZUAG
                         Get-AbrHRZConnectionServer
                         Get-AbrHRZGatewayCert
+                        Get-AbrHRZTSSO
                     }
                 }
 
@@ -424,6 +439,44 @@
                 Get-AbrHRZSite
                 Get-AbrHRZEventConf
                 Get-AbrHRZGlobalpolicy
+            }
+            Write-PScriboMessage "CHealth Check InfoLevel set at $($HealthCheck.HealthCheck.Overview)."
+            if ($HealthCheck.HealthCheck) {
+                Section -Style Heading1 'Health Check' {
+                    Paragraph 'The following section provides overall heath check of the environment.'
+                    if ($HealthCheck.Components.ConnectionServers -or $HealthCheck.Components.GatewayServer -or $HealthCheck.Components.EventDataBases -or $HealthCheck.Components.TrueSSO -or $HealthCheck.Components.MessagingClient) {
+                        Section -Style Heading2 'Components' {
+                            Get-AbrHRZHCConnection
+                            Get-AbrHRZHCGatewayServer
+                            Get-AbrHRZHCEventDataBase
+                            Get-AbrHRZHCTrueSSO
+                        }
+                    }
+                    if ($HealthCheck.RDSFarms) {
+                        Section -Style Heading2 'RDS Farms' {
+                            Get-AbrHRZHCRDSFarm
+                        }
+                    }
+                    if ($healthcheck.vSphere.datastores -or $healthcheck.vSphere.vCenter -or $healthcheck.vSphere.esxiHosts) {
+                        Section -Style Heading2 'vSphere' {
+                            Get-AbrHRZHCDataStore
+                            Get-AbrHRZHCvCenter
+                            Get-AbrHRZHCESXiHost
+                        }
+                    }
+                    if ($HealthCheck.OtherComponents.domains -or $HealthCheck.OtherComponents.SAML2 -or $HealthCheck.OtherComponents.LicenseService) {
+                        Section -Style Heading2 'Other Components' {
+                            Get-AbrHRZHCDomain
+                            Get-AbrHRZHCSAML2
+                            Get-AbrHRZHCLicenseService
+                        }
+                    }
+                    if ($healthcheck.RemotePod.RemotePod){
+                        Section -Style Heading2 'Remote Pod' {
+                            Get-AbrHRZHCRemotePod
+                        }
+                    }
+                }
             }
         }
     }
