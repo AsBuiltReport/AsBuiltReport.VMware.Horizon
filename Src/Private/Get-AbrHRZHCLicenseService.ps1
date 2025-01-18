@@ -41,7 +41,7 @@ function Get-AbrHRZHCLicenseService {
                         $textInfo = $culture.TextInfo
                         $properCaseLicensedEditionEdited = $textInfo.ToTitleCase($LicensedEditionEdited.ToLower())
 
-                        $ProductLicenseingInfo.Licensed
+                        # $ProductLicenseingInfo.Licensed
                         if ($ProductLicenseingInfo.Licensed -eq $true) {
                             $LicStatus = "Okay"
                         } else {
