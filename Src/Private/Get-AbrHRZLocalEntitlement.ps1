@@ -57,7 +57,7 @@ function Get-AbrHRZLocalEntitlement {
                                 Write-PScriboMessage -IsWarning $_.Exception.Message
                             }
                         }
-                        
+
                         $TableParams = @{
                             Name = "Local Entitlements - $($HVEnvironment.toUpper())"
                             List = $false
