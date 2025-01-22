@@ -440,7 +440,7 @@
                 Get-AbrHRZEventConf
                 Get-AbrHRZGlobalpolicy
             }
-            Write-PScriboMessage "CHealth Check InfoLevel set at $($HealthCheck.HealthCheck.Overview)."
+            Write-PScriboMessage "Health Check InfoLevel set at $($HealthCheck.HealthCheck.Overview)."
             if ($HealthCheck.HealthCheck) {
                 Section -Style Heading1 'Health Check' {
                     Paragraph 'The following section provides overall heath check of the environment.'
@@ -452,7 +452,7 @@
                             Get-AbrHRZHCTrueSSO
                         }
                     }
-                    if ($HealthCheck.RDSFarms) {
+                    if ($HealthCheck.RDSFarms -and $farms) {
                         Section -Style Heading2 'RDS Farms' {
                             Get-AbrHRZHCRDSFarm
                         }
@@ -471,7 +471,7 @@
                             Get-AbrHRZHCLicenseService
                         }
                     }
-                    if ($healthcheck.RemotePod.RemotePod){
+                    if ($healthcheck.RemotePod.RemotePod -and $CloudPodListsLocal){
                         Section -Style Heading2 'Remote Pod' {
                             Get-AbrHRZHCRemotePod
                         }

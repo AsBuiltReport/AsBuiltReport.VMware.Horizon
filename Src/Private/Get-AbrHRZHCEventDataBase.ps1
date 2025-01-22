@@ -56,7 +56,7 @@ function Get-AbrHRZHCEventDataBase {
                         $TableParams = @{
                             Name = "Event Database Health Information - $($HVEnvironment.toUpper())"
                             List = $false
-                            ColumnWidths = 20, 8, 12, 16, 18, 8, 10, 10
+                            ColumnWidths = 18, 8, 12, 16, 18, 8, 10, 10
                         }
 
                         if ($Report.ShowTableCaptions) {
