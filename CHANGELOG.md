@@ -16,14 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tested with Horizon 2406
 - Added TrueSSO Cetificate details section
 - Added Health Check module
-- Increased AsBuiltReport.Core minimum requirements to v1.4.1
+- Increased AsBuiltReport.Core minimum requirements to v1.4.2
 - Increased Eomm/why-don-t-you-tweet Github action to v2
 
 ### Fixed
 
 - Resolved the Following issues:
 - [#30](https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues/30)
-
 
 ## [1.1.4] - 2024-11-22
 

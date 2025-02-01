@@ -54,7 +54,7 @@
     RequiredModules = @(
         @{
             ModuleName = 'AsBuiltReport.Core';
-            ModuleVersion = '1.4.1'
+            ModuleVersion = '1.4.2'
         }
     )
     # Assemblies that must be loaded prior to importing this module
