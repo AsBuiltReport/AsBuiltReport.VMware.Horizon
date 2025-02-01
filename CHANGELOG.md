@@ -24,7 +24,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Resolved the Following issues:
 - [#30](https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues/30)
 
-
 ## [1.1.4] - 2024-11-22
 
 ### Added
