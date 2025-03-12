@@ -27,24 +27,30 @@ function Get-RequiredModule {
         [String]$Version
     )
 
-    # Convert required version to a [Version] object
-    $RequiredVersion = [Version]$Version
+    begin {}
 
-    # Find the latest installed version of the module
-    $InstalledModule = Get-Module -ListAvailable -Name $Name |
+    process {
+        # Convert required version to a [Version] object
+        $RequiredVersion = [Version]$Version
+
+        # Find the latest installed version of the module
+        $InstalledModule = Get-Module -ListAvailable -Name $Name |
         Sort-Object -Property Version -Descending |
         Select-Object -First 1
 
-    if ($null -eq $InstalledModule) {
-        throw "VMware PowerCLI $Version or higher is required. Run 'Install-Module -Name $Name -MinimumVersion $Version -Force' to install the required modules."
+        if ($null -eq $InstalledModule) {
+            throw "VMware PowerCLI $Version or higher is required. Run 'Install-Module -Name $Name -MinimumVersion $Version -Force' to install the required modules."
+        }
+
+        # Convert installed version to a [Version] object
+        $InstalledVersion = [Version]$InstalledModule.Version
+
+        Write-PScriboMessage -Plugin "Module" -IsWarning "$($InstalledModule.Name) $InstalledVersion is currently installed."
+
+        if ($InstalledVersion -lt $RequiredVersion) {
+            throw "VMware PowerCLI $Version or higher is required. Run 'Update-Module -Name $Name -MinimumVersion $Version -Force' to update the required modules."
+        }
     }
 
-    # Convert installed version to a [Version] object
-    $InstalledVersion = [Version]$InstalledModule.Version
-
-    Write-PScriboMessage -Plugin "Module" -IsWarning "$($InstalledModule.Name) $InstalledVersion is currently installed."
-
-    if ($InstalledVersion -lt $RequiredVersion) {
-        throw "VMware PowerCLI $Version or higher is required. Run 'Update-Module -Name $Name -MinimumVersion $Version -Force' to update the required modules."
-    }
+    end {}
 }
