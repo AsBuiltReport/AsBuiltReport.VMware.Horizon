@@ -5,7 +5,7 @@
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.5
+        Version:        1.1.5.1
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -18,6 +18,11 @@
         https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon
     #>
 
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "", Scope = "Function")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingUserNameAndPassWordParams", "", Scope = "Function")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "", Scope = "Function")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "", Scope = "Function")]
+
     param (
         [String[]] $Target,
         [PSCredential] $Credential
@@ -28,25 +33,30 @@
         break
     }
 
-    Write-PScriboMessage -Plugin "Module" -IsWarning "Please refer to the AsBuiltReport.VMware.Horizon github website for more detailed information about this project."
-    Write-PScriboMessage -Plugin "Module" -IsWarning "Do not forget to update your report configuration file after each new version release."
-    Write-PScriboMessage -Plugin "Module" -IsWarning "Documentation: https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon"
-    Write-PScriboMessage -Plugin "Module" -IsWarning "Issues or bug reporting: https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues"
-    Write-PScriboMessage -Plugin "Module" -IsWarning "This project is community maintained and has no sponsorship from VMware/Omnissa, its employees or any of its affiliates."
+    Write-Host "- Please refer to the AsBuiltReport.VMware.Horizon github website for more detailed information about this project."
+    Write-Host "- Do not forget to update your report configuration file after each new version release."
+    Write-Host "- Documentation: https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon"
+    Write-Host "- Issues or bug reporting: https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/issues"
+    Write-Host "- This project is community maintained and has no sponsorship from VMware, its employees or any of its affiliates."
 
-    Try {
-        $InstalledVersion = Get-Module -ListAvailable -Name AsBuiltReport.VMware.Horizon -ErrorAction SilentlyContinue | Sort-Object -Property Version -Descending | Select-Object -First 1 -ExpandProperty Version
+    # Check the version of the dependency modules
+    $ModuleArray = @('AsBuiltReport.VMware.Horizon', 'Diagrammer.Core')
 
-        if ($InstalledVersion) {
-            Write-PScriboMessage -IsWarning "AsBuiltReport.VMware.Horizon $($InstalledVersion.ToString()) is currently installed."
-            $LatestVersion = Find-Module -Name AsBuiltReport.VMware.Horizon -Repository PSGallery -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Version
-            if ($LatestVersion -gt $InstalledVersion) {
-                Write-PScriboMessage -IsWarning "AsBuiltReport.VMware.Horizon $($LatestVersion.ToString()) is available."
-                Write-PScriboMessage -IsWarning "Run 'Update-Module -Name AsBuiltReport.VMware.Horizon -Force' to install the latest version."
+    foreach ($Module in $ModuleArray) {
+        try {
+            $InstalledVersion = Get-Module -ListAvailable -Name $Module -ErrorAction SilentlyContinue | Sort-Object -Property Version -Descending | Select-Object -First 1 -ExpandProperty Version
+
+            if ($InstalledVersion) {
+                Write-Host "- $Module module v$($InstalledVersion.ToString()) is currently installed."
+                $LatestVersion = Find-Module -Name $Module -Repository PSGallery -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Version
+                if ($InstalledVersion -lt $LatestVersion) {
+                    Write-Host "  - $Module module v$($LatestVersion.ToString()) is available." -ForegroundColor Red
+                    Write-Host "  - Run 'Update-Module -Name $Module -Force' to install the latest version." -ForegroundColor Red
+                }
             }
+        } catch {
+            Write-PScriboMessage -IsWarning $_.Exception.Message
         }
-    } Catch {
-        Write-PScriboMessage -IsWarning $_.Exception.Message
     }
 
     # Check if the required version of VMware PowerCLI is installed
@@ -61,9 +71,24 @@
 
     foreach ($HVEnvironment in $Target) {
 
-        Try {
+        if (Select-String -InputObject $HVEnvironment -Pattern "^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$") {
+            throw "Please use the FQDN instead of an IP address to connect to the Backup Server: $HVEnvironment"
+        }
+
+        # Variable translating Icon to Image Path ($IconPath)
+        $script:Images = @{
+            "AsBuiltReport_LOGO" = "AsBuiltReport_Logo.png"
+            "AsBuiltReport_Signature" = "AsBuiltReport_Signature.png"
+            "Abr_LOGO_Footer" = "AsBuiltReport_Signature.png"
+            "Microsoft_Logo" = "Microsoft_Logo.png"
+            "Server" = "server.png"
+            "DB_Server" = "DB_Server.png"
+        }
+        $script:ColumnSize = $Options.DiagramColumnSize
+
+        try {
             $HvServer = Connect-HVServer -Server $HVEnvironment -Credential $Credential -ErrorAction Stop
-        } Catch {
+        } catch {
             Write-PScriboMessage -IsWarning $_.Exception.Message
         }
 
@@ -101,10 +126,10 @@
             $ConnectionServersHealth = try { $hzServices.ConnectionServerHealth.ConnectionServerHealth_List() } catch { Write-PScriboMessage -IsWarning $_.Exception.Message }
 
             # TrueSSO
-            $CertificateSSOconnectorHealthlist = try { $hzServices.CertificateSSOConnectorHealth.CertificateSSOConnectorHealth_list()} catch { Write-PScriboMessage -IsWarning $_.Exception.Message }
+            $CertificateSSOconnectorHealthlist = try { $hzServices.CertificateSSOConnectorHealth.CertificateSSOConnectorHealth_list() } catch { Write-PScriboMessage -IsWarning $_.Exception.Message }
 
             # SAML SSO
-            $SAMLAuthenticatorhealthlist=$hzServices.SAMLAuthenticatorHealth.SAMLAuthenticatorHealth_list()
+            $SAMLAuthenticatorhealthlist = $hzServices.SAMLAuthenticatorHealth.SAMLAuthenticatorHealth_list()
 
             # Pod Health
 
@@ -136,7 +161,7 @@
             # Sites
             $CloudPodSites = try { $hzServices.Site.Site_List() } catch { Write-PScriboMessage -IsWarning $_.Exception.Message }
             $CloudPodLists = try { $hzServices.Pod.Pod_List() } catch { Write-PScriboMessage -IsWarning $_.Exception.Message }
-            $CloudPodListsLocal = try { $hzServices.Pod.Pod_List() | Where-Object {$_.localpod -eq $false} } catch { Write-PScriboMessage -IsWarning $_.Exception.Message }
+            $CloudPodListsLocal = try { $hzServices.Pod.Pod_List() | Where-Object { $_.localpod -eq $false } } catch { Write-PScriboMessage -IsWarning $_.Exception.Message }
 
             # Event Database Info
             $EventDataBases = try { $hzServices.EventDatabase.EventDatabase_Get() } catch { Write-PScriboMessage -IsWarning $_.Exception.Message }
@@ -340,7 +365,7 @@
             }
 
             # Registerd Physical Machines
-            Try {
+            try {
                 $RegisteredPhysicalMachineInfoQueryDefn = New-Object VMware.Hv.QueryDefinition
                 $RegisteredPhysicalMachineInfoQueryDefn.queryentitytype = 'RegisteredPhysicalMachineInfo'
                 $RegisteredPhysicalMachineResults = $Queryservice.QueryService_Create($hzServices, $RegisteredPhysicalMachineInfoQueryDefn)
@@ -381,6 +406,15 @@
                 Write-PScriboMessage -IsWarning $_.Exception.Message
             }
             Section -Style Heading1 "$($HVEnvironment.toUpper())" {
+                if ($Options.EnableDiagrams) {
+                    $HRZDiagram = Get-AbrHRZInfrastructureDiagram
+                    if ($HRZDiagram) {
+                        Export-AbrDiagram -DiagramObject $HRZDiagram -MainDiagramLabel "Horizon Infrastructure Diagram" -FileName "AsBuiltReport.VMware.Horizon.Infrastructure"
+                    } else {
+                        Write-PScriboMessage -IsWarning "Unable to generate the Infrastructure Diagram."
+                    }
+                }
+
                 Get-AbrHRZInfrastructure
             }
 
@@ -471,7 +505,7 @@
                             Get-AbrHRZHCLicenseService
                         }
                     }
-                    if ($healthcheck.RemotePod.RemotePod -and $CloudPodListsLocal){
+                    if ($healthcheck.RemotePod.RemotePod -and $CloudPodListsLocal) {
                         Section -Style Heading2 'Remote Pod' {
                             Get-AbrHRZHCRemotePod
                         }

@@ -8,7 +8,23 @@
         "ShowHeaderFooter": true,
         "ShowTableCaptions": true
     },
-    "Options": {},
+    "Options": {
+        "EnableDiagrams": false,
+        "EnableDiagramDebug": false,
+        "DiagramColumnSize": 3,
+        "DiagramTheme": "White",
+        "DiagramWaterMark": "",
+        "DiagramType": {
+            "Infrastructure": true
+        },
+        "ExportDiagrams": false,
+        "ExportDiagramsFormat": [
+            "png"
+        ],
+        "EnableDiagramSignature": false,
+        "SignatureAuthorName": "",
+        "SignatureCompanyName": ""
+    },
     "InfoLevel": {
         "_comment_": "0 = Disabled, 1 = Summary, 2 = Informative, 3 = Detailed",
         "UsersAndGroups": {

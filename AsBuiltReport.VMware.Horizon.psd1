@@ -12,7 +12,7 @@
     RootModule = 'AsBuiltReport.VMware.Horizon.psm1'
 
     # Version number of this module.
-    ModuleVersion = '1.1.5'
+    ModuleVersion = '1.1.6'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -54,7 +54,11 @@
     RequiredModules = @(
         @{
             ModuleName = 'AsBuiltReport.Core';
-            ModuleVersion = '1.4.2'
+            ModuleVersion = '1.4.3'
+        }
+        @{
+            ModuleName = 'Diagrammer.Core';
+            ModuleVersion = '0.2.29'
         }
     )
     # Assemblies that must be loaded prior to importing this module
