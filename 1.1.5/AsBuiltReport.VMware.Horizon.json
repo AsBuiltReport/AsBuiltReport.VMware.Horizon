@@ -1,0 +1,104 @@
+{
+    "Report": {
+        "Name": "Omnissa Horizon As Built Report",
+        "Version": "1.0",
+        "Status": "Released",
+        "ShowCoverPageImage": true,
+        "ShowTableOfContents": true,
+        "ShowHeaderFooter": true,
+        "ShowTableCaptions": true
+    },
+    "Options": {},
+    "InfoLevel": {
+        "_comment_": "0 = Disabled, 1 = Summary, 2 = Informative, 3 = Detailed",
+        "UsersAndGroups": {
+            "Entitlements": 1,
+            "HomeSiteAssignments": 1,
+            "UnauthenticatedAccess": 1
+        },
+        "Inventory": {
+            "Desktop": 1,
+            "Applications": 1,
+            "Farms": 1,
+            "Machines": 1,
+            "GlobalEntitlements": 1
+        },
+        "Settings": {
+            "Servers": {
+                "vCenterServers": {
+                    "vCenter": 1,
+                    "ESXiHosts": 1,
+                    "DataStores": 1,
+                    "ADDomains": 1
+                },
+                "UAG": {
+                    "UAGServers": 1
+                },
+                "ConnectionServers": {
+                    "ConnectionServers": 1,
+                    "TrueSSO": 1
+                }
+            },
+            "InstantClone": {
+                "InstantCloneDomainAccounts": 1
+            },
+            "ProductLicensing": {
+                "ProductLicensingandUsage": 1
+            },
+            "GlobalSettings": {
+                "GlobalSettings": 1
+            },
+            "RegisteredMachines": {
+                "RDSHosts": 1
+            },
+            "Administrators": {
+                "AdministratorsandGroups": 1,
+                "RolePrivileges": 1,
+                "RolePermissions": 1,
+                "AccessGroup": 1,
+                "FederationAccessGroup": 1
+            },
+            "CloudPodArch": {
+                "CloudPodArch": 1
+            },
+            "Sites": {
+                "Sites": 1
+            },
+            "EventConfiguration": {
+                "EventDatabase": 1,
+                "Syslog": 1,
+                "EventstoFileSystem": 1
+            },
+            "GlobalPolicies": {
+                "GlobalPolicies": 1
+            }
+        }
+    },
+    "HealthCheck": {
+        "HealthCheck": {
+            "Overview": true
+        },
+        "Components": {
+            "ConnectionServers": true,
+            "GatewayServer": true,
+            "EventDataBase": true,
+            "TrueSSO": true
+        },
+        "RDSFarms": {
+            "RDSFarms": true
+        },
+        "vSphere": {
+            "DataStores": true,
+            "vCenter": true,
+            "ESXiHosts": true
+        },
+        "OtherComponents": {
+            "Domains": true,
+            "SAML2": true,
+            "LicenseService": true
+        },
+        "RemotePod": {
+            "RemotePod": true
+        }
+    }
+}

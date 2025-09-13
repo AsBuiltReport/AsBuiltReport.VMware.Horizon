@@ -1,0 +1,163 @@
+<Objs Version="1.1.0.1" xmlns="http://schemas.microsoft.com/powershell/2004/04">
+  <Obj RefId="0">
+    <TN RefId="0">
+      <T>Microsoft.PowerShell.Commands.PSRepositoryItemInfo</T>
+      <T>System.Management.Automation.PSCustomObject</T>
+      <T>System.Object</T>
+    </TN>
+    <MS>
+      <S N="Name">AsBuiltReport.VMware.Horizon</S>
+      <Version N="Version">1.1.5</Version>
+      <S N="Type">Module</S>
+      <S N="Description">A PowerShell module to generate as built reports on the configuration of VMware Horizon</S>
+      <S N="Author">Chris Hildebrandt</S>
+      <S N="CompanyName">tpcarman</S>
+      <S N="Copyright">(c) 2025 Chris Hildebrandt. All rights reserved.</S>
+      <DT N="PublishedDate">2025-02-01T00:39:45-04:00</DT>
+      <Obj N="InstalledDate" RefId="1">
+        <DT>2025-09-13T12:03:34.846732-04:00</DT>
+        <MS>
+          <Obj N="DisplayHint" RefId="2">
+            <TN RefId="1">
+              <T>Microsoft.PowerShell.Commands.DisplayHintType</T>
+              <T>System.Enum</T>
+              <T>System.ValueType</T>
+              <T>System.Object</T>
+            </TN>
+            <ToString>DateTime</ToString>
+            <I32>2</I32>
+          </Obj>
+        </MS>
+      </Obj>
+      <Nil N="UpdatedDate" />
+      <URI N="LicenseUri">https://raw.githubusercontent.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/master/LICENSE</URI>
+      <URI N="ProjectUri">https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon</URI>
+      <URI N="IconUri">https://raw.githubusercontent.com/AsBuiltReport/AsBuiltReport/master/AsBuiltReport.png</URI>
+      <Obj N="Tags" RefId="3">
+        <TN RefId="2">
+          <T>System.Object[]</T>
+          <T>System.Array</T>
+          <T>System.Object</T>
+        </TN>
+        <LST>
+          <S>AsBuiltReport</S>
+          <S>Report</S>
+          <S>VMware</S>
+          <S>Horizon</S>
+          <S>Documentation</S>
+          <S>PScribo</S>
+          <S>PSEdition_Desktop</S>
+          <S>Windows</S>
+          <S>Omnissa</S>
+          <S>PSModule</S>
+        </LST>
+      </Obj>
+      <Obj N="Includes" RefId="4">
+        <TN RefId="3">
+          <T>System.Collections.Hashtable</T>
+          <T>System.Object</T>
+        </TN>
+        <DCT>
+          <En>
+            <S N="Key">RoleCapability</S>
+            <Obj N="Value" RefId="5">
+              <TNRef RefId="2" />
+              <LST />
+            </Obj>
+          </En>
+          <En>
+            <S N="Key">DscResource</S>
+            <Ref N="Value" RefId="5" />
+          </En>
+          <En>
+            <S N="Key">Cmdlet</S>
+            <Ref N="Value" RefId="5" />
+          </En>
+          <En>
+            <S N="Key">Function</S>
+            <Obj N="Value" RefId="6">
+              <TNRef RefId="2" />
+              <LST>
+                <S>Invoke-AsBuiltReport.VMware.Horizon</S>
+              </LST>
+            </Obj>
+          </En>
+          <En>
+            <S N="Key">Command</S>
+            <Obj N="Value" RefId="7">
+              <TNRef RefId="2" />
+              <LST>
+                <S>Invoke-AsBuiltReport.VMware.Horizon</S>
+              </LST>
+            </Obj>
+          </En>
+          <En>
+            <S N="Key">Workflow</S>
+            <Ref N="Value" RefId="5" />
+          </En>
+        </DCT>
+      </Obj>
+      <Nil N="PowerShellGetFormatVersion" />
+      <S N="ReleaseNotes">https://raw.githubusercontent.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/master/CHANGELOG.md</S>
+      <Obj N="Dependencies" RefId="8">
+        <TNRef RefId="2" />
+        <LST>
+          <Obj RefId="9">
+            <TN RefId="4">
+              <T>System.Collections.Specialized.OrderedDictionary</T>
+              <T>System.Object</T>
+            </TN>
+            <DCT>
+              <En>
+                <S N="Key">Name</S>
+                <S N="Value">AsBuiltReport.Core</S>
+              </En>
+              <En>
+                <S N="Key">MinimumVersion</S>
+                <S N="Value">1.4.2</S>
+              </En>
+              <En>
+                <S N="Key">CanonicalId</S>
+                <S N="Value">nuget:AsBuiltReport.Core/1.4.2</S>
+              </En>
+            </DCT>
+          </Obj>
+        </LST>
+      </Obj>
+      <S N="RepositorySourceLocation">https://www.powershellgallery.com/api/v2</S>
+      <S N="Repository">PSGallery</S>
+      <S N="PackageManagementProvider">NuGet</S>
+      <Obj N="AdditionalMetadata" RefId="10">
+        <TN RefId="5">
+          <T>System.Management.Automation.PSCustomObject</T>
+          <T>System.Object</T>
+        </TN>
+        <MS>
+          <S N="copyright">(c) 2025 Chris Hildebrandt. All rights reserved.</S>
+          <S N="description">A PowerShell module to generate as built reports on the configuration of VMware Horizon</S>
+          <S N="requireLicenseAcceptance">False</S>
+          <S N="releaseNotes">https://raw.githubusercontent.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/master/CHANGELOG.md</S>
+          <S N="isLatestVersion">True</S>
+          <S N="isAbsoluteLatestVersion">True</S>
+          <S N="versionDownloadCount">17592</S>
+          <S N="downloadCount">36264</S>
+          <S N="packageSize">278721</S>
+          <S N="published">2/1/2025 12:39:45 AM -04:00</S>
+          <S N="created">2/1/2025 12:39:45 AM -04:00</S>
+          <S N="lastUpdated">9/13/2025 4:00:00 PM -04:00</S>
+          <S N="tags">AsBuiltReport Report VMware Horizon Documentation PScribo PSEdition_Desktop Windows Omnissa PSModule PSFunction_Invoke-AsBuiltReport.VMware.Horizon PSCommand_Invoke-AsBuiltReport.VMware.Horizon PSIncludes_Function</S>
+          <S N="developmentDependency">False</S>
+          <S N="updated">2025-09-13T16:00:00Z</S>
+          <S N="NormalizedVersion">1.1.5</S>
+          <S N="Authors">Chris Hildebrandt</S>
+          <S N="IsPrerelease">false</S>
+          <S N="ItemType">Module</S>
+          <S N="FileList">AsBuiltReport.VMware.Horizon.nuspec|Samples\Sample VMware Horizon As Built Report.html|Src\Private\Get-AbrHRZGlobalEntitlement.ps1|Src\Private\Get-AbrHRZInfrastructure.ps1|AsBuiltReport.VMware.Horizon.json|Src\Private\Get-AbrHRZAccessGroup.ps1|Src\Private\Get-AbrHRZGlobalPolicy.ps1|Src\Private\Get-AbrHRZInstantClone.ps1|Src\Private\Get-AbrHRZADDomain.ps1|Src\Private\Get-AbrHRZGlobalSetting.ps1|Src\Private\Get-AbrHRZLicense.ps1|AsBuiltReport.VMware.Horizon.psd1|Src\Private\Get-AbrHRZAdminGroup.ps1|Src\Private\Get-AbrHRZHCConnection.ps1|Src\Private\Get-AbrHRZLocalEntitlement.ps1|AsBuiltReport.VMware.Horizon.psm1|Src\Private\Get-AbrHRZApplicationPool.ps1|Src\Private\Get-AbrHRZHCDataStore.ps1|Src\Private\Get-AbrHRZMachine.ps1|AsBuiltReport.VMware.Horizon.Style.ps1|Src\Private\Get-AbrHRZCertMgmt.ps1|Src\Private\Get-AbrHRZHCDomain.ps1|Src\Private\Get-AbrHRZRegisteredMachine.ps1|CHANGELOG.md|Src\Private\Get-AbrHRZCloudPod.ps1|Src\Private\Get-AbrHRZHCESXiHost.ps1|Src\Private\Get-AbrHRZRolePermission.ps1|LICENSE|Src\Private\Get-AbrHRZConnectionServer.ps1|Src\Private\Get-AbrHRZHCEventDataBase.ps1|Src\Private\Get-AbrHRZRolePrivilege.ps1|README.md|Src\Private\Get-AbrHRZDatastore.ps1|Src\Private\Get-AbrHRZHCGatewayServer.ps1|Src\Private\Get-AbrHRZSite.ps1|.github\PULL_REQUEST_TEMPLATE.md|Src\Private\Get-AbrHRZDesktopPool.ps1|Src\Private\Get-AbrHRZHCLicenseService.ps1|Src\Private\Get-AbrHRZTSSO.ps1|.github\ISSUE_TEMPLATE\bug_report.yml|Src\Private\Get-AbrHRZDomain.ps1|Src\Private\Get-AbrHRZHCRDSFarm.ps1|Src\Private\Get-AbrHRZUAG.ps1|.github\ISSUE_TEMPLATE\change_request.yml|Src\Private\Get-AbrHRZESXi.ps1|Src\Private\Get-AbrHRZHCRemotePod.ps1|Src\Private\Get-AbrHRZUnauthenticatedACL.ps1|.github\ISSUE_TEMPLATE\config.yml|Src\Private\Get-AbrHRZEventConf.ps1|Src\Private\Get-AbrHRZHCSAML2.ps1|Src\Private\Get-AbrHRZVcenter.ps1|.github\workflows\Codeql.yml|Src\Private\Get-AbrHRZFarm.ps1|Src\Private\Get-AbrHRZHCTrueSSO.ps1|Src\Private\Get-RequiredModule.ps1|.github\workflows\PSScriptAnalyzer.yml|Src\Private\Get-AbrHRZFederationAccessGroup.ps1|Src\Private\Get-AbrHRZHCvCenter.ps1|Src\Private\SharedUtilsFunctions.ps1|.github\workflows\PSScriptAnalyzerSettings.psd1|Src\Private\Get-AbrHRZGatewayCert.ps1|Src\Private\Get-AbrHRZHomeSite.ps1|Src\Public\Invoke-ASBuiltReport.VMware.Horizon.ps1|.github\workflows\Release.yml|.vscode\settings.json</S>
+          <S N="GUID">2d7d49b3-b010-453c-8a35-22b19f9b7a17</S>
+          <S N="PowerShellVersion">5.1</S>
+        </MS>
+      </Obj>
+      <S N="InstalledLocation">/home/rebelinux/.local/share/powershell/Modules/AsBuiltReport.VMware.Horizon/1.1.5</S>
+    </MS>
+  </Obj>
+</Objs>
