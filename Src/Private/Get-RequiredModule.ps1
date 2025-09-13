@@ -45,7 +45,7 @@ function Get-RequiredModule {
         # Convert installed version to a [Version] object
         $InstalledVersion = [Version]$InstalledModule.Version
 
-        Write-Host "  - $($InstalledModule.Name) $InstalledVersion is currently installed."
+        Write-Host "- $($InstalledModule.Name) $InstalledVersion is currently installed."
 
         if ($InstalledVersion -lt $RequiredVersion) {
             throw "VMware PowerCLI $Version or higher is required. Run 'Update-Module -Name $Name -MinimumVersion $Version -Force' to update the required modules."
