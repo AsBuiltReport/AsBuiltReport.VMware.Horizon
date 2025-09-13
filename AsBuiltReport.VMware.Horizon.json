@@ -9,7 +9,7 @@
         "ShowTableCaptions": true
     },
     "Options": {
-        "EnableDiagrams": true,
+        "EnableDiagrams": false,
         "EnableDiagramDebug": false,
         "DiagramColumnSize": 3,
         "DiagramTheme": "White",
