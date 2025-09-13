@@ -5,21 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.2] - 2025-09-13
+## [1.1.6] - 2025-09-13
 
 ### Added
 
-- Add Diagrammer.Core module requirements
-- Add the required files structure to support the building of diagrams
+- Include Diagrammer.Core module as a requirement.
+- Introduce the necessary file structure to enable diagram generation.
 
 ### Changed
 
-- Bump AsBuiltReport.Core module to v1.4.3
-- Bump actions/checkout to v5 in Codeql.yml and PSScriptAnalyzer.yml
-- Change Release.yml to use windows-latest
-- Enhance Invoke-ASBuiltReport function with version checks for dependencies
-- Update CHANGELOG.md with recent changes
-- This mark the last edition that support VMware Horizon (Next version Omnissa only)
+- Update AsBuiltReport.Core module requirement to v1.4.3.
+- Upgrade actions/checkout to v5 in Codeql.yml and PSScriptAnalyzer.yml.
+- Upgrade actions/bluesky-post-action to v0.3.0
+- Modifie Release.yml to use windows-latest.
+- Enhance Invoke-ASBuiltReport function with improved dependency version checks.
+- Update CHANGELOG.md to reflect recent changes.
+- This is the final release supporting VMware Horizon; future versions will support Omnissa only.
 
 ## [1.1.5.1] - 2025-03-13
 
