@@ -5,7 +5,7 @@
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.5.1
+        Version:        1.1.7
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -401,7 +401,7 @@
 
             try {
                 # Gateway Certificates
-                $script:GatewayCerts = $hzServices.GlobalSettings.GlobalSettings_ListGatewayCertificates()
+                $script:GatewayCerts = $hzServices.GlobalSettings.GlobalSettings_ListGatewayCertificates() | Out-Null
             } catch {
                 Write-PScriboMessage -IsWarning $_.Exception.Message
             }
@@ -486,19 +486,19 @@
                             Get-AbrHRZHCTrueSSO
                         }
                     }
-                    if ($HealthCheck.RDSFarms -and $farms) {
+                    if ($HealthCheck.RDSFarms.RDSFarms -and $farms) {
                         Section -Style Heading2 'RDS Farms' {
                             Get-AbrHRZHCRDSFarm
                         }
                     }
-                    if ($healthcheck.vSphere.datastores -or $healthcheck.vSphere.vCenter -or $healthcheck.vSphere.esxiHosts) {
+                    if ($healthcheck.vSphere.Datastores -or $healthcheck.vSphere.vCenter -or $healthcheck.vSphere.esxiHosts) {
                         Section -Style Heading2 'vSphere' {
                             Get-AbrHRZHCDataStore
                             Get-AbrHRZHCvCenter
                             Get-AbrHRZHCESXiHost
                         }
                     }
-                    if ($HealthCheck.OtherComponents.domains -or $HealthCheck.OtherComponents.SAML2 -or $HealthCheck.OtherComponents.LicenseService) {
+                    if ($HealthCheck.OtherComponents.Domains -or $HealthCheck.OtherComponents.SAML2 -or $HealthCheck.OtherComponents.LicenseService) {
                         Section -Style Heading2 'Other Components' {
                             Get-AbrHRZHCDomain
                             Get-AbrHRZHCSAML2

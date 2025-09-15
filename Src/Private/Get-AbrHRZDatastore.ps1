@@ -5,7 +5,7 @@ function Get-AbrHRZDatastore {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.5
+        Version:        1.1.7
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -31,7 +31,7 @@ function Get-AbrHRZDatastore {
         try {
             if ($vCenterHealth) {
                 if ($InfoLevel.Settings.Servers.vCenterServers.DataStores -ge 1) {
-                    Section -Style NOTOCHeading5 "Datastores" {
+                    Section -Style Heading5 "Datastores" {
                         $OutObj = @()
                         $Datastores = $vCenterHealth.datastoredata
                         foreach ($DataStore in $Datastores) {
@@ -50,7 +50,7 @@ function Get-AbrHRZDatastore {
                             }
                         }
 
-                        if ($HealthCheck.DataStores.Status) {
+                        if ($HealthCheck.vSphere.DataStores) {
                             $OutObj | Where-Object { $_.'Accessible' -eq 'No' } | Set-Style -Style Warning
                         }
 
@@ -83,7 +83,7 @@ function Get-AbrHRZDatastore {
 
                                                     $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
 
-                                                    if ($HealthCheck.DataStores.Status) {
+                                                    if ($HealthCheck.vSphere.DataStores) {
                                                         $OutObj | Where-Object { $_.'Accessible' -eq 'No' } | Set-Style -Style Warning -Property 'Accessible'
                                                     }
 

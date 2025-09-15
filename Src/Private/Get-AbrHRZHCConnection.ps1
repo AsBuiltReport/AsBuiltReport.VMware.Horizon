@@ -5,7 +5,7 @@ function Get-AbrHRZHCConnection {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.5
+        Version:        1.1.7
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -31,12 +31,12 @@ function Get-AbrHRZHCConnection {
         try {
             if ($ConnectionServersHealth) {
                 if ($HealthCheck.Components.ConnectionServers) {
-                     Section -Style Heading3 "Connection Server Health Information" {
+                    Section -Style Heading3 "Connection Server Health Information" {
                         Paragraph "The following section details on the connection server health information for $($HVEnvironment.toUpper())."
                         BlankLine
                         $OutObj = @()
                         foreach ($CSHealth in $ConnectionServersHealth) {
-                            if($CSHealth.CertificateHealth.ExpirationTime -lt ((Get-Date).AddDays(30))) {
+                            if ($CSHealth.CertificateHealth.ExpirationTime -lt ((Get-Date).AddDays(30))) {
                                 $ConServCertExpiry = "Certificate Expiring Soon"
                             } elseif ($CSHealth.CertificateHealth.ExpirationTime -lt (Get-Date)) {
                                 $ConServCertExpiry = "Certificate Expired"

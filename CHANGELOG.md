@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.7] - 2025-09-??
+
+### Fixed
+
+- Fix health check references for consistency across scripts
+- Fix section styles, migrate from NOTOCHeading5 to Heading5 for consistency in documentation
+- Fix error "Item has already been added. Key in dictionary: 'List' Key being added: 'List'"
+- Fix error "Cannot bind argument to parameter 'Name' because it is an empty string"
+
 ## [1.1.6] - 2025-09-13
 
 ### Added

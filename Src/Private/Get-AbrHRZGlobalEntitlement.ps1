@@ -5,7 +5,7 @@ function Get-AbrHRZGlobalEntitlement {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.5
+        Version:        1.1.7
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -40,7 +40,7 @@ function Get-AbrHRZGlobalEntitlement {
                         $GlobalApplicationEntitlementGroups | ForEach-Object { $_ | Add-Member -MemberType NoteProperty -Name "GE_Type" -Value "Application" }
                         $GlobalEntitlementJoined = @()
                         $GlobalEntitlementJoined += $GlobalEntitlements
-                        $GlobalEntitlementJoined += $GlobalApplicationEntitlementGroups
+                        if ($GlobalApplicationEntitlementGroups) { $GlobalEntitlementJoined += $GlobalApplicationEntitlementGroups }
 
                         $OutObj = @()
                         foreach ($GlobalEntitlement in $GlobalEntitlementJoined) {
@@ -78,7 +78,7 @@ function Get-AbrHRZGlobalEntitlement {
                                 Write-PScriboMessage "Discovered Global Entitlements Detailed Information for $($GlobalEntitlement.base.DisplayName)."
                                 try {
                                     if ($InfoLevel.Inventory.GlobalEntitlements -ge 2) {
-                                        Section -Style NOTOCHeading5 "Summary - $($GlobalEntitlement.base.DisplayName)" {
+                                        Section -Style Heading5 "Summary - $($GlobalEntitlement.base.DisplayName)" {
 
                                             $SupportedDisplayProtocolsresult = ''
                                             $SupportedDisplayProtocols = $GlobalEntitlement.base | ForEach-Object { $_.SupportedDisplayProtocols }

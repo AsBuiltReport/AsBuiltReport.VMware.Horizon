@@ -5,7 +5,7 @@ function Get-AbrHRZConnectionServer {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.5
+        Version:        1.1.6
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -54,7 +54,7 @@ function Get-AbrHRZConnectionServer {
                             }
                         }
 
-                        if ($HealthCheck.ConnectionServers.Status) {
+                        if ($HealthCheck.Components.ConnectionServers) {
                             $OutObj | Where-Object { $_.'Enabled' -eq 'No' } | Set-Style -Style Warning -Property 'Enabled'
                         }
 
@@ -72,7 +72,7 @@ function Get-AbrHRZConnectionServer {
                             try {
                                 $OutObj = @()
                                 foreach ($ConnectionServer in $ConnectionServers) {
-                                    Section -Style NOTOCHeading5 "General $($ConnectionServer.General.Name) Details" {
+                                    Section -Style Heading4 "General $($ConnectionServer.General.Name) Details" {
                                         try {
                                             $ConnectionServerTags = $ConnectionServer.General | ForEach-Object { $_.Tags }
                                             $ConnectionServerTagsresult = $ConnectionServerTags -join ', '
@@ -108,13 +108,21 @@ function Get-AbrHRZConnectionServer {
                                                 'IP Mode' = $ConnectionServer.General.IpMode
                                                 'FIPs Mode Enabled' = $ConnectionServer.General.FipsModeEnabled
                                                 'Replication Status' = $ConnectionServerHealthData.ReplicationStatus.Status
-                                                'Current CPU Usage Percentage' = $($ConnectionServerHealthData.ResourcesData.CpuUsagePercentage).ToString() + '%'
-                                                'Current Memory Usage Percentage' = $($ConnectionServerHealthData.ResourcesData.MemoryUsagePercentage).ToString() + '%'
+                                                'Current CPU Usage Percentage' = switch ([string]::IsNullOrEmpty($ConnectionServerHealthData.ResourcesData.CpuUsagePercentage)) {
+                                                    $true { '--' }
+                                                    $false { "$($ConnectionServerHealthData.ResourcesData.CpuUsagePercentage)%" }
+                                                    default { 'Unknown' }
+                                                }
+                                                'Current Memory Usage Percentage' = switch ([string]::IsNullOrEmpty($ConnectionServerHealthData.ResourcesData.MemoryUsagePercentage)) {
+                                                    $true { '--' }
+                                                    $false { "$($ConnectionServerHealthData.ResourcesData.MemoryUsagePercentage)%" }
+                                                    default { 'Unknown' }
+                                                }
                                             }
 
                                             $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
 
-                                            if ($HealthCheck.ConnectionServers.Status) {
+                                            if ($HealthCheck.Components.ConnectionServers) {
                                                 $OutObj | Where-Object { $_.'Enabled' -eq 'No' } | Set-Style -Style Warning -Property 'Enabled'
                                             }
 
@@ -137,7 +145,7 @@ function Get-AbrHRZConnectionServer {
 
                                     try {
                                         $OutObj = @()
-                                        Section -Style NOTOCHeading5 "Authentication $($ConnectionServer.General.Name) Details" {
+                                        Section -Style Heading5 "Authentication $($ConnectionServer.General.Name) Details" {
                                             try {
                                                 Write-PScriboMessage "Discovered Connection Servers Authentication Information $($ConnectionServer.General.Name)."
 
@@ -192,11 +200,11 @@ function Get-AbrHRZConnectionServer {
                                     }
                                     try {
                                         $OutObj = @()
-                                        Section -Style NOTOCHeading5 "Backup $($ConnectionServer.General.Name) Details" {
+                                        Section -Style Heading5 "Backup $($ConnectionServer.General.Name) Details" {
                                             try {
                                                 Write-PScriboMessage "Discovered Connection Servers Authentication Information $($ConnectionServer.General.Name)."
                                                 $inObj = [ordered] @{
-                                                    'Automatic Backup Frequency' = Switch ($ConnectionServer.Backup.LdapBackupFrequencyTime) {
+                                                    'Automatic Backup Frequency' = switch ($ConnectionServer.Backup.LdapBackupFrequencyTime) {
                                                         'DAY_1' { 'Every day' }
                                                         'DAY_2' { 'Every 2 day' }
                                                         'HOUR_1' { 'Every hour' }
@@ -214,7 +222,7 @@ function Get-AbrHRZConnectionServer {
 
                                                 $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
 
-                                                if ($HealthCheck.ConnectionServers.Status) {
+                                                if ($HealthCheck.Components.ConnectionServers) {
                                                     $OutObj | Where-Object { $_.'Last Backup Status' -ne 'OK' } | Set-Style -Style Warning -Property 'Last Backup Status'
                                                     $OutObj | Where-Object { $_.'Automatic Backup Frequency' -eq 'Disabled' } | Set-Style -Style Critical -Property 'Automatic Backup Frequency'
                                                 }
@@ -238,7 +246,7 @@ function Get-AbrHRZConnectionServer {
                                     }
                                     try {
                                         $OutObj = @()
-                                        Section -Style NOTOCHeading5 "Certificate Details for $($ConnectionServer.General.Name) Details" {
+                                        Section -Style Heading5 "Certificate Details for $($ConnectionServer.General.Name) Details" {
                                             try {
 
                                                 # Connection Server Health Data
@@ -272,7 +280,7 @@ function Get-AbrHRZConnectionServer {
                                                     'Certificate Thumbprint' = $PodCert.Thumbprint
                                                 }
                                                 $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
-                                                if ($HealthCheck.ConnectionServers.Status) {
+                                                if ($HealthCheck.Components.ConnectionServers) {
                                                     $OutObj | Where-Object { $_.'Enabled' -eq 'No' } | Set-Style -Style Warning -Property 'Enabled'
                                                 }
                                                 $TableParams = @{
@@ -295,17 +303,17 @@ function Get-AbrHRZConnectionServer {
                                         if ($InfoLevel.settings.servers.ConnectionServers.ConnectionServers -ge 2) {
                                             try {
                                                 $OutObj = @()
-                                                Section -Style NOTOCHeading5 "Replication Status for Connection Server $($connectionserver.General.Name)" {
+                                                Section -Style Heading5 "Replication Status for Connection Server $($connectionserver.General.Name)" {
                                                     try {
                                                         Write-PScriboMessage "Working on Replication Information for $($connectionserver.General.Name)."
 
-                                                        If ($CSHealth.Message) {
+                                                        if ($CSHealth.Message) {
                                                             $CSHealthMessage = $CSHealth.Message
                                                         } else {
                                                             $CSHealthMessage = "No Replication Issues"
                                                         }
 
-                                                        foreach ($CSHealth in ($ConnectionServersHealth | Where-Object { $_.Name -EQ $connectionserver.General.Name })) {
+                                                        foreach ($CSHealth in ($ConnectionServersHealth | Where-Object { $_.Name -eq $connectionserver.General.Name })) {
                                                             $inObj = [ordered] @{
                                                                 'Connection Server' = $CSHealth.Name
                                                                 'Replication Partner' = $($CSHealth.ReplicationStatus | ForEach-Object { $_.ServerName }) -join ','

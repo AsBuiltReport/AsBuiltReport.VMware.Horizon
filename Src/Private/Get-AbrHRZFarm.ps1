@@ -5,7 +5,7 @@ function Get-AbrHRZFarm {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.5
+        Version:        1.1.7
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -46,7 +46,7 @@ function Get-AbrHRZFarm {
                             $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                         }
 
-                        if ($HealthCheck.Farms.Status) {
+                        if ($HealthCheck.RDSFarms.RDSFarms) {
                             $OutObj | Where-Object { $_.'Enabled' -eq 'No' } | Set-Style -Style Warning -Property 'Enabled'
                         }
 
@@ -64,12 +64,12 @@ function Get-AbrHRZFarm {
                             if ($InfoLevel.Inventory.Farms -ge 2) {
                                 Section -Style Heading4 "Farm Pools Details" {
                                     foreach ($Farm in $Farms) {
-                                        Section -Style NOTOCHeading5 $($Farm.Data.name) {
+                                        Section -Style Heading5 $($Farm.Data.name) {
                                             # Find out Access Group for Applications
                                             $AccessgroupMatch = $false
                                             $AccessgroupJoined = @()
                                             $AccessgroupJoined += $Accessgroups
-                                            $AccessgroupJoined += $Accessgroups.Children
+                                            if ($Accessgroups.Children) { $AccessgroupJoined += $Accessgroups.Children }
                                             foreach ($Accessgroup in $AccessgroupJoined) {
                                                 if ($Accessgroup.Id.id -eq $Farm.data.accessgroup.id) {
                                                     $AccessGroupName = $Accessgroup.base.name
@@ -134,7 +134,7 @@ function Get-AbrHRZFarm {
 
                                                     $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
 
-                                                    if ($HealthCheck.Farms.Status) {
+                                                    if ($HealthCheck.RDSFarms.RDSFarms) {
                                                         $OutObj | Where-Object { $_.'Enabled' -eq 'No' } | Set-Style -Style Warning -Property 'Enabled'
                                                     }
 
@@ -199,7 +199,7 @@ function Get-AbrHRZFarm {
 
                                                     $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
 
-                                                    if ($HealthCheck.Farms.Status) {
+                                                    if ($HealthCheck.RDSFarms.RDSFarms) {
                                                         $OutObj | Where-Object { $_.'Provisioning Enabled' -eq 'No' } | Set-Style -Style Warning -Property 'Provisioning Enabled'
                                                     }
 

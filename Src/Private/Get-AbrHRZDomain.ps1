@@ -86,7 +86,7 @@ function Get-AbrHRZDomain {
                                 }
                             }
 
-                            if ($HealthCheck.DataStores.Status) {
+                            if ($HealthCheck.vSphere.DataStores) {
                                 $OutObj | Where-Object { $_.'Status' -eq 'ERROR' } | Set-Style -Style Warning
                             }
 

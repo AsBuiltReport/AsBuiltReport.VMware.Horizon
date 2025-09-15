@@ -31,12 +31,12 @@ function Get-AbrHRZESXi {
         try {
             if ($vCenterHealth) {
                 if ($InfoLevel.Settings.Servers.vCenterServers.ESXiHosts -ge 1) {
-                    Section -Style NOTOCHeading5 "ESXi Hosts" {
+                    Section -Style Heading3 "ESXi Hosts" {
                         Paragraph "The following section details the hardware information of ESXi Hosts for $($HVEnvironment.toUpper()) server."
                         BlankLine
                         $ESXHosts = $vCenterHealth.hostdata
                         foreach ($ESXCLUSTER in ($ESXHosts.ClusterName | Select-Object -Unique)) {
-                            Section -Style NOTOCHeading5 "$($ESXCLUSTER) Cluster" {
+                            Section -Style Heading4 "$($ESXCLUSTER) Cluster" {
                                 $OutObj = @()
                                 try {
                                     foreach ($ESXHost in ($ESXHosts | Where-Object { $_.ClusterName -eq $ESXCLUSTER })) {
@@ -50,7 +50,7 @@ function Get-AbrHRZESXi {
 
                                         $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                                     }
-                                    if ($HealthCheck.ESXiHosts.Status) {
+                                    if ($HealthCheck.vSphere.ESXiHosts) {
                                         $OutObj | Where-Object { $_.'Status' -ne 'CONNECTED' } | Set-Style -Style Warning
                                     }
                                 } catch {
@@ -72,7 +72,8 @@ function Get-AbrHRZESXi {
                                         foreach ($ESXHost in ($ESXHosts | Where-Object { $_.ClusterName -eq $ESXCLUSTER })) {
                                             if ($ESXHost.Name) {
                                                 try {
-                                                    Section -ExcludeFromTOC -Style NOTOCHeading6 "$($ESXHost.Name) Details" {
+                                                    Section -ExcludeFromTOC -Style NOTOCHeading5 "$($ESXHost.Name) Details" {
+                                                        $OutObj = @()
                                                         Write-PScriboMessage "Discovered ESXI Server Information from $($ESXHost.Name)."
                                                         $inObj = [ordered] @{
                                                             'CPU Cores' = $ESXHost.NumCpuCores

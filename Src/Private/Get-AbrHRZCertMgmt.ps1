@@ -5,7 +5,7 @@ function Get-AbrHRZCertMgmt {
     .DESCRIPTION
         Documents the configuration of VMware Horizon in Word/HTML/XML/Text formats using PScribo.
     .NOTES
-        Version:        1.1.5
+        Version:        1.1.7
         Author:         Chris Hildebrandt, Karl Newick
         Twitter:        @childebrandt42, @karlnewick
         Editor:         Jonathan Colon, @jcolonfzenpr
@@ -54,7 +54,7 @@ function Get-AbrHRZCertMgmt {
                             'Certificate Thumbprint' = $PodCert.Thumbprint
                         }
                         $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
-                        if ($HealthCheck.ConnectionServers.Status) {
+                        if ($HealthCheck.Components.ConnectionServers) {
                             $OutObj | Where-Object { $_.'Enabled' -eq 'No' } | Set-Style -Style Warning -Property 'Enabled'
                         }
                         $TableParams = @{
