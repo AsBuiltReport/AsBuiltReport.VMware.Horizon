@@ -31,7 +31,7 @@ function Get-AbrHRZDatastore {
         try {
             if ($vCenterHealth) {
                 if ($InfoLevel.Settings.Servers.vCenterServers.DataStores -ge 1) {
-                    Section -Style NOTOCHeading5 "Datastores" {
+                    Section -Style Heading5 "Datastores" {
                         $OutObj = @()
                         $Datastores = $vCenterHealth.datastoredata
                         foreach ($DataStore in $Datastores) {

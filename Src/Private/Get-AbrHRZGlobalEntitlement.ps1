@@ -78,7 +78,7 @@ function Get-AbrHRZGlobalEntitlement {
                                 Write-PScriboMessage "Discovered Global Entitlements Detailed Information for $($GlobalEntitlement.base.DisplayName)."
                                 try {
                                     if ($InfoLevel.Inventory.GlobalEntitlements -ge 2) {
-                                        Section -Style NOTOCHeading5 "Summary - $($GlobalEntitlement.base.DisplayName)" {
+                                        Section -Style Heading5 "Summary - $($GlobalEntitlement.base.DisplayName)" {
 
                                             $SupportedDisplayProtocolsresult = ''
                                             $SupportedDisplayProtocols = $GlobalEntitlement.base | ForEach-Object { $_.SupportedDisplayProtocols }

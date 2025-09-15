@@ -64,7 +64,7 @@ function Get-AbrHRZFarm {
                             if ($InfoLevel.Inventory.Farms -ge 2) {
                                 Section -Style Heading4 "Farm Pools Details" {
                                     foreach ($Farm in $Farms) {
-                                        Section -Style NOTOCHeading5 $($Farm.Data.name) {
+                                        Section -Style Heading5 $($Farm.Data.name) {
                                             # Find out Access Group for Applications
                                             $AccessgroupMatch = $false
                                             $AccessgroupJoined = @()

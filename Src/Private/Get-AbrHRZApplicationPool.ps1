@@ -107,7 +107,7 @@ function Get-AbrHRZApplicationPool {
                                         $OtherApplicationFileTypes = $App.ExecutionData.OtherFileTypes | ForEach-Object { $_.FileType }
                                         $OtherApplicationFileTypesresult = $OtherApplicationFileTypes -join ', '
 
-                                        Section -Style NOTOCHeading5 "Application Summary - $($App.Data.DisplayName)" {
+                                        Section -Style Heading5 "Application Summary - $($App.Data.DisplayName)" {
                                             $OutObj = @()
                                             Write-PScriboMessage "Discovered $($App.Data.DisplayName) Applications Information."
                                             $inObj = [ordered] @{

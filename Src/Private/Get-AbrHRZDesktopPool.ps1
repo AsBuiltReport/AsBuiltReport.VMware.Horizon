@@ -280,7 +280,7 @@ function Get-AbrHRZDesktopPool {
                                             }
                                         }
                                         try {
-                                            Section -Style NOTOCHeading5 "Pool - $($Pool.Base.name)" {
+                                            Section -Style Heading5 "Pool - $($Pool.Base.name)" {
                                                 $SupportedDisplayProtocolsresult = ''
                                                 $SupportedDisplayProtocols = $Pool.DesktopSettings.DisplayProtocolSettings | ForEach-Object { $_.SupportedDisplayProtocols }
                                                 $SupportedDisplayProtocolsresult = $SupportedDisplayProtocols -join ', '
