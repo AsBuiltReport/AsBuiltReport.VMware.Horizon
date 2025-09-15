@@ -69,7 +69,7 @@ function Get-AbrHRZFarm {
                                             $AccessgroupMatch = $false
                                             $AccessgroupJoined = @()
                                             $AccessgroupJoined += $Accessgroups
-                                            $AccessgroupJoined += $Accessgroups.Children
+                                            if ($Accessgroups.Children) { $AccessgroupJoined += $Accessgroups.Children }
                                             foreach ($Accessgroup in $AccessgroupJoined) {
                                                 if ($Accessgroup.Id.id -eq $Farm.data.accessgroup.id) {
                                                     $AccessGroupName = $Accessgroup.base.name
