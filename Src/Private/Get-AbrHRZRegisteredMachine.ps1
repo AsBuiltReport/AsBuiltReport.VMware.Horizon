@@ -49,7 +49,7 @@ function Get-AbrHRZRegisteredMachine {
                                 $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                             }
 
-                            if ($HealthCheck.RegisteredMachines.Status) {
+                            if ($HealthCheck.RDSFarms.RDSFarms) {
                                 $OutObj | Where-Object { $_.'Status' -ne 'AVAILABLE' } | Set-Style -Style Warning
                             }
 
@@ -126,7 +126,7 @@ function Get-AbrHRZRegisteredMachine {
                                         }
                                         $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                                     }
-                                    if ($HealthCheck.RegisteredMachines.Status) {
+                                    if ($HealthCheck.RDSFarms.RDSFarms) {
                                         $OutObj | Where-Object { $_.'Status' -ne 'AVAILABLE' } | Set-Style -Style Warning
                                     }
                                     $TableParams = @{

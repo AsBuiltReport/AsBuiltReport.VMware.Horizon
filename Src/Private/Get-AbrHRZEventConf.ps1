@@ -56,7 +56,7 @@ function Get-AbrHRZEventConf {
                                         $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                                     }
 
-                                    if ($HealthCheck.EventConfiguration.EventDatabase) {
+                                    if ($HealthCheck.Components.EventDatabase) {
                                         $OutObj | Where-Object { $_.'Enabled' -eq 'No' } | Set-Style -Style Warning -Property 'Enabled'
                                     }
 

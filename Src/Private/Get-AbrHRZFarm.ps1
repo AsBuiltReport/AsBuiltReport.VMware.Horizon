@@ -46,7 +46,7 @@ function Get-AbrHRZFarm {
                             $OutObj += [pscustomobject](ConvertTo-HashToYN $inObj)
                         }
 
-                        if ($HealthCheck.Farms.Status) {
+                        if ($HealthCheck.RDSFarms.RDSFarms) {
                             $OutObj | Where-Object { $_.'Enabled' -eq 'No' } | Set-Style -Style Warning -Property 'Enabled'
                         }
 
@@ -134,7 +134,7 @@ function Get-AbrHRZFarm {
 
                                                     $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
 
-                                                    if ($HealthCheck.Farms.Status) {
+                                                    if ($HealthCheck.RDSFarms.RDSFarms) {
                                                         $OutObj | Where-Object { $_.'Enabled' -eq 'No' } | Set-Style -Style Warning -Property 'Enabled'
                                                     }
 
@@ -199,7 +199,7 @@ function Get-AbrHRZFarm {
 
                                                     $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
 
-                                                    if ($HealthCheck.Farms.Status) {
+                                                    if ($HealthCheck.RDSFarms.RDSFarms) {
                                                         $OutObj | Where-Object { $_.'Provisioning Enabled' -eq 'No' } | Set-Style -Style Warning -Property 'Provisioning Enabled'
                                                     }
 

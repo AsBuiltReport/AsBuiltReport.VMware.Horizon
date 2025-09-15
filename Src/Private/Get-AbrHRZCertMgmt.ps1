@@ -54,7 +54,7 @@ function Get-AbrHRZCertMgmt {
                             'Certificate Thumbprint' = $PodCert.Thumbprint
                         }
                         $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
-                        if ($HealthCheck.ConnectionServers.Status) {
+                        if ($HealthCheck.Components.ConnectionServers) {
                             $OutObj | Where-Object { $_.'Enabled' -eq 'No' } | Set-Style -Style Warning -Property 'Enabled'
                         }
                         $TableParams = @{

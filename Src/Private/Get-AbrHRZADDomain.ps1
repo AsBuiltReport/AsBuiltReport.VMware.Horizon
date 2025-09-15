@@ -47,7 +47,7 @@ function Get-AbrHRZADDomain {
                                 Write-PScriboMessage -IsWarning $_.Exception.Message
                             }
                         }
-                        if ($HealthCheck.DataStores.Status) {
+                        if ($HealthCheck.vSphere.DataStores) {
                             $OutObj | Where-Object { $_.'Status' -eq 'ERROR' } | Set-Style -Style Warning
                         }
                         $TableParams = @{

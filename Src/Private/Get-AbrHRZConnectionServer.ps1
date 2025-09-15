@@ -54,7 +54,7 @@ function Get-AbrHRZConnectionServer {
                             }
                         }
 
-                        if ($HealthCheck.ConnectionServers.Status) {
+                        if ($HealthCheck.Components.ConnectionServers) {
                             $OutObj | Where-Object { $_.'Enabled' -eq 'No' } | Set-Style -Style Warning -Property 'Enabled'
                         }
 
@@ -114,7 +114,7 @@ function Get-AbrHRZConnectionServer {
 
                                             $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
 
-                                            if ($HealthCheck.ConnectionServers.Status) {
+                                            if ($HealthCheck.Components.ConnectionServers) {
                                                 $OutObj | Where-Object { $_.'Enabled' -eq 'No' } | Set-Style -Style Warning -Property 'Enabled'
                                             }
 
@@ -214,7 +214,7 @@ function Get-AbrHRZConnectionServer {
 
                                                 $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
 
-                                                if ($HealthCheck.ConnectionServers.Status) {
+                                                if ($HealthCheck.Components.ConnectionServers) {
                                                     $OutObj | Where-Object { $_.'Last Backup Status' -ne 'OK' } | Set-Style -Style Warning -Property 'Last Backup Status'
                                                     $OutObj | Where-Object { $_.'Automatic Backup Frequency' -eq 'Disabled' } | Set-Style -Style Critical -Property 'Automatic Backup Frequency'
                                                 }
@@ -272,7 +272,7 @@ function Get-AbrHRZConnectionServer {
                                                     'Certificate Thumbprint' = $PodCert.Thumbprint
                                                 }
                                                 $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
-                                                if ($HealthCheck.ConnectionServers.Status) {
+                                                if ($HealthCheck.Components.ConnectionServers) {
                                                     $OutObj | Where-Object { $_.'Enabled' -eq 'No' } | Set-Style -Style Warning -Property 'Enabled'
                                                 }
                                                 $TableParams = @{

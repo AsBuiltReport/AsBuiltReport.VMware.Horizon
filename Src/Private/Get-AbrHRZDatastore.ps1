@@ -50,7 +50,7 @@ function Get-AbrHRZDatastore {
                             }
                         }
 
-                        if ($HealthCheck.DataStores.Status) {
+                        if ($HealthCheck.vSphere.DataStores) {
                             $OutObj | Where-Object { $_.'Accessible' -eq 'No' } | Set-Style -Style Warning
                         }
 
@@ -83,7 +83,7 @@ function Get-AbrHRZDatastore {
 
                                                     $OutObj = [pscustomobject](ConvertTo-HashToYN $inObj)
 
-                                                    if ($HealthCheck.DataStores.Status) {
+                                                    if ($HealthCheck.vSphere.DataStores) {
                                                         $OutObj | Where-Object { $_.'Accessible' -eq 'No' } | Set-Style -Style Warning -Property 'Accessible'
                                                     }
 
