@@ -1,15 +1,15 @@
 <!-- ********** DO NOT EDIT THESE LINKS ********** -->
 <p align="center">
-    <a href="https://www.asbuiltreport.com/" alt="AsBuiltReport"></a>
-            <img src='https://github.com/AsBuiltReport.png' width="8%" height="8%" /></a>
+    <a href="https://www.asbuiltreport.com/">
+        <img src="https://raw.githubusercontent.com/AsBuiltReport/.github/main/assets/repo-banners/AsBuiltReport.VMware.Horizon.png" alt="AsBuiltReport.VMware.Horizon" width="880"></a>
 </p>
 <p align="center">
     <a href="https://www.powershellgallery.com/packages/AsBuiltReport.VMware.Horizon/" alt="PowerShell Gallery Version">
-        <img src="https://img.shields.io/powershellgallery/v/AsBuiltReport.VMware.Horizon.svg" /></a>
+        <img src="https://img.shields.io/powershellgallery/v/AsBuiltReport.VMware.Horizon.svg?color=1F5FD0" /></a>
     <a href="https://www.powershellgallery.com/packages/AsBuiltReport.VMware.Horizon/" alt="PS Gallery Downloads">
-        <img src="https://img.shields.io/powershellgallery/dt/AsBuiltReport.VMware.Horizon.svg" /></a>
+        <img src="https://img.shields.io/powershellgallery/dt/AsBuiltReport.VMware.Horizon.svg?color=012456" /></a>
     <a href="https://www.powershellgallery.com/packages/AsBuiltReport.VMware.Horizon/" alt="PS Platform">
-        <img src="https://img.shields.io/powershellgallery/p/AsBuiltReport.VMware.Horizon.svg" /></a>
+        <img src="https://img.shields.io/powershellgallery/p/AsBuiltReport.VMware.Horizon.svg?color=FFD02B" /></a>
 </p>
 <p align="center">
     <a href="https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/graphs/commit-activity" alt="GitHub Last Commit">
@@ -17,15 +17,9 @@
     <a href="https://raw.githubusercontent.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/master/LICENSE" alt="GitHub License">
         <img src="https://img.shields.io/github/license/AsBuiltReport/AsBuiltReport.VMware.Horizon.svg" /></a>
     <a href="https://github.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/graphs/contributors" alt="GitHub Contributors">
-        <img src="https://img.shields.io/github/contributors/AsBuiltReport/AsBuiltReport.VMware.Horizon.svg"/></a>
-</p>
-<p align="center">
-    <a href="https://twitter.com/AsBuiltReport" alt="Twitter">
-            <img src="https://img.shields.io/twitter/follow/AsBuiltReport.svg?style=social"/></a>
+        <img src="https://img.shields.io/github/contributors/AsBuiltReport/AsBuiltReport.VMware.Horizon.svg?color=012456"/></a>
 </p>
 <!-- ********** DO NOT EDIT THESE LINKS ********** -->
-
-# Omnissa Horizon As Built Report
 
 Omnissa Horizon As Built Report is a PowerShell module which works in conjunction with [AsBuiltReport.Core](https://github.com/AsBuiltReport/AsBuiltReport.Core).
 
@@ -33,17 +27,17 @@ Omnissa Horizon As Built Report is a PowerShell module which works in conjunctio
 
 Please refer to the AsBuiltReport [website](https://www.asbuiltreport.com) for more detailed information about this project.
 
-# :books: Sample Reports
+# <img src="https://raw.githubusercontent.com/AsBuiltReport/.github/main/assets/section-icons/sample-reports.svg" alt="" width="28" height="28" align="top"> Sample Reports
 
 ## Sample Report - Custom Style
 
 Sample Omnissa Horizon As Built report HTML file: [Sample VMware Horizon As-Built Report.html](https://htmlpreview.github.io/?https://raw.githubusercontent.com/AsBuiltReport/AsBuiltReport.VMware.Horizon/dev/Samples/Sample%20VMware%20Horizon%20As%20Built%20Report.html)
 
-# :beginner: Getting Started
+# <img src="https://raw.githubusercontent.com/AsBuiltReport/.github/main/assets/section-icons/getting-started.svg" alt="" width="28" height="28" align="top"> Getting Started
 
 Below are the instructions on how to install, configure and generate a Onmissa Horizon As Built report.
 
-## :floppy_disk: Supported Versions
+## <img src="https://raw.githubusercontent.com/AsBuiltReport/.github/main/assets/section-icons/supported-versions.svg" alt="" width="24" height="24" align="top"> Supported Versions
 
 The Omnissa Horizon As Built Report supports the following Horizon versions;
 
@@ -57,18 +51,18 @@ This report is compatible with the following PowerShell versions;
 | :--------------------: | :----------------: |
 |   :white_check_mark:   | :white_check_mark: |
 
-## :wrench: System Requirements
+## <img src="https://raw.githubusercontent.com/AsBuiltReport/.github/main/assets/section-icons/system-requirements.svg" alt="" width="24" height="24" align="top"> System Requirements
 
 PowerShell 5.1 or PowerShell 7, and the following PowerShell modules are required for generating a VMware Horizon As Built Report.
 
 - [VMware PowerCLI Module](https://www.powershellgallery.com/packages/VMware.PowerCLI/) version 13.2.0.22643736 or older (VMware removed the "VMware.VimAutomation.HorizonView" in latest versions.)
 - [AsBuiltReport.VMware.Horizon Module](https://www.powershellgallery.com/packages/AsBuiltReport.VMware.Horizon/)
 
-### :closed_lock_with_key: Required Privileges
+### <img src="https://raw.githubusercontent.com/AsBuiltReport/.github/main/assets/section-icons/required-privileges.svg" alt="" width="20" height="20" align="top"> Required Privileges
 
 - A Omnissa Horizon As Built Report can be generated with Administrators(Read only) privileges.
 
-## :package: Module Installation
+## <img src="https://raw.githubusercontent.com/AsBuiltReport/.github/main/assets/section-icons/module-installation.svg" alt="" width="24" height="24" align="top"> Module Installation
 
 Open a PowerShell terminal window and install each of the required modules.
 
@@ -94,7 +88,7 @@ If you are unable to use the PowerShell Gallery, you can still install the modul
 
 _Note: You are not limited to installing the module to those example paths, you can add a new entry to the environment variable PSModulePath if you want to use another path._
 
-## :pencil2: Configuration
+## <img src="https://raw.githubusercontent.com/AsBuiltReport/.github/main/assets/section-icons/configuration.svg" alt="" width="24" height="24" align="top"> Configuration
 
 The Omnissa Horizon As Built Report utilizes a JSON file to allow configuration of report information, options, detail and healthchecks.
 
@@ -188,7 +182,7 @@ The table below outlines the default and maximum InfoLevel settings for each Set
 
 The **Healthcheck** schema is used to toggle health checks on or off.
 
-## :computer: Examples
+## <img src="https://raw.githubusercontent.com/AsBuiltReport/.github/main/assets/section-icons/examples.svg" alt="" width="24" height="24" align="top"> Examples
 
 ```powershell
 # Generate a Horizon As Built Report for Horizon Connection Server 'horizon-cs-01.corp.local' using specified credentials. Export report to HTML & DOCX formats. Use default report style. Append timestamp to report filename. Save reports to 'C:\Users\Jon\Documents'
